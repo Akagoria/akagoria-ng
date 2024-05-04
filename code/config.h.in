@@ -1,0 +1,7 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#define AKAGORIA_DATADIR    "@AKAGORIA_DATADIR@"
+#define AKAGORIA_LOCALEDIR  "@AKAGORIA_LOCALEDIR@"
+
+#endif // CONFIG_H
