@@ -16,7 +16,7 @@ namespace akgr {
     main_title_text.font = "fonts/Philosopher-Regular.ttf";
     main_title_text.data.content = "AKAGORIA";
     main_title_text.data.character_size = 150.0f;
-    main_title_text.data.letter_spacing_factor = 2.0f;
+    main_title_text.data.letter_spacing_factor = 1.3f;
 
     additional_title_text.font = "fonts/sawarabi-mincho-medium.ttf";
     additional_title_text.data.content = "アカゴリア";
@@ -26,7 +26,7 @@ namespace akgr {
     subtitle_text.data.content = "The revenge of Kalista"; // TODO: i18n
     subtitle_text.data.character_size = 60.0f;
 
-    underline_shape.data = gf::ShapeData::make_rectangle({ 750.0f, 5.0f });
+    underline_shape.data = gf::ShapeData::make_rectangle({ 900.0f, 5.0f });
     underline_shape.data.color = gf::Black;
   }
 
