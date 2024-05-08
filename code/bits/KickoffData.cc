@@ -10,6 +10,9 @@ namespace akgr {
   {
     using namespace gf::literals;
 
+    base_action_group.actions.emplace("fullscreen"_id, gf::ActionData(gf::ActionType::Instantaneous).add_keycode_control(gf::Keycode::F));
+    base_action_group.actions.emplace("quit"_id, gf::ActionData(gf::ActionType::Instantaneous).add_scancode_control(gf::Scancode::Escape));
+
     title_sprite.texture = "logo.png";
     title_sprite.data.color = gf::gray(0.8f);
 

@@ -15,7 +15,7 @@ namespace akgr {
 
     gf::ResourceBundle bundle(Akagoria* game);
 
-    gf::ActionGroupData action_group;
+    gf::ActionGroupData base_action_group;
 
     gf::SpriteResource title_sprite;
     gf::TextResource main_title_text;
