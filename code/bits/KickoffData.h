@@ -1,9 +1,9 @@
 #ifndef AKGR_KICKOFF_DATA_H
 #define AKGR_KICKOFF_DATA_H
 
-#include <gf2/core/ActionData.h>
+#include <gf2/core/ActionSettings.h>
 #include <gf2/core/ResourceBundle.h>
-#include <gf2/core/ShapeData.h>
+#include <gf2/core/ShapeBuffer.h>
 #include <gf2/core/SpriteData.h>
 #include <gf2/core/TextData.h>
 
@@ -15,7 +15,7 @@ namespace akgr {
 
     gf::ResourceBundle bundle(Akagoria* game);
 
-    gf::ActionGroupData base_action_group;
+    gf::ActionGroupSettings base_action_group;
 
     gf::SpriteResource title_sprite;
     gf::TextResource main_title_text;

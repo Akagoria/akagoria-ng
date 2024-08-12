@@ -13,7 +13,7 @@
 namespace akgr {
   class Akagoria;
 
-  class KickoffBaseScene : public gf::StandardScene {
+  class KickoffBaseScene : public gf::Scene {
   public:
     KickoffBaseScene(Akagoria* game, const KickoffData& data);
 

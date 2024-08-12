@@ -10,8 +10,8 @@ namespace akgr {
   {
     using namespace gf::literals;
 
-    base_action_group.actions.emplace("fullscreen"_id, gf::ActionData(gf::ActionType::Instantaneous).add_keycode_control(gf::Keycode::F));
-    base_action_group.actions.emplace("quit"_id, gf::ActionData(gf::ActionType::Instantaneous).add_scancode_control(gf::Scancode::Escape));
+    base_action_group.actions.emplace("fullscreen"_id, gf::ActionSettings(gf::ActionType::Instantaneous).add_keycode_control(gf::Keycode::F));
+    base_action_group.actions.emplace("quit"_id, gf::ActionSettings(gf::ActionType::Instantaneous).add_scancode_control(gf::Scancode::Escape));
 
     title_sprite.texture = "logo.png";
     title_sprite.data.color = gf::gray(0.8f);
@@ -19,18 +19,19 @@ namespace akgr {
     main_title_text.font = "fonts/Philosopher-Regular.ttf";
     main_title_text.data.content = "AKAGORIA";
     main_title_text.data.character_size = 150.0f;
-    main_title_text.data.letter_spacing_factor = 1.3f;
+    main_title_text.data.letter_spacing_factor = 1.2f;
 
     additional_title_text.font = "fonts/sawarabi-mincho-medium.ttf";
     additional_title_text.data.content = "アカゴリア";
     additional_title_text.data.character_size = 75.0f;
 
-    subtitle_text.font = "fonts/Philosopher-Italic.ttf";
+    subtitle_text.font = "fonts/Philosopher-Bold.ttf";
     subtitle_text.data.content = "The revenge of Kalista"; // TODO: i18n
-    subtitle_text.data.character_size = 60.0f;
+    subtitle_text.data.character_size = 75.0f;
+    subtitle_text.data. color = gf::gray(0.3f);
 
-    underline_shape.data = gf::ShapeData::make_rectangle({ 900.0f, 5.0f });
-    underline_shape.data.color = gf::Black;
+    underline_shape.buffer = gf::ShapeBuffer::make_rectangle({ 900.0f, 5.0f });
+    underline_shape.buffer.color = gf::Black;
   }
 
   gf::ResourceBundle KickoffData::bundle(Akagoria* game)

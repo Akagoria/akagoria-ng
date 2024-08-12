@@ -22,7 +22,7 @@ namespace akgr {
 
     m_title_sprite.set_location({ 500.0f, 500.0f });
     m_title_sprite.set_origin({ 0.5f, 0.5f }); // center
-    m_title_sprite.set_scale(500.0f / m_title_sprite.sprite().texture()->size().h);
+    m_title_sprite.set_scale(500.0f / static_cast<float>(m_title_sprite.sprite().texture()->size().h));
     add_world_entity(&m_title_sprite);
 
     m_main_title_text.set_location({ 500.0f, 500.0f - PaddingAroundLine });

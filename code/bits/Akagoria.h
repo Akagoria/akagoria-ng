@@ -7,6 +7,7 @@
 
 #include "KickoffAct.h"
 #include "KickoffData.h"
+#include "MenuData.h"
 
 namespace akgr {
 
@@ -20,6 +21,7 @@ namespace akgr {
     }
 
   private:
+    MenuData m_menu_data;
     KickoffData m_kickoff_data;
     std::unique_ptr<KickoffAct> m_kickoff_act = nullptr;
 
