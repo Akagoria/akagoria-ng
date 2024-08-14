@@ -9,7 +9,7 @@ namespace akgr {
   class Akagoria;
 
   struct KickoffAct {
-    KickoffAct(Akagoria* game, const KickoffResources& kickoff_resources);
+    KickoffAct(Akagoria* game, const KickoffResources& resources);
 
     KickoffBaseScene base_scene;
     KickoffMenuScene menu_scene;
