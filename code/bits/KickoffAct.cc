@@ -2,9 +2,9 @@
 
 namespace akgr {
 
-  KickoffAct::KickoffAct(Akagoria* game, const KickoffData& kickoff_data, const MenuData& menu_data)
-  : base_scene(game, kickoff_data)
-  , menu_scene(game, menu_data)
+  KickoffAct::KickoffAct(Akagoria* game, const KickoffResources& kickoff_resources)
+  : base_scene(game, kickoff_resources)
+  , menu_scene(game, kickoff_resources)
   {
   }
 

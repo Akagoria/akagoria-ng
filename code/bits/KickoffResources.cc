@@ -1,18 +1,36 @@
-#include "MenuData.h"
+#include "KickoffResources.h"
+
+#include <gf2/core/Color.h>
 
 #include "Akagoria.h"
-#include "gf2/core/ActionSettings.h"
 
 namespace akgr {
 
-  MenuData::MenuData()
+  KickoffResources::KickoffResources()
   {
-    using namespace gf::literals;
+    // title
 
-    action_group.actions.emplace("up"_id, gf::ActionSettings(gf::ActionType::Instantaneous).add_keycode_control(gf::Keycode::Up));
-    action_group.actions.emplace("down"_id, gf::ActionSettings(gf::ActionType::Instantaneous).add_keycode_control(gf::Keycode::Down));
-    action_group.actions.emplace("left"_id, gf::ActionSettings(gf::ActionType::Instantaneous).add_keycode_control(gf::Keycode::Left));
-    action_group.actions.emplace("right"_id, gf::ActionSettings(gf::ActionType::Instantaneous).add_keycode_control(gf::Keycode::Right));
+    title_sprite.texture = "logo.png";
+    title_sprite.data.color = gf::gray(0.8f);
+
+    main_title_text.font = "fonts/Philosopher-Regular.ttf";
+    main_title_text.data.content = "AKAGORIA";
+    main_title_text.data.character_size = 150.0f;
+    main_title_text.data.letter_spacing_factor = 1.2f;
+
+    additional_title_text.font = "fonts/sawarabi-mincho-medium.ttf";
+    additional_title_text.data.content = "アカゴリア";
+    additional_title_text.data.character_size = 75.0f;
+
+    subtitle_text.font = "fonts/Philosopher-Bold.ttf";
+    subtitle_text.data.content = "The revenge of Kalista"; // TODO: i18n
+    subtitle_text.data.character_size = 75.0f;
+    subtitle_text.data. color = gf::gray(0.3f);
+
+    underline_shape.buffer = gf::ShapeBuffer::make_rectangle({ 900.0f, 5.0f });
+    underline_shape.buffer.color = gf::Black;
+
+    // menu
 
     icon_arrow_text.font = "fonts/DejaVuSans.ttf";
     icon_arrow_text.data.content = "→";
@@ -45,17 +63,23 @@ namespace akgr {
     back_text.font = "fonts/DejaVuSans.ttf";
     back_text.data.content = "Back"; // TODO: i18n
     back_text.data.character_size = 1.0f;
+
   }
 
-  gf::ResourceBundle MenuData::bundle(Akagoria* game)
+  gf::ResourceBundle KickoffResources::bundle(Akagoria* game)
   {
     gf::ResourceBundle bundle([game, this](gf::ResourceBundle* bundle, gf::ResourceManager* resources, gf::ResourceAction action) {
       // fonts
 
-      for (const gf::TextResource* resource : { &icon_arrow_text, &icon_left_text, &icon_right_text }) {
+      for (const gf::TextResource* resource : { &main_title_text, &additional_title_text, &subtitle_text, &icon_arrow_text, &icon_left_text, &icon_right_text, &start_text, &load_text, &quit_text, &back_text }) {
         bundle->handle<gf::FontFace>(resource->font, game->font_manager(), resources, action);
       }
 
+      // textures
+
+      for (const gf::SpriteResource* resource : { &title_sprite }) {
+        bundle->handle<gf::Texture>(resource->texture, game->render_manager(), resources, action);
+      }
     });
 
     return bundle;

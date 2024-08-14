@@ -1,7 +1,6 @@
-#ifndef AKGR_MENU_DATA_H
-#define AKGR_MENU_DATA_H
+#ifndef AKGR_KICKOFF_DATA_H
+#define AKGR_KICKOFF_DATA_H
 
-#include <gf2/core/ActionSettings.h>
 #include <gf2/core/ResourceBundle.h>
 #include <gf2/core/ShapeBuffer.h>
 #include <gf2/core/SpriteData.h>
@@ -10,12 +9,20 @@
 namespace akgr {
   class Akagoria;
 
-  struct MenuData {
-    MenuData();
+  struct KickoffResources {
+    KickoffResources();
 
     gf::ResourceBundle bundle(Akagoria* game);
 
-    gf::ActionGroupSettings action_group;
+    // title
+
+    gf::SpriteResource title_sprite;
+    gf::TextResource main_title_text;
+    gf::TextResource additional_title_text;
+    gf::TextResource subtitle_text;
+    gf::ShapeResource underline_shape;
+
+    // menu
 
     gf::TextResource icon_arrow_text;
     gf::TextResource icon_left_text;
@@ -25,9 +32,8 @@ namespace akgr {
     gf::TextResource load_text;
     gf::TextResource quit_text;
     gf::TextResource back_text;
-
   };
 
 }
 
-#endif // AKGR_MENU_DATA_H
+#endif // AKGR_KICKOFF_DATA_H

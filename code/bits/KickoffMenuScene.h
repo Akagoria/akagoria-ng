@@ -8,7 +8,7 @@
 #include <gf2/graphics/SpriteEntity.h>
 #include <gf2/graphics/TextEntity.h>
 
-#include "MenuData.h"
+#include "KickoffResources.h"
 #include "ui/State.h"
 #include "ui/Theme.h"
 #include "ui/Widgets.h"
@@ -19,9 +19,11 @@ namespace akgr {
 
   class KickoffMenuScene : public gf::Scene {
   public:
-    KickoffMenuScene(Akagoria* game, const MenuData& data);
+    KickoffMenuScene(Akagoria* game, const KickoffResources& resources);
 
   private:
+    static gf::ActionGroupSettings compute_settings();
+
     void do_process_event(const gf::Event& event) override;
     void do_handle_actions() override;
 

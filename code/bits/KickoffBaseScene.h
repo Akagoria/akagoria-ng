@@ -8,16 +8,18 @@
 #include <gf2/graphics/SpriteEntity.h>
 #include <gf2/graphics/TextEntity.h>
 
-#include "KickoffData.h"
+#include "KickoffResources.h"
 
 namespace akgr {
   class Akagoria;
 
   class KickoffBaseScene : public gf::Scene {
   public:
-    KickoffBaseScene(Akagoria* game, const KickoffData& data);
+    KickoffBaseScene(Akagoria* game, const KickoffResources& resources);
 
   private:
+    static gf::ActionGroupSettings compute_settings();
+
     void do_process_event(const gf::Event& event) override;
     void do_handle_actions() override;
 

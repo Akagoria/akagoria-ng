@@ -11,17 +11,17 @@ namespace akgr {
 
   }
 
-  KickoffMenuScene::KickoffMenuScene(Akagoria* game, const MenuData& data)
+  KickoffMenuScene::KickoffMenuScene(Akagoria* game, const KickoffResources& resources)
   : m_game(game)
   , m_atlas({ 1024, 1024 }, game->render_manager())
-  , m_action_group(data.action_group)
-  , m_icon_arrow_text(&m_atlas, data.icon_arrow_text, game->render_manager(), game->resource_manager())
-  , m_icon_left_text(&m_atlas, data.icon_left_text, game->render_manager(), game->resource_manager())
-  , m_icon_right_text(&m_atlas, data.icon_right_text, game->render_manager(), game->resource_manager())
-  , m_start_text(&m_atlas, data.start_text, game->render_manager(), game->resource_manager())
-  , m_load_text(&m_atlas, data.load_text, game->render_manager(), game->resource_manager())
-  , m_quit_text(&m_atlas, data.quit_text, game->render_manager(), game->resource_manager())
-  , m_back_text(&m_atlas, data.back_text, game->render_manager(), game->resource_manager())
+  , m_action_group(compute_settings())
+  , m_icon_arrow_text(&m_atlas, resources.icon_arrow_text, game->render_manager(), game->resource_manager())
+  , m_icon_left_text(&m_atlas, resources.icon_left_text, game->render_manager(), game->resource_manager())
+  , m_icon_right_text(&m_atlas, resources.icon_right_text, game->render_manager(), game->resource_manager())
+  , m_start_text(&m_atlas, resources.start_text, game->render_manager(), game->resource_manager())
+  , m_load_text(&m_atlas, resources.load_text, game->render_manager(), game->resource_manager())
+  , m_quit_text(&m_atlas, resources.quit_text, game->render_manager(), game->resource_manager())
+  , m_back_text(&m_atlas, resources.back_text, game->render_manager(), game->resource_manager())
   , m_frame_widget(nullptr, &m_frame_theme, game->render_manager())
   {
     set_clear_color(gf::White);
@@ -49,6 +49,19 @@ namespace akgr {
     m_frame_widget.compute_layout();
 
     add_world_entity(&m_frame_widget);
+  }
+
+  gf::ActionGroupSettings KickoffMenuScene::compute_settings()
+  {
+    using namespace gf::literals;
+    gf::ActionGroupSettings settings;
+
+    settings.actions.emplace("up"_id, gf::instantaneous_action().add_keycode_control(gf::Keycode::Up));
+    settings.actions.emplace("down"_id, gf::instantaneous_action().add_keycode_control(gf::Keycode::Down));
+    settings.actions.emplace("left"_id, gf::instantaneous_action().add_keycode_control(gf::Keycode::Left));
+    settings.actions.emplace("right"_id, gf::instantaneous_action().add_keycode_control(gf::Keycode::Right));
+
+    return settings;
   }
 
   void KickoffMenuScene::do_process_event(const gf::Event& event)

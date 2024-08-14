@@ -6,8 +6,7 @@
 #include <gf2/framework/SceneSystem.h>
 
 #include "KickoffAct.h"
-#include "KickoffData.h"
-#include "MenuData.h"
+#include "KickoffResources.h"
 
 namespace akgr {
 
@@ -21,8 +20,7 @@ namespace akgr {
     }
 
   private:
-    MenuData m_menu_data;
-    KickoffData m_kickoff_data;
+    KickoffResources m_kickoff_resources;
     std::unique_ptr<KickoffAct> m_kickoff_act = nullptr;
 
   };
