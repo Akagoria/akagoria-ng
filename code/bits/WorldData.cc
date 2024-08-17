@@ -2,6 +2,7 @@
 
 #include <gf2/core/Streams.h>
 #include <gf2/core/Serialization.h>
+#include <gf2/core/SerializationOps.h>
 
 #include "Version.h"
 

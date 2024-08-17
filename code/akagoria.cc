@@ -4,6 +4,7 @@
 
 int main()
 {
-  akgr::Akagoria akagoria(AKAGORIA_DATADIR);
+  const std::filesystem::path assets_directory = akgr::AkagoriaDataDirectory;
+  akgr::Akagoria akagoria(assets_directory / "akagoria");
   return akagoria.run();
 }

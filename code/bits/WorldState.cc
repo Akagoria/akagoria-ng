@@ -26,8 +26,15 @@ namespace akgr {
     ar | *this;
   }
 
+  namespace {
+
+
+
+  }
+
   void WorldState::bind(const WorldData& data)
   {
+
   }
 
 }

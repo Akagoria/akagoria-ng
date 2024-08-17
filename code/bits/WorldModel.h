@@ -3,6 +3,10 @@
 
 #include <gf2/core/Model.h>
 
+#include "WorldData.h"
+#include "WorldRuntime.h"
+#include "WorldState.h"
+
 namespace akgr {
   class Akagoria;
 
@@ -10,6 +14,9 @@ namespace akgr {
     WorldModel(Akagoria* game);
     void update(gf::Time time) override;
 
+    WorldData data;
+    WorldState state;
+    WorldRuntime runtime;
   };
 
 }

@@ -20,7 +20,7 @@ if is_plat("windows") then
 end
 
 set_configdir("$(buildir)/config")
-set_configvar("AKAGORIA_DATADIR", "$(projectdir)/data/akagoria")
+set_configvar("AKAGORIA_DATADIR", "$(projectdir)/data")
 set_configvar("AKAGORIA_LOCALEDIR", "$(projectdir)/data/raw/i18n")
 add_configfiles("code/config.h.in", {pattern = "@(.-)@"})
 
@@ -31,12 +31,18 @@ target("akagoria")
     add_files("code/bits/ui/*.cc")
     add_includedirs("$(buildir)/config")
 --     add_packages("nlohmann_json")
-    add_packages("gamedevframework2", { components = "framework" })
+    add_packages("gamedevframework2", { components = { "framework", "physics" } })
 --     add_packages("boost", "icu4c")
 
+target("akagoria-compile-data")
+    set_kind("binary")
+    add_files("code/akagoria-compile-data.cc")
+    add_files("code/bits/WorldData.cc")
+    add_includedirs("$(buildir)/config")
+    add_packages("gamedevframework2", { components = { "core" } })
 
 target("akagoria-editor")
     set_kind("binary")
     add_files("code/akagoria-editor.cc")
     add_includedirs("$(buildir)/config")
-    add_packages("gamedevframework2", { components = { "imgui", "graphics"} })
+    add_packages("gamedevframework2", { components = { "imgui", "graphics" } })

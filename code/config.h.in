@@ -1,7 +1,11 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define AKAGORIA_DATADIR    "@AKAGORIA_DATADIR@"
-#define AKAGORIA_LOCALEDIR  "@AKAGORIA_LOCALEDIR@"
+#include <string_view>
+
+namespace akgr {
+  constexpr std::string_view AkagoriaDataDirectory =  R"(@AKAGORIA_DATADIR@)";
+  constexpr std::string_view AkagoriaLocaleDirectory = R"(@AKAGORIA_LOCALEDIR@)";
+}
 
 #endif // CONFIG_H

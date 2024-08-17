@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Zlib
 // Copyright (c) 2023 Julien Bernard
 #include <cstdlib>
+#include <filesystem>
 
 #include <imgui.h>
 
@@ -11,6 +12,8 @@
 #include <gf2/imgui/ImguiManager.h>
 
 #include "config.h"
+#include "bits/WorldData.h"
+#include "gf2/core/Log.h"
 
 namespace {
 
@@ -51,6 +54,10 @@ namespace {
 
   class EditorEntity : public gf::Entity {
   public:
+    EditorEntity(std::filesystem::path data_directory)
+    : m_data_directory(std::move(data_directory))
+    {
+    }
 
     void update([[maybe_unused]] gf::Time time) override
     {
@@ -62,9 +69,18 @@ namespace {
             ImGui::EndTabItem();
           }
 
+          if (ImGui::BeginTabItem("Data")) {
+            data();
+            ImGui::EndTabItem();
+          }
+
 
           ImGui::EndTabBar();
         }
+
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Text("%s", m_status_text.c_str()); // NOLINT(cppcoreguidelines-pro-type-vararg)
       }
 
       ImGui::End();
@@ -84,9 +100,16 @@ namespace {
       }
     }
 
+    void data() {
+      if (ImGui::Button("Create Data Pack")) {
+      }
+    }
+
+    std::filesystem::path m_data_directory;
 
     bool m_modified = false;
 
+    std::string m_status_text = "Editor started...";
   };
 
 
@@ -94,8 +117,8 @@ namespace {
 
 int main()
 {
-  const std::filesystem::path assets_directory = AKAGORIA_DATADIR;
-  const std::filesystem::path font_file = assets_directory / "fonts/DejaVuSans.ttf";
+  const std::filesystem::path assets_directory = akgr::AkagoriaDataDirectory;
+  const std::filesystem::path font_file = assets_directory / "akagoria/fonts/DejaVuSans.ttf";
 
   gf::SingleSceneManager scene_manager("Akagoria Editor", gf::vec(1600, 900));
   const gf::ImguiInitializer imgui_initializer;
@@ -106,7 +129,7 @@ int main()
   io.IniFilename = nullptr;
   io.Fonts->AddFontFromFileTTF(font_file.string().c_str(), 24);
 
-  EditorEntity editor;
+  EditorEntity editor(assets_directory);
 
   ImguiScene scene(&scene_manager);
   scene.add_hud_entity(&editor);
