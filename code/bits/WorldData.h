@@ -4,12 +4,12 @@
 #include <filesystem>
 
 #include <gf2/core/TypeTraits.h>
-#include <gf2/core/TiledMapData.h>
+#include <gf2/core/TiledMap.h>
 
 namespace akgr {
 
   struct WorldData {
-    gf::TiledMapResource map;
+    gf::TiledMap map;
 
 
     void load_from_file(const std::filesystem::path& filename);

@@ -13,9 +13,6 @@
 #include <gf2/physics/PhysicsWorld.h>
 
 #include "WorldData.h"
-#include "gf2/core/Math.h"
-#include "gf2/core/Polyline.h"
-#include "gf2/core/TiledMapData.h"
 
 namespace akgr {
 
@@ -44,16 +41,16 @@ namespace akgr {
       return filter;
     }
 
-    gf::PhysicsShape object_to_convex_shape(gf::PhysicsBody* body, const gf::ObjectData& object)
+    gf::PhysicsShape object_to_convex_shape(gf::PhysicsBody* body, const gf::MapObject& object)
     {
       switch (object.type) {
-        case gf::ObjectType::Polygon:
+        case gf::MapObjectType::Polygon:
           {
             auto polygon = std::get<std::vector<gf::Vec2F>>(object.feature);
             assert(gf::is_convex(polygon));
             return gf::PhysicsShape::make_polygon(body, polygon, gf::Identity3F, ShapeRadius);
           }
-        case gf::ObjectType::Rectangle:
+        case gf::MapObjectType::Rectangle:
           {
             gf::Vec2F size = std::get<gf::Vec2F>(object.feature);
             return gf::PhysicsShape::make_box(body, gf::RectF::from_size(size), ShapeRadius);
@@ -66,22 +63,22 @@ namespace akgr {
       return {};
     }
 
-    std::vector<gf::PhysicsShape> object_to_collision_shapes(gf::PhysicsBody* body, const gf::ObjectData& object)
+    std::vector<gf::PhysicsShape> object_to_collision_shapes(gf::PhysicsBody* body, const gf::MapObject& object)
     {
       switch (object.type) {
-        case gf::ObjectType::Rectangle:
+        case gf::MapObjectType::Rectangle:
           {
             gf::Vec2F size = std::get<gf::Vec2F>(object.feature);
             return { gf::PhysicsShape::make_box(body, gf::RectF::from_size(size), ShapeRadius) };
           }
-        case gf::ObjectType::Polyline:
-        case gf::ObjectType::Polygon:
+        case gf::MapObjectType::Polyline:
+        case gf::MapObjectType::Polygon:
           {
             auto polyline = std::get<std::vector<gf::Vec2F>>(object.feature);
-            auto type = (object.type == gf::ObjectType::Polygon) ? gf::PolylineType::Loop : gf::PolylineType::Chain;
+            auto type = (object.type == gf::MapObjectType::Polygon) ? gf::PolylineType::Loop : gf::PolylineType::Chain;
             return gf::make_polyline_shapes(body, polyline, ShapeRadius, type);
           }
-        case gf::ObjectType::Ellipse:
+        case gf::MapObjectType::Ellipse:
           {
             const gf::Vec2F size = std::get<gf::Vec2F>(object.feature);
 
@@ -121,23 +118,23 @@ namespace akgr {
   {
     const auto& map = data.map;
 
-    for (const auto& layer : map.data.layers) {
-      assert(layer.type == gf::LayerType::Group);
+    for (const auto& layer : map.layers) {
+      assert(layer.type == gf::MapLayerType::Group);
 
-      const auto& group_layer = map.data.group_layers[layer.layer_index];
-      const auto& group_properties = map.data.properties[group_layer.layer.properties_index];
+      const auto& group_layer = map.group_layers[layer.layer_index];
+      const auto& group_properties = map.properties[group_layer.layer.properties_index];
 
       const auto& floor_property = group_properties("floor");
       assert(floor_property.is_int());
       const auto floor = static_cast<int32_t>(floor_property.as_int());
 
       for (const auto& sub_layer : group_layer.sub_layers) {
-        if (sub_layer.type != gf::LayerType::Object) {
+        if (sub_layer.type != gf::MapLayerType::Object) {
           continue;
         }
 
-        const auto& object_layer = map.data.object_layers[sub_layer.layer_index];
-        const auto& object_properties = map.data.properties[object_layer.layer.properties_index];
+        const auto& object_layer = map.object_layers[sub_layer.layer_index];
+        const auto& object_properties = map.properties[object_layer.layer.properties_index];
 
         const auto& kind_property = object_properties("kind");
         assert(kind_property.is_string());
@@ -162,14 +159,14 @@ namespace akgr {
     }
   }
 
-  void PhysicsRuntime::extract_zone(const gf::ObjectData& object, int32_t floor, const gf::TiledMapResource& map, gf::PhysicsWorld& physics_world)
+  void PhysicsRuntime::extract_zone(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map, gf::PhysicsWorld& physics_world)
   {
     // 1. prepare zone data
 
     Zone zone;
     zone.name = object.name;
 
-    const auto& object_properties = map.data.properties[object.properties_index];
+    const auto& object_properties = map.properties[object.properties_index];
 
     if (!object_properties.has_property("message")) {
       gf::Log::error("Missing message in a zone object: '{}'", zone.name);
@@ -212,12 +209,12 @@ namespace akgr {
     m_zones.emplace(shape.id(), std::move(zone));
   }
 
-  void PhysicsRuntime::extract_sprites(const gf::ObjectData& object, int32_t floor, const gf::TiledMapResource& map, gf::PhysicsWorld& physics_world)
+  void PhysicsRuntime::extract_sprites(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map, gf::PhysicsWorld& physics_world)
   {
-    assert(object.type == gf::ObjectType::Tile);
-    const auto tile = std::get<gf::TileData>(object.feature);
+    assert(object.type == gf::MapObjectType::Tile);
+    const auto tile = std::get<gf::MapTile>(object.feature);
 
-    const auto* tileset = map.data.tileset_from_gid(tile.gid);
+    const auto* tileset = map.tileset_from_gid(tile.gid);
     const uint32_t id = tile.gid - tileset->first_gid;
     const auto& tileset_tile = tileset->tiles[id];
 
@@ -225,7 +222,7 @@ namespace akgr {
       return;
     }
 
-    const auto& object_layer = map.data.object_layers[*tileset_tile.objects];
+    const auto& object_layer = map.object_layers[*tileset_tile.objects];
 
     auto body = gf::PhysicsBody::make_static();
     body.set_location(object.location); // TODO: check if correct

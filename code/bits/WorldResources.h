@@ -5,11 +5,12 @@
 
 namespace akgr {
   class Akagoria;
+  struct WorldData;
 
   struct WorldResources {
     WorldResources();
 
-    gf::ResourceBundle bundle(Akagoria* game);
+    gf::ResourceBundle bundle(Akagoria* game, WorldData* data);
 
 
 

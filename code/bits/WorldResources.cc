@@ -1,5 +1,7 @@
 #include "WorldResources.h"
 
+#include "Akagoria.h"
+
 namespace akgr {
 
   WorldResources::WorldResources()
@@ -7,10 +9,12 @@ namespace akgr {
 
   }
 
-  gf::ResourceBundle WorldResources::bundle(Akagoria* game)
+  gf::ResourceBundle WorldResources::bundle(Akagoria* game, WorldData* data)
   {
-    gf::ResourceBundle bundle([game, this](gf::ResourceBundle* bundle, gf::ResourceManager* resources, gf::ResourceAction action) {
-
+    gf::ResourceBundle bundle([game, data, this](gf::ResourceBundle* bundle, gf::ResourceManager* resource_manager, gf::ResourceAction action) {
+      for (const std::filesystem::path& texture : data->map.textures) {
+        bundle->handle<gf::Texture>(texture, game->render_manager(), resource_manager, action);
+      }
 
     });
 

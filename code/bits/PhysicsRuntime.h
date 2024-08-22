@@ -6,6 +6,8 @@
 #include <string>
 
 #include <gf2/core/Id.h>
+#include <gf2/core/TiledMap.h>
+
 #include <gf2/physics/PhysicsBody.h>
 #include <gf2/physics/PhysicsCollisionHandler.h>
 #include <gf2/physics/PhysicsWorld.h>
@@ -22,8 +24,8 @@ namespace akgr {
     void bind(const WorldData& data, gf::PhysicsWorld& physics_world);
 
   private:
-    void extract_zone(const gf::ObjectData& object, int32_t floor, const gf::TiledMapResource& map, gf::PhysicsWorld& physics_world);
-    void extract_sprites(const gf::ObjectData& object, int32_t floor, const gf::TiledMapResource& map, gf::PhysicsWorld& physics_world);
+    void extract_zone(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map, gf::PhysicsWorld& physics_world);
+    static void extract_sprites(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map, gf::PhysicsWorld& physics_world);
 
     struct Zone {
       std::string name;

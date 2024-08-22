@@ -13,7 +13,7 @@
 
 namespace {
 
-  void copy_textures(const gf::TiledMapResource& map, const std::filesystem::path& raw_directory, const std::filesystem::path& out_directory)
+  void copy_textures(const gf::TiledMap& map, const std::filesystem::path& raw_directory, const std::filesystem::path& out_directory)
   {
     gf::Log::info("# Copying textures...");
     for (const auto& texture : map.textures) {
@@ -41,7 +41,7 @@ int main() {
   akgr::WorldData data;
 
   gf::Log::info("# Reading map...");
-  data.map = gf::TiledMapResource(raw_directory / "akagoria.tmx");
+  data.map = gf::TiledMap(raw_directory / "akagoria.tmx");
 
   copy_textures(data.map, raw_directory, out_directory);
 

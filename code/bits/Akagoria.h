@@ -5,10 +5,21 @@
 
 #include <gf2/framework/SceneSystem.h>
 
+#include <gf2/graphics/RenderAsync.h>
+
 #include "KickoffAct.h"
 #include "KickoffResources.h"
 
+#include "WorldAct.h"
+#include "WorldData.h"
+#include "WorldResources.h"
+
 namespace akgr {
+
+  enum class AdventureChoice {
+    New,
+    Saved,
+  };
 
   class Akagoria : public gf::SceneSystem {
   public:
@@ -19,10 +30,21 @@ namespace akgr {
       return m_kickoff_act.get();
     }
 
+    WorldAct* world_act()
+    {
+      return m_world_act.get();
+    }
+
+    void load_world(AdventureChoice choice);
+
   private:
     KickoffResources m_kickoff_resources;
     std::unique_ptr<KickoffAct> m_kickoff_act = nullptr;
 
+    gf::RenderAsync m_world_async;
+    WorldData m_world_data;
+    WorldResources m_world_resources;
+    std::unique_ptr<WorldAct> m_world_act = nullptr;
   };
 
 }
