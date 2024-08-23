@@ -30,6 +30,11 @@ namespace akgr {
       return m_kickoff_act.get();
     }
 
+    WorldModel* world_model()
+    {
+      return &m_world_model;
+    }
+
     WorldAct* world_act()
     {
       return m_world_act.get();

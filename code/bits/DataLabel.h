@@ -12,8 +12,8 @@ namespace akgr {
     std::string tag;
     gf::Id id;
 
-    DataLabel& operator=(const std::string& other) {
-      tag = other;
+    DataLabel& operator=(std::string other) {
+      tag = std::move(other);
       id = gf::hash_string(tag);
       return *this;
     }
