@@ -11,7 +11,7 @@
 #include "KickoffResources.h"
 
 #include "WorldAct.h"
-#include "WorldData.h"
+#include "WorldModel.h"
 #include "WorldResources.h"
 
 namespace akgr {
@@ -36,13 +36,14 @@ namespace akgr {
     }
 
     void load_world(AdventureChoice choice);
+    bool world_loaded();
 
   private:
     KickoffResources m_kickoff_resources;
     std::unique_ptr<KickoffAct> m_kickoff_act = nullptr;
 
     gf::RenderAsync m_world_async;
-    WorldData m_world_data;
+    WorldModel m_world_model;
     WorldResources m_world_resources;
     std::unique_ptr<WorldAct> m_world_act = nullptr;
   };

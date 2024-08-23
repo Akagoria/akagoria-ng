@@ -48,7 +48,7 @@ int main() {
   data.save_to_file(out_directory / "akagoria.dat");
 
   auto duration = clock.elapsed_time();
-  gf::Log::info("Data successfully compiled in {:g} seconds", duration.as_seconds());
+  gf::Log::info("Data successfully compiled in {} ms", duration.as_milliseconds());
 
   auto size = std::filesystem::file_size(out_directory / "akagoria.dat");
   const double size_in_kib = double(size) / 1024.0;

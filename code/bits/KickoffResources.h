@@ -32,6 +32,10 @@ namespace akgr {
     gf::TextResource load_text;
     gf::TextResource quit_text;
     gf::TextResource back_text;
+
+    // loading
+
+    gf::TextResource loading_text;
   };
 
 }

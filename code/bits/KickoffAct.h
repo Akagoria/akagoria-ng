@@ -2,8 +2,9 @@
 #define AKGR_KICKOFF_ACT_H
 
 #include "KickoffBaseScene.h"
-#include "KickoffResources.h"
+#include "KickoffLoadingScene.h"
 #include "KickoffMenuScene.h"
+#include "KickoffResources.h"
 
 namespace akgr {
   class Akagoria;
@@ -13,6 +14,7 @@ namespace akgr {
 
     KickoffBaseScene base_scene;
     KickoffMenuScene menu_scene;
+    KickoffLoadingScene loading_scene;
   };
 
 }

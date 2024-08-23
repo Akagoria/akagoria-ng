@@ -1,6 +1,7 @@
 #include "KickoffMenuScene.h"
 
 #include "Akagoria.h"
+#include "gf2/core/ActionSettings.h"
 #include "ui/Widgets.h"
 
 namespace akgr {
@@ -60,6 +61,7 @@ namespace akgr {
     settings.actions.emplace("down"_id, gf::instantaneous_action().add_keycode_control(gf::Keycode::Down));
     settings.actions.emplace("left"_id, gf::instantaneous_action().add_keycode_control(gf::Keycode::Left));
     settings.actions.emplace("right"_id, gf::instantaneous_action().add_keycode_control(gf::Keycode::Right));
+    settings.actions.emplace("use"_id, gf::instantaneous_action().add_scancode_control(gf::Scancode::Return));
 
     return settings;
   }
@@ -81,6 +83,17 @@ namespace akgr {
     if (m_action_group.active("up"_id)) {
       m_menu_index.compute_prev_choice();
       m_frame_widget.compute_layout();
+    }
+
+    if (m_action_group.active("use"_id)) {
+      switch (m_menu_index.choice) {
+        case 0:
+          m_game->load_world(AdventureChoice::New);
+          m_game->replace_scene(&m_game->kickoff_act()->loading_scene);
+          break;
+        default:
+          break;
+      }
     }
 
     m_action_group.reset();
