@@ -9,8 +9,7 @@ namespace akgr {
   struct WorldData;
 
   struct WorldRuntime {
-    gf::PhysicsWorld physics_world;
-    PhysicsRuntime physics_runtime;
+    PhysicsRuntime physics;
 
     // TODO: script
 

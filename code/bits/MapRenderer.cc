@@ -133,7 +133,8 @@ namespace akgr {
       return;
     }
 
-    auto geometries = m_rich_map_renderer->select_geometry({ iterator->second });
+    const gf::MapLayerStructure structure[] = { iterator->second };
+    auto geometries = m_rich_map_renderer->select_geometry(structure);
 
     gf::RenderObject object;
     object.priority = priority();

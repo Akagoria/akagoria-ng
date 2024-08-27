@@ -36,7 +36,7 @@ namespace akgr {
 
     gf::PhysicsShapeFilter filter_from_floor(int32_t floor)
     {
-      gf::PhysicsShapeFilter filter;
+      gf::PhysicsShapeFilter filter = {};
       filter.categories = filter.mask = bits_from_floor(floor);
       return filter;
     }
@@ -109,12 +109,27 @@ namespace akgr {
     }
   }
 
-  bool PhysicsRuntime::begin(gf::PhysicsArbiter arbiter, gf::PhysicsWorld world)
+  /*
+   * ZoneHandler
+   */
+
+  void ZoneHandler::add_zone(gf::PhysicsId id, std::string name, std::string message, std::set<gf::Id> requirements)
+  {
+    Zone zone = { std::move(name), std::move(message), std::move(requirements) };
+    m_zones.emplace(id, std::move(zone));
+  }
+
+
+  bool ZoneHandler::begin(gf::PhysicsArbiter arbiter, gf::PhysicsWorld world)
   {
     return true;
   }
 
-  void PhysicsRuntime::bind(const WorldData& data, gf::PhysicsWorld& physics_world)
+  /*
+   * PhysicsRuntime
+   */
+
+  void PhysicsRuntime::bind(const WorldData& data)
   {
     const auto& map = data.map;
 
@@ -142,7 +157,7 @@ namespace akgr {
 
         if (kind == "zones") {
           for (const auto& object : object_layer.objects) {
-            extract_zone(object, floor, map, physics_world);
+            extract_zone(object, floor, map);
           }
 
           continue;
@@ -150,7 +165,7 @@ namespace akgr {
 
         if (kind == "low_sprites" || kind == "high_sprites") {
           for (const auto& object : object_layer.objects) {
-            extract_sprites(object, floor, map, physics_world);
+            extract_sprites(object, floor, map);
           }
 
           continue;
@@ -159,36 +174,31 @@ namespace akgr {
     }
   }
 
-  void PhysicsRuntime::extract_zone(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map, gf::PhysicsWorld& physics_world)
+  void PhysicsRuntime::extract_zone(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map)
   {
     // 1. prepare zone data
-
-    Zone zone;
-    zone.name = object.name;
 
     const auto& object_properties = map.properties[object.properties_index];
 
     if (!object_properties.has_property("message")) {
-      gf::Log::error("Missing message in a zone object: '{}'", zone.name);
+      gf::Log::error("Missing message in a zone object: '{}'", object.name);
       return;
     }
 
-    const auto& message_property = object_properties("message");
-    assert(message_property.is_string());
-    zone.message = message_property.as_string();
+    const auto& message = object_properties("message").as_string();
+
+    std::set<gf::Id> requirements;
 
     if (object_properties.has_property("requirements")) {
-      const auto& requirements_property = object_properties("requirements");
-      assert(requirements_property.is_string());
-      std::string requirements = requirements_property.as_string();
-      auto requirement_list = gf::split_string(requirements, ",");
+      std::string requirements_string = object_properties("requirements").as_string();
+      auto requirement_list = gf::split_string(requirements_string, ",");
 
       for (auto requirement : requirement_list) {
         if (requirement.empty()) {
           continue;
         }
 
-        zone.requirements.insert(gf::hash_string(requirement));
+        requirements.insert(gf::hash_string(requirement));
       }
     }
 
@@ -196,20 +206,20 @@ namespace akgr {
 
     auto body = gf::PhysicsBody::make_static();
     body.set_location(object.location);
-    physics_world.add_body(body);
+    world.add_body(body);
 
     auto shape = object_to_convex_shape(&body, object);
     shape.set_collision_type(ZoneCollisionType);
     shape.set_sensor(true);
     shape.set_shape_filter(filter_from_floor(floor));
-    physics_world.add_shape(shape);
+    world.add_shape(shape);
 
     // 3. add zone to known zones
 
-    m_zones.emplace(shape.id(), std::move(zone));
+    zone_handler.add_zone(shape.id(), object.name, message, std::move(requirements));
   }
 
-  void PhysicsRuntime::extract_sprites(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map, gf::PhysicsWorld& physics_world)
+  void PhysicsRuntime::extract_sprites(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map)
   {
     assert(object.type == gf::MapObjectType::Tile);
     const auto tile = std::get<gf::MapTile>(object.feature);
@@ -227,14 +237,14 @@ namespace akgr {
     auto body = gf::PhysicsBody::make_static();
     body.set_location(object.location); // TODO: check if correct
     body.set_angle(gf::degrees_to_radians(object.rotation));
-    physics_world.add_body(body);
+    world.add_body(body);
 
     for (const auto& physics_object : object_layer.objects) {
       auto shapes = object_to_collision_shapes(&body, physics_object);
 
       for (auto& shape : shapes) {
         shape.set_shape_filter(filter_from_floor(floor));
-        physics_world.add_shape(shape);
+        world.add_shape(shape);
       }
     }
 

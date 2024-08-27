@@ -5,20 +5,24 @@
 
 #include <gf2/core/TypeTraits.h>
 
+#include "HeroState.h"
+
 namespace akgr {
   struct WorldData;
+  struct WorldRuntime;
 
   struct WorldState {
+    HeroState hero;
 
     void load_from_file(const std::filesystem::path& filename);
     void save_to_file(const std::filesystem::path& filename) const;
-    void bind(const WorldData& data);
+    void bind(const WorldData& data, WorldRuntime& runtime);
   };
 
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<WorldState, Archive>& state)
   {
-    return ar;
+    return ar | state.hero;
   }
 
 }

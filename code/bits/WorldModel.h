@@ -12,11 +12,12 @@ namespace akgr {
 
   struct WorldModel : public gf::Model {
     WorldModel(Akagoria* game);
+
     void update(gf::Time time) override;
 
     WorldData data;
-    WorldState state;
     WorldRuntime runtime;
+    WorldState state;
   };
 
 }

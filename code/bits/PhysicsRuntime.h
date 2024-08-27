@@ -16,17 +16,13 @@
 
 namespace akgr {
 
-  class PhysicsRuntime : public gf::PhysicsCollisionHandler {
+  class ZoneHandler : public gf::PhysicsCollisionHandler {
   public:
+    void add_zone(gf::PhysicsId id, std::string name, std::string message, std::set<gf::Id> requirements);
 
     bool begin(gf::PhysicsArbiter arbiter, gf::PhysicsWorld world) override;
 
-    void bind(const WorldData& data, gf::PhysicsWorld& physics_world);
-
   private:
-    void extract_zone(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map, gf::PhysicsWorld& physics_world);
-    static void extract_sprites(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map, gf::PhysicsWorld& physics_world);
-
     struct Zone {
       std::string name;
       std::string message;
@@ -36,6 +32,17 @@ namespace akgr {
     std::map<gf::PhysicsId, Zone> m_zones;
   };
 
+
+  struct PhysicsRuntime {
+    gf::PhysicsWorld world;
+    ZoneHandler zone_handler;
+
+    void bind(const WorldData& data);
+
+  private:
+    void extract_zone(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map);
+    void extract_sprites(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map);
+  };
 
 }
 
