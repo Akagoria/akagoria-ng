@@ -3,6 +3,7 @@
 namespace akgr {
 
   WorldModel::WorldModel(Akagoria* game)
+  : runtime(game)
   {
   }
 

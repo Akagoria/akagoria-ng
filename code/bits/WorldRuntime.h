@@ -4,11 +4,16 @@
 #include <gf2/physics/PhysicsWorld.h>
 
 #include "PhysicsRuntime.h"
+#include "Script.h"
 
 namespace akgr {
+  class Akagoria;
   struct WorldData;
 
   struct WorldRuntime {
+    WorldRuntime(Akagoria* game);
+
+    Script script;
     PhysicsRuntime physics;
 
     // TODO: script
