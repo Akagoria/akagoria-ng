@@ -26,7 +26,7 @@ namespace akgr {
   , m_zoom(world_camera())
   , m_rich_map(&game->world_model()->data.map, load_textures(&game->world_model()->data.map, game->resource_manager()))
   , m_rich_map_renderer(&m_rich_map, game->render_manager())
-  , m_universe_renderer(&game->world_model()->state, &m_rich_map_renderer)
+  , m_universe_renderer(game, resources, &m_rich_map_renderer)
   , m_physics_debug(&game->world_model()->runtime.physics.world, game->render_manager())
   {
     set_world_size({ 800.0f, 800.0f });
@@ -41,6 +41,7 @@ namespace akgr {
 
   void WorldBaseScene::do_update([[maybe_unused]] gf::Time time)
   {
+    update_entities(time);
     // set_world_center(m_game->world_model()->state.); // TODO: set the center to the hero position
   }
 

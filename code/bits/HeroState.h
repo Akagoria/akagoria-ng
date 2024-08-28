@@ -9,6 +9,9 @@ namespace akgr {
 
   struct HeroState {
     PhysicsState physics;
+
+
+    gf::Vec2F location() const { return physics.spot.location; }
   };
 
   template<typename Archive>

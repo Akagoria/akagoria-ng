@@ -4,13 +4,16 @@
 #include <gf2/graphics/Entity.h>
 
 #include "FloorRenderer.h"
+#include "HeroRenderer.h"
 #include "MapRenderer.h"
 
 namespace akgr {
+  class Akagoria;
+  struct WorldResources;
 
   class UniverseRenderer : public gf::Entity {
   public:
-    UniverseRenderer(WorldState* world_state, gf::RichMapRenderer* rich_map_renderer);
+    UniverseRenderer(Akagoria* game, const WorldResources& resources, gf::RichMapRenderer* rich_map_renderer);
 
     void update(gf::Time time) override;
     void render(gf::RenderRecorder& recorder) override;
@@ -21,6 +24,8 @@ namespace akgr {
     MapRenderer m_low_object_renderer;
     MapRenderer m_high_tile_renderer;
     MapRenderer m_high_object_renderer;
+
+    HeroRenderer m_hero_renderer;
 
     FloorRendererContainer m_renderers;
   };

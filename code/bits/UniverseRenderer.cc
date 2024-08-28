@@ -1,20 +1,24 @@
 #include "UniverseRenderer.h"
+
+#include "Akagoria.h"
 #include "MapRenderer.h"
 
 namespace akgr {
 
-  UniverseRenderer::UniverseRenderer(WorldState* world_state, gf::RichMapRenderer* rich_map_renderer)
-  : m_ground_renderer(PlaneType::Tile, Plane::Ground, world_state, rich_map_renderer)
-  , m_low_tile_renderer(PlaneType::Tile, Plane::Low, world_state, rich_map_renderer)
-  , m_low_object_renderer(PlaneType::Object, Plane::Low, world_state, rich_map_renderer)
-  , m_high_tile_renderer(PlaneType::Tile, Plane::High, world_state, rich_map_renderer)
-  , m_high_object_renderer(PlaneType::Object, Plane::High, world_state, rich_map_renderer)
+  UniverseRenderer::UniverseRenderer(Akagoria* game, const WorldResources& resources, gf::RichMapRenderer* rich_map_renderer)
+  : m_ground_renderer(PlaneType::Tile, Plane::Ground, game->world_state(), rich_map_renderer)
+  , m_low_tile_renderer(PlaneType::Tile, Plane::Low, game->world_state(), rich_map_renderer)
+  , m_low_object_renderer(PlaneType::Object, Plane::Low, game->world_state(), rich_map_renderer)
+  , m_high_tile_renderer(PlaneType::Tile, Plane::High, game->world_state(), rich_map_renderer)
+  , m_high_object_renderer(PlaneType::Object, Plane::High, game->world_state(), rich_map_renderer)
+  , m_hero_renderer(game, resources)
   {
     m_renderers.add_renderer(&m_ground_renderer);
     m_renderers.add_renderer(&m_low_tile_renderer);
     m_renderers.add_renderer(&m_low_object_renderer);
     m_renderers.add_renderer(&m_high_tile_renderer);
     m_renderers.add_renderer(&m_high_object_renderer);
+    m_renderers.add_renderer(&m_hero_renderer);
 
     m_renderers.finish();
   }

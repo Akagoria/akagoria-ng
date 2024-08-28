@@ -35,6 +35,11 @@ namespace akgr {
       return &m_world_model;
     }
 
+    WorldState* world_state()
+    {
+      return &m_world_model.state;
+    }
+
     WorldAct* world_act()
     {
       return m_world_act.get();
