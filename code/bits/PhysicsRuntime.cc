@@ -236,7 +236,7 @@ namespace akgr {
 
     auto body = gf::PhysicsBody::make_static();
     body.set_location(object.location); // TODO: check if correct
-    body.set_angle(gf::degrees_to_radians(object.rotation));
+    body.set_rotation(gf::degrees_to_radians(object.rotation));
     world.add_body(body);
 
     for (const auto& physics_object : object_layer.objects) {

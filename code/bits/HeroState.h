@@ -12,6 +12,7 @@ namespace akgr {
 
 
     gf::Vec2F location() const { return physics.spot.location; }
+    float rotation() const { return physics.rotation; }
   };
 
   template<typename Archive>

@@ -11,7 +11,7 @@ namespace akgr {
 
   struct PhysicsState {
     Spot spot;
-    float angle = 0.0f;
+    float rotation = 0.0f;
     gf::PhysicsBody controller;
     gf::PhysicsBody body;
   };
@@ -19,7 +19,7 @@ namespace akgr {
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<PhysicsState, Archive>& state)
   {
-    return ar | state.spot | state.angle;
+    return ar | state.spot | state.rotation;
   }
 
 }

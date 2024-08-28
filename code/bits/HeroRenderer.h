@@ -7,6 +7,7 @@
 
 namespace akgr {
   class Akagoria;
+  struct HeroState;
   struct WorldResources;
 
   class HeroRenderer : public FloorRenderer {
@@ -17,6 +18,7 @@ namespace akgr {
     void render_floor(gf::RenderRecorder& recorder, int32_t floor) override;
 
   private:
+    HeroState* m_state = nullptr;
     gf::AnimationGroupEntity m_animations;
   };
 

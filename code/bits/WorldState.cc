@@ -55,7 +55,7 @@ namespace akgr {
 
       hero.physics.body = gf::PhysicsBody::make_dynamic(HeroMass, gf::compute_moment_for_circle(HeroMass, 0.0f, HeroRadius, { 0.0f, 0.0f }));
       hero.physics.body.set_location(hero.physics.spot.location);
-      hero.physics.body.set_angle(hero.physics.angle);
+      hero.physics.body.set_rotation(hero.physics.rotation);
       runtime.physics.world.add_body(hero.physics.body);
 
       auto pivot = gf::PhysicsConstraint::make_pivot_joint(&hero.physics.controller, &hero.physics.body, { 0.0f, 0.0f }, { 0.0f, 0.0f });
