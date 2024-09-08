@@ -4,6 +4,7 @@
 #include "WorldResources.h"
 
 #include "WorldBaseScene.h"
+#include "WorldTravelScene.h"
 
 namespace akgr {
   class Akagoria;
@@ -12,6 +13,7 @@ namespace akgr {
     WorldAct(Akagoria* game, const WorldResources& resources);
 
     WorldBaseScene base_scene;
+    WorldTravelScene travel_scene;
   };
 
 }

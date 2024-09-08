@@ -54,7 +54,7 @@ namespace akgr {
       runtime.physics.world.add_body(hero.physics.controller);
 
       hero.physics.body = gf::PhysicsBody::make_dynamic(HeroMass, gf::compute_moment_for_circle(HeroMass, 0.0f, HeroRadius, { 0.0f, 0.0f }));
-      hero.physics.body.set_location(hero.physics.spot.location);
+      hero.physics.body.set_location({ 10712.0f, 56792.0f }); // hero.physics.spot.location);
       hero.physics.body.set_rotation(hero.physics.rotation);
       runtime.physics.world.add_body(hero.physics.body);
 

@@ -1,6 +1,7 @@
 #include "KickoffLoadingScene.h"
 
 #include "Akagoria.h"
+#include "gf2/graphics/Scene.h"
 
 namespace akgr {
 
@@ -21,7 +22,8 @@ namespace akgr {
   void KickoffLoadingScene::do_update([[maybe_unused]] gf::Time time)
   {
     if (m_game->world_loaded()) {
-      m_game->replace_all_scenes(&m_game->world_act()->base_scene);
+      gf::BasicScene* scenes[] = { &m_game->world_act()->base_scene, &m_game->world_act()->travel_scene };
+      m_game->replace_all_scenes(scenes);
     }
   }
 

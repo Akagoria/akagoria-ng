@@ -42,7 +42,7 @@ namespace akgr {
   void WorldBaseScene::do_update([[maybe_unused]] gf::Time time)
   {
     update_entities(time);
-    // set_world_center(m_game->world_model()->state.); // TODO: set the center to the hero position
+    set_world_center(m_game->world_model()->state.hero.location()); // TODO: set the center to the hero position
   }
 
   gf::ActionGroupSettings WorldBaseScene::compute_settings()

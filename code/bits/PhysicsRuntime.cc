@@ -22,7 +22,7 @@ namespace akgr {
     constexpr float ShapeRadius = 1.0f;
 
     constexpr int EllipseSegmentCount = 10;
-    constexpr float EllipseSegmentLength = 50.0f;
+    constexpr float EllipseSegmentLength = 40.0f;
 
     constexpr unsigned bits_from_floor(int32_t floor) {
       if (floor < -6 || floor > 7) {
@@ -69,7 +69,7 @@ namespace akgr {
         case gf::MapObjectType::Rectangle:
           {
             gf::Vec2F size = std::get<gf::Vec2F>(object.feature);
-            return { gf::PhysicsShape::make_box(body, gf::RectF::from_size(size), ShapeRadius) };
+            return { gf::PhysicsShape::make_box(body, gf::RectF::from_center_size({ 0.0f, 0.0f }, size), ShapeRadius) };
           }
         case gf::MapObjectType::Polyline:
         case gf::MapObjectType::Polygon:
@@ -87,7 +87,6 @@ namespace akgr {
               return { gf::PhysicsShape::make_circle(body, radius, { 0.0f, 0.0f }) };
             }
 
-            const gf::Vec2F center = size / 2.0f;
             std::vector<gf::Vec2F> polyline;
 
             const float perimeter_approx = gf::Pi * std::sqrt(2 * (gf::square(size.w) + gf::square(size.h)));
@@ -95,7 +94,7 @@ namespace akgr {
             polyline.reserve(count);
 
             for (int i = 0; i < count; ++i) {
-              polyline.push_back(size / 2 * gf::unit(2.0f * gf::Pi * float(i) / float(count)) + center);
+              polyline.push_back(size / 2 * gf::unit(2.0f * gf::Pi * float(i) / float(count)));
             }
 
             return gf::make_polyline_shapes(body, polyline, ShapeRadius, gf::PolylineType::Loop);
@@ -234,8 +233,13 @@ namespace akgr {
 
     const auto& object_layer = map.object_layers[*tileset_tile.objects];
 
+    const gf::Vec2F object_size = tileset->tile_size;
+    const gf::Vec2F object_center = object.location + object_size / 2 - gf::diry(object_size.h);
+    const gf::Vec2F bottom_left = object.location;
+    const gf::Vec2F location = gf::transform_point(gf::rotation(gf::degrees_to_radians(object.rotation), bottom_left), object_center);
+
     auto body = gf::PhysicsBody::make_static();
-    body.set_location(object.location); // TODO: check if correct
+    body.set_location(location);
     body.set_rotation(gf::degrees_to_radians(object.rotation));
     world.add_body(body);
 
