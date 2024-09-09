@@ -6,6 +6,7 @@
 #include <gf2/graphics/RenderObject.h>
 
 #include "FloorRenderer.h"
+#include "WorldState.h"
 
 namespace akgr {
 
@@ -134,7 +135,8 @@ namespace akgr {
     }
 
     const gf::MapLayerStructure structure[] = { iterator->second };
-    auto geometries = m_rich_map_renderer->select_geometry(structure);
+    gf::Vec2I position = m_rich_map_renderer->compute_position(m_world_state->hero.location());
+    auto geometries = m_rich_map_renderer->select_geometry(position, structure);
 
     gf::RenderObject object;
     object.priority = priority();
