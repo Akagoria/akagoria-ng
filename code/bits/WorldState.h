@@ -16,7 +16,7 @@ namespace akgr {
 
     void load_from_file(const std::filesystem::path& filename);
     void save_to_file(const std::filesystem::path& filename) const;
-    void bind(const WorldData& data, WorldRuntime& runtime);
+    void bind(const WorldData& data);
   };
 
   template<typename Archive>

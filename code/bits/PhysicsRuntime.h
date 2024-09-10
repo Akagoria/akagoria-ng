@@ -13,7 +13,9 @@
 #include <gf2/physics/PhysicsCollisionHandler.h>
 #include <gf2/physics/PhysicsWorld.h>
 
+#include "HeroRuntime.h"
 #include "WorldData.h"
+#include "WorldState.h"
 
 namespace akgr {
 
@@ -37,10 +39,13 @@ namespace akgr {
   struct PhysicsRuntime {
     gf::PhysicsWorld world;
     ZoneHandler zone_handler;
+    HeroRuntime hero;
 
-    void bind(const WorldData& data);
+    void bind(const WorldData& data, const WorldState& state);
 
   private:
+    void bind_hero(const HeroState& state);
+
     void compute_tile_layer(const gf::MapLayerStructure& layer, const gf::TiledMap& map, std::vector<gf::SegmentI>& fences);
     void extract_collisions(const std::vector<gf::SegmentI>& fences, int32_t floor);
 

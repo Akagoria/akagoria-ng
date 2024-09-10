@@ -135,7 +135,7 @@ namespace akgr {
     }
 
     const gf::MapLayerStructure structure[] = { iterator->second };
-    gf::Vec2I position = m_rich_map_renderer->compute_position(m_world_state->hero.location());
+    gf::Vec2I position = m_rich_map_renderer->compute_position(m_world_state->hero.spot.location);
     auto geometries = m_rich_map_renderer->select_geometry(position, structure);
 
     gf::RenderObject object;

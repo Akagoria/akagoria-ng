@@ -61,7 +61,7 @@ namespace akgr {
       hero.move.method = HeroMoveMethod::Absolute;
       hero.move.linear = gf::LinearMove::Forward;
       hero.move.angular = gf::AngularMove::None;
-      hero.physics.rotation = gf::angle(stick);
+      hero.rotation = gf::angle(stick);
     } else {
       if (hero.move.method == HeroMoveMethod::Absolute) {
         hero.move.linear = gf::LinearMove::None;

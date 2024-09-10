@@ -9,6 +9,7 @@
 namespace akgr {
   class Akagoria;
   struct WorldData;
+  struct WorldState;
 
   struct WorldRuntime {
     WorldRuntime(Akagoria* game);
@@ -18,7 +19,7 @@ namespace akgr {
 
     // TODO: script
 
-    void bind(const WorldData& data);
+    void bind(const WorldData& data, const WorldState& state);
   };
 
 }

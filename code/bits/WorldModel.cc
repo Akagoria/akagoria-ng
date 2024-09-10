@@ -24,7 +24,7 @@ namespace akgr {
 
     // hero
 
-    float rotation = state.hero.physics.rotation;
+    float rotation = state.hero.rotation;
     float velocity = 0.0f;
 
     if (state.hero.move.method == HeroMoveMethod::Relative) {
@@ -56,16 +56,16 @@ namespace akgr {
       }
     }
 
-    state.hero.physics.body.set_rotation(rotation);
-    state.hero.physics.controller.set_rotation(rotation);
-    state.hero.physics.controller.set_velocity(velocity * gf::unit(rotation));
+    runtime.physics.hero.body.set_rotation(rotation);
+    runtime.physics.hero.controller.set_rotation(rotation);
+    runtime.physics.hero.controller.set_velocity(velocity * gf::unit(rotation));
 
     // physics
 
     runtime.physics.world.update(time);
 
-    state.hero.physics.rotation = state.hero.physics.body.rotation();
-    state.hero.physics.spot.location = state.hero.physics.body.location();
+    state.hero.rotation = runtime.physics.hero.body.rotation();
+    state.hero.spot.location = runtime.physics.hero.body.location();
 
   }
 

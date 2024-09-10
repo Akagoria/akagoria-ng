@@ -20,8 +20,8 @@ namespace akgr {
   {
     m_world_async.run_async([this]() {
       m_world_model.data.load_from_file(resource_manager()->search("akagoria.dat"));
-      m_world_model.runtime.bind(m_world_model.data);
-      m_world_model.state.bind(m_world_model.data, m_world_model.runtime);
+      m_world_model.state.bind(m_world_model.data);
+      m_world_model.runtime.bind(m_world_model.data, m_world_model.state);
       auto world_bundle = m_world_resources.bundle(this, &m_world_model.data);
       world_bundle.load_from(resource_manager());
       m_world_act = std::make_unique<WorldAct>(this, m_world_resources);

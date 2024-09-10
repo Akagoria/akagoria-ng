@@ -23,10 +23,10 @@ namespace akgr {
     m_animations.update(time);
   }
 
-  void HeroRenderer::render_floor(gf::RenderRecorder& recorder, int32_t floor)
+  void HeroRenderer::render_floor(gf::RenderRecorder& recorder, [[maybe_unused]] int32_t floor)
   {
-    m_animations.set_location(m_state->location());
-    m_animations.set_rotation(m_state->rotation() + gf::Pi2);
+    m_animations.set_location(m_state->spot.location);
+    m_animations.set_rotation(m_state->rotation + gf::Pi2);
     m_animations.render(recorder);
   }
 

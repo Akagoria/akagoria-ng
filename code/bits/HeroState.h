@@ -4,11 +4,11 @@
 #include <gf2/core/Move.h>
 #include <gf2/core/TypeTraits.h>
 
-#include "PhysicsState.h"
+#include "Spot.h"
 
 namespace akgr {
 
-  enum class HeroMoveMethod {
+  enum class HeroMoveMethod : uint8_t {
     Relative,
     Absolute,
   };
@@ -26,17 +26,15 @@ namespace akgr {
 
   struct HeroState {
     HeroMove move;
-    PhysicsState physics;
+    Spot spot;
+    float rotation = 0.0f;
 
-
-    gf::Vec2F location() const { return physics.spot.location; }
-    float rotation() const { return physics.rotation; }
   };
 
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<HeroState, Archive>& state)
   {
-    return ar | state.move | state.physics;
+    return ar | state.move | state.spot | state.rotation;
   }
 
 }

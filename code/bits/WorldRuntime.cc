@@ -7,10 +7,10 @@ namespace akgr {
   {
   }
 
-  void WorldRuntime::bind(const WorldData& data)
+  void WorldRuntime::bind(const WorldData& data, const WorldState& state)
   {
     script.bind();
-    physics.bind(data);
+    physics.bind(data, state);
   }
 
 }

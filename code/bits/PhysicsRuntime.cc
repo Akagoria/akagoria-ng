@@ -11,6 +11,7 @@
 #include <gf2/core/StringUtils.h>
 
 #include <gf2/physics/PhysicsArbiter.h>
+#include <gf2/physics/PhysicsConstraint.h>
 #include <gf2/physics/PhysicsShape.h>
 #include <gf2/physics/PhysicsShapeEx.h>
 #include <gf2/physics/PhysicsWorld.h>
@@ -20,6 +21,14 @@
 namespace akgr {
 
   namespace {
+
+    // hero
+
+    constexpr float HeroMass = 1.0f;
+    constexpr float HeroRadius = 20.0f;
+
+    // map
+
     constexpr uintptr_t ZoneCollisionType = 42;
 
     constexpr float ShapeRadius = 1.0f;
@@ -136,8 +145,14 @@ namespace akgr {
    * PhysicsRuntime
    */
 
-  void PhysicsRuntime::bind(const WorldData& data)
+  void PhysicsRuntime::bind(const WorldData& data, const WorldState& state)
   {
+    // hero
+
+    bind_hero(state.hero);
+
+    // map
+
     const auto& map = data.map;
 
     for (const auto& layer : map.layers) {
@@ -169,6 +184,35 @@ namespace akgr {
       extract_collisions(fences, floor);
     }
   }
+
+    // hero
+
+  void PhysicsRuntime::bind_hero(const HeroState& state)
+  {
+    hero.controller = gf::PhysicsBody::make_kinematic();
+    world.add_body(hero.controller);
+
+    hero.body = gf::PhysicsBody::make_dynamic(HeroMass, gf::compute_moment_for_circle(HeroMass, 0.0f, HeroRadius, { 0.0f, 0.0f }));
+    hero.body.set_location(state.spot.location);
+    hero.body.set_rotation(state.rotation);
+    world.add_body(hero.body);
+
+    auto pivot = gf::PhysicsConstraint::make_pivot_joint(&hero.controller, &hero.body, { 0.0f, 0.0f }, { 0.0f, 0.0f });
+    pivot.set_max_bias(0.0f);
+    pivot.set_max_force(1'000.0f);
+    world.add_constraint(pivot);
+
+    auto gear = gf::PhysicsConstraint::make_gear_joint(&hero.controller, &hero.body, 0.0f, 1.0f);
+    gear.set_error_bias(0.0f);
+    gear.set_max_bias(1.2f);
+    gear.set_max_force(5'000.0f);
+    world.add_constraint(gear);
+
+    auto shape = gf::PhysicsShape::make_circle(&hero.body, HeroRadius, { 0.0f, 0.0f });
+    shape.set_shape_filter(filter_from_floor(state.spot.floor));
+    world.add_shape(shape);
+  }
+
 
   void PhysicsRuntime::compute_tile_layer(const gf::MapLayerStructure& layer, const gf::TiledMap& map, std::vector<gf::SegmentI>& fences)
   {
