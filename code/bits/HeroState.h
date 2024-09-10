@@ -1,6 +1,9 @@
 #ifndef AKGR_HERO_STATE_H
 #define AKGR_HERO_STATE_H
 
+#include <set>
+
+#include <gf2/core/Id.h>
 #include <gf2/core/Move.h>
 #include <gf2/core/TypeTraits.h>
 
@@ -29,12 +32,13 @@ namespace akgr {
     Spot spot;
     float rotation = 0.0f;
 
+    std::set<gf::Id> requirements;
   };
 
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<HeroState, Archive>& state)
   {
-    return ar | state.move | state.spot | state.rotation;
+    return ar | state.move | state.spot | state.rotation | state.requirements;
   }
 
 }

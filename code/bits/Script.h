@@ -2,6 +2,7 @@
 #define AKGR_SCRIPT_H
 
 #include <filesystem>
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,19 @@ namespace akgr {
     const char* load_module(std::filesystem::path name);
 
     /*
-     * interface
+     * World interface
+     */
+
+    void initialize();
+    void start();
+    void on_message(const std::string& name);
+    void on_dialog(const std::string& name);
+
+    void on_message_deferred(std::string name);
+    void handle_deferred_messages();
+
+    /*
+     * Adventure interface
      */
 
     static void not_implemented(AgateVM* vm);
@@ -41,6 +54,8 @@ namespace akgr {
     AgateHandle* m_method_start = nullptr;
     AgateHandle* m_method_on_message = nullptr;
     AgateHandle* m_method_on_dialog = nullptr;
+
+    std::queue<std::string> m_messages;
   };
 
 

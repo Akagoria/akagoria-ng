@@ -170,6 +170,74 @@ namespace akgr {
     return m_sources.back().c_str();
   }
 
+  void Script::initialize()
+  {
+    agateStackStart(m_vm);
+    ptrdiff_t arg0 = agateSlotAllocate(m_vm);
+    agateSlotSetHandle(m_vm, arg0, m_class_adventure);
+    AgateStatus result = agateCallHandle(m_vm, m_method_initialize);
+    agateStackFinish(m_vm);
+
+    if (result != AGATE_STATUS_OK) {
+      gf::Log::error("Could not execute 'Adventure.initialize()'");
+    }
+  }
+
+  void Script::start()
+  {
+    agateStackStart(m_vm);
+    ptrdiff_t arg0 = agateSlotAllocate(m_vm);
+    agateSlotSetHandle(m_vm, arg0, m_class_adventure);
+    AgateStatus result = agateCallHandle(m_vm, m_method_start);
+    agateStackFinish(m_vm);
+
+    if (result != AGATE_STATUS_OK) {
+      gf::Log::error("Could not execute 'Adventure.start()'\n");
+    }
+  }
+
+  void Script::on_message(const std::string& name)
+  {
+    agateStackStart(m_vm);
+    ptrdiff_t arg0 = agateSlotAllocate(m_vm);
+    agateSlotSetHandle(m_vm, arg0, m_class_adventure);
+    ptrdiff_t arg1 = agateSlotAllocate(m_vm);
+    agateSlotSetString(m_vm, arg1, name.c_str());
+    AgateStatus result = agateCallHandle(m_vm, m_method_on_message);
+    agateStackFinish(m_vm);
+
+    if (result != AGATE_STATUS_OK) {
+      gf::Log::error("Could not execute 'Adventure.on_message(_)'");
+    }
+  }
+
+  void Script::on_dialog(const std::string& name)
+  {
+    agateStackStart(m_vm);
+    ptrdiff_t arg0 = agateSlotAllocate(m_vm);
+    agateSlotSetHandle(m_vm, arg0, m_class_adventure);
+    ptrdiff_t arg1 = agateSlotAllocate(m_vm);
+    agateSlotSetString(m_vm, arg1, name.c_str());
+    AgateStatus result = agateCallHandle(m_vm, m_method_on_dialog);
+    agateStackFinish(m_vm);
+
+    if (result != AGATE_STATUS_OK) {
+      gf::Log::error("Could not execute 'Adventure.on_dialog(_)'");
+    }
+  }
+
+  void Script::on_message_deferred(std::string name)
+  {
+    m_messages.push(std::move(name));
+  }
+
+  void Script::handle_deferred_messages()
+  {
+    while (!m_messages.empty()) {
+      on_message(m_messages.front());
+      m_messages.pop();
+    }
+  }
 
   void Script::not_implemented([[maybe_unused]] AgateVM* vm) {
     assert(false);
