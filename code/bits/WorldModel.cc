@@ -67,6 +67,8 @@ namespace akgr {
     state.hero.rotation = runtime.physics.hero.body.rotation();
     state.hero.spot.location = runtime.physics.hero.body.location();
 
+    runtime.script.handle_deferred_messages();
+
   }
 
 }

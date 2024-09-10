@@ -7,6 +7,7 @@
 
 #include <gf2/core/Geometry.h>
 #include <gf2/core/Id.h>
+#include <gf2/core/Signal.h>
 #include <gf2/core/TiledMap.h>
 
 #include <gf2/physics/PhysicsBody.h>
@@ -24,6 +25,8 @@ namespace akgr {
     void add_zone(gf::PhysicsId id, std::string name, std::string message, std::set<gf::Id> requirements);
 
     bool begin(gf::PhysicsArbiter arbiter, gf::PhysicsWorld world) override;
+
+    gf::Signal<void(const std::string& message, const std::set<gf::Id>& requirements)> on_message; // NOLINT
 
   private:
     struct Zone {

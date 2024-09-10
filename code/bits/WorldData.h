@@ -11,7 +11,6 @@ namespace akgr {
   struct WorldData {
     gf::TiledMap map;
 
-
     void load_from_file(const std::filesystem::path& filename);
     void save_to_file(const std::filesystem::path& filename) const;
   };

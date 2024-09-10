@@ -6,6 +6,7 @@
 #include <gf2/core/Id.h>
 
 #include "Akagoria.h"
+#include "DataLexicon.h"
 
 namespace akgr {
 
@@ -47,14 +48,15 @@ namespace akgr {
       assert(std::strcmp(unit_name, "world") == 0);
       assert(std::strcmp(class_name, "World") == 0);
       assert(kind == AGATE_FOREIGN_METHOD_CLASS);
+      using namespace gf::literals;
 
       switch (gf::hash_string(signature)) {
-        // case "move_hero(_)"_id:
-        //   return &Script::moveHero;
-        // case "move_hero_down()"_id:
-        //   return &Script::moveHeroDown;
-        // case "move_hero_up()"_id:
-        //   return &Script::moveHeroUp;
+        case "move_hero(_)"_id:
+          return &Script::move_hero;
+        case "move_hero_down()"_id:
+          return &Script::move_hero_down;
+        case "move_hero_up()"_id:
+          return &Script::move_hero_up;
         // case "post_notification(_)"_id:
         //   return &Script::postNotification;
         // case "add_requirement(_)"_id:
@@ -81,6 +83,10 @@ namespace akgr {
     }
 
     void vm_print([[maybe_unused]] AgateVM* vm, const char* text) {
+      if (std::strcmp(text, "\n") == 0) {
+        return;
+      }
+
       gf::Log::info("{}", text);
     }
 
@@ -240,7 +246,62 @@ namespace akgr {
   }
 
   void Script::not_implemented([[maybe_unused]] AgateVM* vm) {
-    assert(false);
+    // assert(false);
+  }
+
+  // move_hero(location)
+  void Script::move_hero(AgateVM* vm)
+  {
+    const char* location_id = agateSlotGetString(vm, 1);
+
+    gf::Log::info("move_hero({})", location_id);
+
+    const LocationRuntime* location = data_lexicon_find(runtime(vm).locations, gf::hash_string(location_id));
+    assert(location);
+
+    state(vm).hero.spot = location->spot;
+    runtime(vm).physics.hero.set_spot(location->spot);
+
+    agateSlotSetNil(vm, AGATE_RETURN_SLOT);
+  }
+
+  // move_hero_down()
+  void Script::move_hero_down(AgateVM* vm)
+  {
+    auto& hero = state(vm).hero;
+    hero.spot.floor -= 2;
+    runtime(vm).physics.hero.set_spot(hero.spot);
+
+    agateSlotSetNil(vm, AGATE_RETURN_SLOT);
+  }
+
+  // move_hero_up()
+  void Script::move_hero_up(AgateVM* vm)
+  {
+    auto& hero = state(vm).hero;
+    hero.spot.floor += 2;
+    runtime(vm).physics.hero.set_spot(hero.spot);
+
+    agateSlotSetNil(vm, AGATE_RETURN_SLOT);
+  }
+
+
+  const WorldData& Script::data(AgateVM* vm)
+  {
+    auto* script = static_cast<Script *>(agateGetUserData(vm));
+    return script->m_game->world_model()->data;
+  }
+
+  WorldState& Script::state(AgateVM* vm)
+  {
+    auto* script = static_cast<Script *>(agateGetUserData(vm));
+    return script->m_game->world_model()->state;
+  }
+
+  WorldRuntime& Script::runtime(AgateVM* vm)
+  {
+    auto* script = static_cast<Script *>(agateGetUserData(vm));
+    return script->m_game->world_model()->runtime;
   }
 
 }

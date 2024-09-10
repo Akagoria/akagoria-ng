@@ -19,6 +19,8 @@ namespace akgr {
     void render(gf::RenderRecorder& recorder) override;
 
   private:
+    Akagoria* m_game = nullptr;
+
     MapRenderer m_ground_renderer;
     MapRenderer m_low_tile_renderer;
     MapRenderer m_low_object_renderer;

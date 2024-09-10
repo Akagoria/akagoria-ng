@@ -16,6 +16,7 @@
 #include <gf2/physics/PhysicsShapeEx.h>
 #include <gf2/physics/PhysicsWorld.h>
 
+#include "PhysicsUtils.h"
 #include "WorldData.h"
 
 namespace akgr {
@@ -27,6 +28,8 @@ namespace akgr {
     constexpr float HeroMass = 1.0f;
     constexpr float HeroRadius = 20.0f;
 
+    constexpr uintptr_t HeroCollisionType = 69;
+
     // map
 
     constexpr uintptr_t ZoneCollisionType = 42;
@@ -35,23 +38,6 @@ namespace akgr {
 
     constexpr int EllipseSegmentCount = 10;
     constexpr float EllipseSegmentLength = 40.0f;
-
-    constexpr unsigned bits_from_floor(int32_t floor) {
-      if (floor < -6 || floor > 7) {
-        gf::Log::debug("Unknown floor: {}", floor);
-        return 0;
-      }
-
-      assert(-6 <= floor && floor <= 7);
-      return static_cast<unsigned>(1 << (floor + 8));
-    }
-
-    gf::PhysicsShapeFilter filter_from_floor(int32_t floor)
-    {
-      gf::PhysicsShapeFilter filter = {};
-      filter.categories = filter.mask = bits_from_floor(floor);
-      return filter;
-    }
 
     gf::PhysicsShape object_to_convex_shape(gf::PhysicsBody* body, const gf::MapObject& object)
     {
@@ -135,9 +121,19 @@ namespace akgr {
     m_zones.emplace(id, std::move(zone));
   }
 
-
-  bool ZoneHandler::begin(gf::PhysicsArbiter arbiter, gf::PhysicsWorld world)
+  bool ZoneHandler::begin(gf::PhysicsArbiter arbiter, [[maybe_unused]] gf::PhysicsWorld world)
   {
+    auto [ zone_body, hero_body  ] = arbiter.bodies();
+    assert(zone_body.type() == gf::PhysicsBodyType::Static);
+    const gf::PhysicsId id = zone_body.id();
+
+    if (auto iterator = m_zones.find(id); iterator != m_zones.end()) {
+      const auto& zone = iterator->second;
+      on_message.emit(zone.message, zone.requirements);
+    } else {
+      gf::Log::error("No zone found for a body.");
+    }
+
     return true;
   }
 
@@ -147,6 +143,10 @@ namespace akgr {
 
   void PhysicsRuntime::bind(const WorldData& data, const WorldState& state)
   {
+    // zone_handler
+
+    world.add_collision_handler(&zone_handler, ZoneCollisionType, HeroCollisionType);
+
     // hero
 
     bind_hero(state.hero);
@@ -208,9 +208,10 @@ namespace akgr {
     gear.set_max_force(5'000.0f);
     world.add_constraint(gear);
 
-    auto shape = gf::PhysicsShape::make_circle(&hero.body, HeroRadius, { 0.0f, 0.0f });
-    shape.set_shape_filter(filter_from_floor(state.spot.floor));
-    world.add_shape(shape);
+    hero.shape = gf::PhysicsShape::make_circle(&hero.body, HeroRadius, { 0.0f, 0.0f });
+    hero.shape.set_shape_filter(filter_from_floor(state.spot.floor));
+    hero.shape.set_collision_type(HeroCollisionType);
+    world.add_shape(hero.shape);
   }
 
 
@@ -363,7 +364,7 @@ namespace akgr {
 
     // 3. add zone to known zones
 
-    zone_handler.add_zone(shape.id(), object.name, message, std::move(requirements));
+    zone_handler.add_zone(body.id(), object.name, message, std::move(requirements));
   }
 
   void PhysicsRuntime::extract_sprites(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map)

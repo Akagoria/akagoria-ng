@@ -34,7 +34,6 @@ namespace akgr {
 
   void WorldState::bind(const WorldData& data)
   {
-    hero.spot.location = { 10712.0f, 56792.0f }; // TODO: remove in the future
   }
 
 }

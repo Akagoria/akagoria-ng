@@ -10,6 +10,9 @@
 
 namespace akgr {
   class Akagoria;
+  struct WorldData;
+  struct WorldState;
+  struct WorldRuntime;
 
   class Script {
   public:
@@ -43,7 +46,15 @@ namespace akgr {
 
     static void not_implemented(AgateVM* vm);
 
+    static void move_hero(AgateVM* vm);
+    static void move_hero_down(AgateVM* vm);
+    static void move_hero_up(AgateVM* vm);
+
   private:
+    static const WorldData& data(AgateVM* vm);
+    static WorldState& state(AgateVM* vm);
+    static WorldRuntime& runtime(AgateVM* vm);
+
     Akagoria* m_game;
 
     std::vector<std::string> m_sources;

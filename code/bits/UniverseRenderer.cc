@@ -6,7 +6,8 @@
 namespace akgr {
 
   UniverseRenderer::UniverseRenderer(Akagoria* game, const WorldResources& resources, gf::RichMapRenderer* rich_map_renderer)
-  : m_ground_renderer(PlaneType::Tile, Plane::Ground, game->world_state(), rich_map_renderer)
+  : m_game(game)
+  , m_ground_renderer(PlaneType::Tile, Plane::Ground, game->world_state(), rich_map_renderer)
   , m_low_tile_renderer(PlaneType::Tile, Plane::Low, game->world_state(), rich_map_renderer)
   , m_low_object_renderer(PlaneType::Object, Plane::Low, game->world_state(), rich_map_renderer)
   , m_high_tile_renderer(PlaneType::Tile, Plane::High, game->world_state(), rich_map_renderer)
@@ -30,7 +31,7 @@ namespace akgr {
 
   void UniverseRenderer::render(gf::RenderRecorder& recorder)
   {
-    const int32_t floor = 0; // TODO
+    const int32_t floor = m_game->world_state()->hero.spot.floor;
     m_renderers.render_floor(recorder, floor);
   }
 
