@@ -5,6 +5,7 @@
 #include <set>
 #include <string>
 
+#include <gf2/core/Geometry.h>
 #include <gf2/core/Id.h>
 #include <gf2/core/TiledMap.h>
 
@@ -40,6 +41,10 @@ namespace akgr {
     void bind(const WorldData& data);
 
   private:
+    void compute_tile_layer(const gf::MapLayerStructure& layer, const gf::TiledMap& map, std::vector<gf::SegmentI>& fences);
+    void extract_collisions(const std::vector<gf::SegmentI>& fences, int32_t floor);
+
+    void compute_object_layer(const gf::MapLayerStructure& layer, int32_t floor, const gf::TiledMap& map);
     void extract_zone(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map);
     void extract_sprites(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map);
   };

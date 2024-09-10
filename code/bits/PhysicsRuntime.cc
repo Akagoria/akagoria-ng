@@ -1,7 +1,10 @@
 #include "PhysicsRuntime.h"
 
 #include <cassert>
+#include <cstdint>
+#include <cstdlib>
 
+#include <gf2/core/Geometry.h>
 #include <gf2/core/Log.h>
 #include <gf2/core/Mat3.h>
 #include <gf2/core/Polygon.h>
@@ -69,12 +72,17 @@ namespace akgr {
         case gf::MapObjectType::Rectangle:
           {
             gf::Vec2F size = std::get<gf::Vec2F>(object.feature);
-            return { gf::PhysicsShape::make_box(body, gf::RectF::from_center_size({ 0.0f, 0.0f }, size), ShapeRadius) };
+            return { gf::PhysicsShape::make_box(body, gf::RectF::from_position_size(object.location, size), ShapeRadius) };
           }
         case gf::MapObjectType::Polyline:
         case gf::MapObjectType::Polygon:
           {
             auto polyline = std::get<std::vector<gf::Vec2F>>(object.feature);
+
+            for (gf::Vec2F& point : polyline) {
+              point += object.location;
+            }
+
             auto type = (object.type == gf::MapObjectType::Polygon) ? gf::PolylineType::Loop : gf::PolylineType::Chain;
             return gf::make_polyline_shapes(body, polyline, ShapeRadius, type);
           }
@@ -84,7 +92,7 @@ namespace akgr {
 
             if (gf::almost_equals(size.w, size.h)) {
               const float radius = (size.w + size.h) / 2.0f;
-              return { gf::PhysicsShape::make_circle(body, radius, { 0.0f, 0.0f }) };
+              return { gf::PhysicsShape::make_circle(body, radius, object.location) };
             }
 
             std::vector<gf::Vec2F> polyline;
@@ -94,7 +102,7 @@ namespace akgr {
             polyline.reserve(count);
 
             for (int i = 0; i < count; ++i) {
-              polyline.push_back(size / 2 * gf::unit(2.0f * gf::Pi * float(i) / float(count)));
+              polyline.push_back(object.location + size / 2 + size / 2 * gf::unit(2.0f * gf::Pi * float(i) / float(count)));
             }
 
             return gf::make_polyline_shapes(body, polyline, ShapeRadius, gf::PolylineType::Loop);
@@ -142,34 +150,130 @@ namespace akgr {
       assert(floor_property.is_int());
       const auto floor = static_cast<int32_t>(floor_property.as_int());
 
+      std::vector<gf::SegmentI> fences;
+
       for (const auto& sub_layer : group_layer.sub_layers) {
-        if (sub_layer.type != gf::MapLayerType::Object) {
-          continue;
-        }
-
-        const auto& object_layer = map.object_layers[sub_layer.layer_index];
-        const auto& object_properties = map.properties[object_layer.layer.properties_index];
-
-        const auto& kind_property = object_properties("kind");
-        assert(kind_property.is_string());
-        const std::string kind = kind_property.as_string();
-
-        if (kind == "zones") {
-          for (const auto& object : object_layer.objects) {
-            extract_zone(object, floor, map);
-          }
-
-          continue;
-        }
-
-        if (kind == "low_sprites" || kind == "high_sprites") {
-          for (const auto& object : object_layer.objects) {
-            extract_sprites(object, floor, map);
-          }
-
-          continue;
+        switch (sub_layer.type) {
+          case gf::MapLayerType::Object:
+            compute_object_layer(sub_layer, floor, map);
+            break;
+          case gf::MapLayerType::Tile:
+            compute_tile_layer(sub_layer, map, fences);
+            break;
+          case gf::MapLayerType::Group:
+            assert(false);
+            break;
         }
       }
+
+      extract_collisions(fences, floor);
+    }
+  }
+
+  void PhysicsRuntime::compute_tile_layer(const gf::MapLayerStructure& layer, const gf::TiledMap& map, std::vector<gf::SegmentI>& fences)
+  {
+    assert(layer.type == gf::MapLayerType::Tile);
+
+    const auto& tile_layer = map.tile_layers[layer.layer_index];
+
+    for (auto position : tile_layer.tiles.position_range()) {
+      const auto& cell = tile_layer.tiles(position);
+
+      if (cell.gid == 0) {
+        continue;
+      }
+
+      const auto* tileset = map.tileset_from_gid(cell.gid);
+      const uint32_t gid = cell.gid - tileset->first_gid;
+      const auto* tile = tileset->tile(gid);
+      assert(tile != nullptr);
+
+      if (tile->properties_index == gf::NoIndex) {
+        continue;
+      }
+
+      const auto& properties = map.properties[tile->properties_index];
+
+      if (!properties.has_property("fence_count")) {
+        continue;
+      }
+
+      const int64_t fence_count = properties("fence_count").as_int();
+
+      for (int64_t i = 0; i < fence_count; ++i) {
+        const std::string& fence = properties("fence" + std::to_string(i)).as_string();
+        auto coords = gf::split_string(fence, ",");
+        assert(coords.size() == 4);
+
+        gf::SegmentI segment;
+        segment[0] = gf::vec(std::atoi(coords[0].data()), std::atoi(coords[1].data()));
+        segment[1] = gf::vec(std::atoi(coords[2].data()), std::atoi(coords[3].data()));
+
+        if (cell.flip.test(gf::CellFlip::Diagonally)) {
+          std::swap(segment[0].x, segment[0].y);
+          std::swap(segment[1].x, segment[1].y);
+        }
+
+        if (cell.flip.test(gf::CellFlip::Horizontally)) {
+          segment[0].x = map.tile_size.x - segment[0].x;
+          segment[1].x = map.tile_size.x - segment[1].x;
+        }
+
+        if (cell.flip.test(gf::CellFlip::Vertically)) {
+          segment[0].y = map.tile_size.y - segment[0].y;
+          segment[1].y = map.tile_size.y - segment[1].y;
+        }
+
+        segment[0] += position * map.tile_size;
+        segment[1] += position * map.tile_size;
+
+        fences.push_back(segment);
+      }
+    }
+  }
+
+  void PhysicsRuntime::extract_collisions(const std::vector<gf::SegmentI>& fences, int32_t floor)
+  {
+    auto body = gf::PhysicsBody::make_static();
+    world.add_body(body);
+
+    auto collisions = gf::compute_lines(fences);
+
+    for (auto& collision : collisions) {
+      auto shapes = gf::make_polyline_shapes(&body, collision.points, ShapeRadius, collision.type);
+
+      for (auto& shape : shapes) {
+        shape.set_shape_filter(filter_from_floor(floor));
+        world.add_shape(shape);
+      }
+    }
+  }
+
+  void PhysicsRuntime::compute_object_layer(const gf::MapLayerStructure& layer, int32_t floor, const gf::TiledMap& map)
+  {
+    assert(layer.type == gf::MapLayerType::Object);
+
+    const auto& object_layer = map.object_layers[layer.layer_index];
+    const auto& object_properties = map.properties[object_layer.layer.properties_index];
+
+    const auto& kind_property = object_properties("kind");
+    assert(kind_property.is_string());
+    const std::string kind = kind_property.as_string();
+
+    if (kind == "zones") {
+      for (const auto& object : object_layer.objects) {
+        extract_zone(object, floor, map);
+      }
+
+      return;
+    }
+
+    if (kind == "low_sprites" || kind == "high_sprites") {
+      for (const auto& object : object_layer.objects) {
+        extract_sprites(object, floor, map);
+      }
+
+      return;
     }
   }
 
@@ -234,7 +338,7 @@ namespace akgr {
     const auto& object_layer = map.object_layers[*tileset_tile.objects];
 
     const gf::Vec2F object_size = tileset->tile_size;
-    const gf::Vec2F object_center = object.location + object_size / 2 - gf::diry(object_size.h);
+    const gf::Vec2F object_center = object.location - gf::diry(object_size.h);
     const gf::Vec2F bottom_left = object.location;
     const gf::Vec2F location = gf::transform_point(gf::rotation(gf::degrees_to_radians(object.rotation), bottom_left), object_center);
 
