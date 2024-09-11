@@ -57,12 +57,12 @@ namespace akgr {
           return &Script::move_hero_down;
         case "move_hero_up()"_id:
           return &Script::move_hero_up;
-        // case "post_notification(_)"_id:
-        //   return &Script::postNotification;
-        // case "add_requirement(_)"_id:
-        //   return &Script::addRequirement;
-        // case "remove_requirement(_)"_id:
-        //   return &Script::removeRequirement;
+        case "post_notification(_)"_id:
+          return &Script::post_notification;
+        case "add_requirement(_)"_id:
+          return &Script::add_requirement;
+        case "remove_requirement(_)"_id:
+          return &Script::remove_requirement;
         // case "add_item(_,_)"_id:
         //   return &Script::addItem;
         // case "add_item_to_inventory(_)"_id:
@@ -254,7 +254,7 @@ namespace akgr {
   {
     const char* location_id = agateSlotGetString(vm, 1);
 
-    gf::Log::info("move_hero({})", location_id);
+    gf::Log::info("[SCRIPT] move_hero({})", location_id);
 
     const LocationRuntime* location = data_lexicon_find(runtime(vm).locations, gf::hash_string(location_id));
     assert(location);
@@ -268,6 +268,8 @@ namespace akgr {
   // move_hero_down()
   void Script::move_hero_down(AgateVM* vm)
   {
+    gf::Log::info("[SCRIPT] move_hero_down()");
+
     auto& hero = state(vm).hero;
     hero.spot.floor -= 2;
     runtime(vm).physics.hero.set_spot(hero.spot);
@@ -278,6 +280,8 @@ namespace akgr {
   // move_hero_up()
   void Script::move_hero_up(AgateVM* vm)
   {
+    gf::Log::info("[SCRIPT] move_hero_up()");
+
     auto& hero = state(vm).hero;
     hero.spot.floor += 2;
     runtime(vm).physics.hero.set_spot(hero.spot);
@@ -285,6 +289,44 @@ namespace akgr {
     agateSlotSetNil(vm, AGATE_RETURN_SLOT);
   }
 
+  // post_notification(notification)
+  void Script::post_notification(AgateVM* vm)
+  {
+    const char* notification_id = agateSlotGetString(vm, 1);
+
+    gf::Log::info("[SCRIPT] post_notification({})", notification_id);
+
+    NotificationState notification;
+    notification.data.id = gf::hash_string(notification_id);
+    notification.data.bind_from(data(vm).notifications);
+    assert(notification.data.origin != nullptr);
+
+    state(vm).notifications.push_back(notification);
+
+    agateSlotSetNil(vm, AGATE_RETURN_SLOT);
+  }
+
+  // add_requirement(requirement)
+  void Script::add_requirement(AgateVM* vm)
+  {
+    const char* requirement_id = agateSlotGetString(vm, 1);
+
+    gf::Log::info("[SCRIPT] add_requirement({})", requirement_id);
+
+    state(vm).hero.requirements.insert(gf::hash_string(requirement_id));
+    agateSlotSetNil(vm, AGATE_RETURN_SLOT);
+  }
+
+  // remove_requirement(requirement)
+  void Script::remove_requirement(AgateVM* vm)
+  {
+    const char* requirement_id = agateSlotGetString(vm, 1);
+
+    gf::Log::info("[SCRIPT] remove_requirement({})", requirement_id);
+
+    state(vm).hero.requirements.erase(gf::hash_string(requirement_id));
+    agateSlotSetNil(vm, AGATE_RETURN_SLOT);
+  }
 
   const WorldData& Script::data(AgateVM* vm)
   {

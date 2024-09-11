@@ -5,6 +5,7 @@ add_repositories("gf-repo https://github.com/GamedevFramework/xmake-repo")
 
 -- set_policy("package.install_locally", true)
 add_requires("gamedevframework2")
+add_requires("nlohmann_json")
 
 add_rules("mode.debug", "mode.releasedbg", "mode.release")
 add_rules("plugin.compile_commands.autoupdate", {outputdir = "$(buildir)"})
@@ -40,8 +41,10 @@ target("akagoria-compile-data")
     set_kind("binary")
     add_files("code/akagoria-compile-data.cc")
     add_files("code/bits/WorldData.cc")
+    add_files("code/bits/DataLabel.cc")
     add_includedirs("$(buildir)/config")
     add_packages("gamedevframework2", { components = { "core" } })
+    add_packages("nlohmann_json")
 
 target("akagoria-editor")
     set_kind("binary")

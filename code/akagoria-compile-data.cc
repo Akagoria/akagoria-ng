@@ -1,15 +1,53 @@
 #include <cassert>
 
 #include <filesystem>
+#include <fstream>
+
+#include <nlohmann/json.hpp>
 
 #include <gf2/core/Clock.h>
 #include <gf2/core/Log.h>
 #include <gf2/core/Polygon.h>
 #include <gf2/core/StringUtils.h>
 
+#include "bits/DataLabel.h"
+#include "bits/DataLexicon.h"
 #include "bits/WorldData.h"
 
 #include "config.h"
+
+using namespace gf::literals;
+
+namespace gf {
+
+  void from_json(const nlohmann::json& json, Time& time) {
+    int32_t ms = 0;
+    json.get_to(ms);
+    time = gf::milliseconds(ms);
+  }
+
+}
+
+namespace akgr {
+
+  void from_json(const nlohmann::json& json, DataLabel& label) {
+    if (json.is_null()) {
+      label.tag = "";
+      label.id = gf::InvalidId;
+    } else {
+      json.get_to(label.tag);
+      label.id = gf::hash_string(label.tag);
+    }
+  }
+
+  void from_json(const nlohmann::json& json, NotificationData& data) {
+    json.at("label").get_to(data.label);
+    json.at("message").get_to(data.message);
+    json.at("duration").get_to(data.duration);
+  }
+
+}
+
 
 namespace {
 
@@ -28,6 +66,17 @@ namespace {
     }
   }
 
+  void compile_json_notifications(const std::filesystem::path& filename, akgr::DataLexicon<akgr::NotificationData>& data, std::vector<std::string>& strings) {
+    gf::Log::info("Reading '{}'...", filename.string());
+    std::ifstream ifs(filename);
+    nlohmann::json::parse(ifs).get_to(data);
+
+    for (const auto& notification : data) {
+      strings.push_back(notification.message);
+    }
+
+    akgr::data_lexicon_sort(data);
+  }
 
 }
 
@@ -39,11 +88,13 @@ int main() {
   const std::filesystem::path out_directory = assets_directory / "akagoria";
 
   akgr::WorldData data;
+  std::vector<std::string> strings;
 
   gf::Log::info("# Reading map...");
   data.map = gf::TiledMap(raw_directory / "akagoria.tmx");
 
   copy_textures(data.map, raw_directory, out_directory);
+  compile_json_notifications(raw_directory / "database/notifications.json", data.notifications, strings);
 
   data.save_to_file(out_directory / "akagoria.dat");
 

@@ -50,6 +50,11 @@ namespace akgr {
     static void move_hero_down(AgateVM* vm);
     static void move_hero_up(AgateVM* vm);
 
+    static void post_notification(AgateVM* vm);
+
+    static void add_requirement(AgateVM* vm);
+    static void remove_requirement(AgateVM* vm);
+
   private:
     static const WorldData& data(AgateVM* vm);
     static WorldState& state(AgateVM* vm);

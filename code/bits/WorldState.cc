@@ -34,6 +34,10 @@ namespace akgr {
 
   void WorldState::bind(const WorldData& data)
   {
+    for (auto& notification : notifications) {
+      notification.data.bind_from(data.notifications);
+      assert(notification.data.origin != nullptr);
+    }
   }
 
 }

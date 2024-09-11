@@ -18,6 +18,11 @@ namespace akgr {
     WorldData data;
     WorldRuntime runtime;
     WorldState state;
+
+  private:
+    void update_hero(gf::Time time);
+    void update_physics(gf::Time time);
+    void update_notifications(gf::Time time);
   };
 
 }

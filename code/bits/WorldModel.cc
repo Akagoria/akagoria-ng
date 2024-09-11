@@ -20,9 +20,14 @@ namespace akgr {
 
   void WorldModel::update(gf::Time time)
   {
-    const float dt = time.as_seconds();
+    update_hero(time);
+    update_physics(time);
+    update_notifications(time);
+  }
 
-    // hero
+  void WorldModel::update_hero(gf::Time time)
+  {
+    const float dt = time.as_seconds();
 
     float rotation = state.hero.rotation;
     float velocity = 0.0f;
@@ -59,16 +64,30 @@ namespace akgr {
     runtime.physics.hero.body.set_rotation(rotation);
     runtime.physics.hero.controller.set_rotation(rotation);
     runtime.physics.hero.controller.set_velocity(velocity * gf::unit(rotation));
+  }
 
-    // physics
-
+  void WorldModel::update_physics(gf::Time time)
+  {
     runtime.physics.world.update(time);
 
     state.hero.rotation = runtime.physics.hero.body.rotation();
     state.hero.spot.location = runtime.physics.hero.body.location();
 
     runtime.script.handle_deferred_messages();
+  }
 
+  void WorldModel::update_notifications(gf::Time time)
+  {
+    if (state.notifications.empty()) {
+      return;
+    }
+
+    auto& current = state.notifications.front();
+    current.elapsed += time;
+
+    if (current.elapsed > current.data->duration) {
+      state.notifications.erase(state.notifications.begin());
+    }
   }
 
 }
