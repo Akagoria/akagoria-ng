@@ -121,6 +121,11 @@ namespace akgr {
     m_zones.emplace(id, std::move(zone));
   }
 
+  void ZoneHandler::clear_zones()
+  {
+    m_zones.clear();
+  }
+
   bool ZoneHandler::begin(gf::PhysicsArbiter arbiter, [[maybe_unused]] gf::PhysicsWorld world)
   {
     auto [ zone_body, hero_body  ] = arbiter.bodies();
@@ -184,8 +189,6 @@ namespace akgr {
       extract_collisions(fences, floor);
     }
   }
-
-    // hero
 
   void PhysicsRuntime::bind_hero(const HeroState& state)
   {

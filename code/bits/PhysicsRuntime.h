@@ -23,6 +23,7 @@ namespace akgr {
   class ZoneHandler : public gf::PhysicsCollisionHandler {
   public:
     void add_zone(gf::PhysicsId id, std::string name, std::string message, std::set<gf::Id> requirements);
+    void clear_zones();
 
     bool begin(gf::PhysicsArbiter arbiter, gf::PhysicsWorld world) override;
 

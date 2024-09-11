@@ -130,6 +130,10 @@ namespace akgr {
 
   void Script::bind()
   {
+    if (m_vm != nullptr) {
+      return;
+    }
+
     const char* script = load_module("adventure");
 
     AgateConfig configuration;

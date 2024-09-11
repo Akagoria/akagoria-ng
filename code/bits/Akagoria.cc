@@ -25,7 +25,8 @@ namespace akgr {
 
       m_world_model.runtime.script.initialize();
 
-      auto world_bundle = m_world_resources.bundle(this, &m_world_model.data);
+      m_world_resources.bind(m_world_model.data);
+      auto world_bundle = m_world_resources.bundle(this);
       world_bundle.load_from(resource_manager());
       m_world_act = std::make_unique<WorldAct>(this, m_world_resources);
 
