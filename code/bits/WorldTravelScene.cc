@@ -5,10 +5,21 @@
 
 namespace akgr {
 
+  namespace {
+
+    constexpr gf::Vec2F WorldTravelSceneWorldSize = { 1600, 900 };
+
+  }
+
   WorldTravelScene::WorldTravelScene(Akagoria* game, const WorldResources& resources)
   : m_game(game)
   , m_action_group(compute_settings())
+  , m_notification_renderer(game, resources)
   {
+    set_world_size(WorldTravelSceneWorldSize);
+    set_world_center(WorldTravelSceneWorldSize / 2.0f);
+
+    add_world_entity(&m_notification_renderer);
   }
 
   gf::ActionGroupSettings WorldTravelScene::compute_settings()

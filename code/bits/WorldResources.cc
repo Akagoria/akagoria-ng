@@ -1,6 +1,8 @@
 #include "WorldResources.h"
 
 #include "Akagoria.h"
+#include "Colors.h"
+#include "gf2/core/Color.h"
 
 namespace akgr {
 
@@ -25,8 +27,20 @@ namespace akgr {
     animation.add_tileset(0, gf::vec(16, 16), 50_milliseconds, 16, 15, -1);
     hero_animations.data.animations.emplace("backward"_id, animation);
 
+    notification_text.data.content = "404 Not Found";
+    notification_text.data.character_size = 30.0f;
+    notification_text.data.color = gf::White;
+    notification_text.data.alignment = gf::Alignment::Center;
+    notification_text.data.paragraph_width = 750.0f;
+    notification_text.default_font = "fonts/DejaVuSans.ttf";
+    notification_text.bold_font = "fonts/DejaVuSans-Bold.ttf";
+    notification_text.italic_font = "fonts/DejaVuSans-Oblique.ttf";
+    notification_text.bold_italic_font = "fonts/DejaVuSans-BoldOblique.ttf";
 
-
+    notification_background.buffer = gf::ShapeBuffer::make_rounded_rectangle({ 800.0f, 100.0f }, 10.0f);
+    notification_background.buffer.color = RpgBlue * gf::opaque(0.9f);
+    notification_background.buffer.outline_color = gf::White;
+    notification_background.buffer.outline_thickness = 1.0f;
   }
 
   void WorldResources::bind(const WorldData& data)
@@ -38,23 +52,6 @@ namespace akgr {
 
     for (const std::filesystem::path& texture : data.map.textures) {
       map_textures.push_back(texture);
-    }
-
-    // notifications
-
-    notifications.clear();
-
-    for (const auto& notification : data.notifications) {
-      gf::RichTextResource resource;
-      resource.data.content = notification.message;
-      resource.data.color = gf::White;
-      resource.data.alignment = gf::Alignment::Left;
-      resource.default_font = "fonts/DejaVuSans.ttf";
-      resource.bold_font = "fonts/DejaVuSans-Bold.ttf";
-      resource.italic_font = "fonts/DejaVuSans-Oblique.ttf";
-      resource.bold_italic_font = "fonts/DejaVuSans-BoldOblique.ttf";
-
-      notifications.emplace(notification.label.id, std::move(resource));
     }
 
   }
@@ -70,12 +67,10 @@ namespace akgr {
         bundle->handle<gf::Texture>(texture, game->render_manager(), resource_manager, action);
       }
 
-      for (const auto& [ id, notification ] : notifications) {
-        bundle->handle<gf::FontFace>(notification.default_font, game->font_manager(), resource_manager, action);
-        bundle->handle<gf::FontFace>(notification.bold_font, game->font_manager(), resource_manager, action);
-        bundle->handle<gf::FontFace>(notification.italic_font, game->font_manager(), resource_manager, action);
-        bundle->handle<gf::FontFace>(notification.bold_italic_font, game->font_manager(), resource_manager, action);
-      }
+      bundle->handle<gf::FontFace>(notification_text.default_font, game->font_manager(), resource_manager, action);
+      bundle->handle<gf::FontFace>(notification_text.bold_font, game->font_manager(), resource_manager, action);
+      bundle->handle<gf::FontFace>(notification_text.italic_font, game->font_manager(), resource_manager, action);
+      bundle->handle<gf::FontFace>(notification_text.bold_italic_font, game->font_manager(), resource_manager, action);
 
     });
 

@@ -5,6 +5,7 @@
 #include <gf2/graphics/MotionGroup.h>
 #include <gf2/graphics/Scene.h>
 
+#include "NotificationRenderer.h"
 #include "WorldResources.h"
 
 namespace akgr {
@@ -26,6 +27,7 @@ namespace akgr {
     gf::ActionGroup m_action_group;
     gf::MotionGroup m_motion_group;
 
+    NotificationRenderer m_notification_renderer;
   };
 
 }

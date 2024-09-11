@@ -1,7 +1,7 @@
 [
   {
     "label": "Welcome",
-    "message": "Welcome to Akagoria!",
+    "message": "Welcome to <style=akgr>Akagoria</>!",
     "duration": 3000
   },
   {

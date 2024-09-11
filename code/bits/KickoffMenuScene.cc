@@ -1,7 +1,7 @@
 #include "KickoffMenuScene.h"
 
 #include "Akagoria.h"
-#include "gf2/core/ActionSettings.h"
+#include "Colors.h"
 #include "ui/Widgets.h"
 
 namespace akgr {
@@ -30,7 +30,7 @@ namespace akgr {
     set_world_size(MenuSceneWorldSize);
     set_world_center(MenuSceneWorldSize / 2.0f);
 
-    m_frame_theme.color = { 0.015625f, 0.03125f, 0.515625f, 1.0f };
+    m_frame_theme.color = RpgBlue;
     // m_frame_theme.margin = { 10.0f, 10.0f };
     // m_frame_theme.outline_color = gf::White;
     // m_frame_theme.outline_thickness = 2.0f;
