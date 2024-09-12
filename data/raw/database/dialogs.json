@@ -1,0 +1,45 @@
+[
+  {
+    "label": "Intro",
+    "type": "Story",
+    "content": [
+      { "speaker": "Kalista", "words": "Ouch! What a terrible headache!\nWhere am I? Why am I here?\nI am sooo hungry, I must find something to eat..." },
+      { "speaker": "Kalista", "words": "What!?! I lost my power!\nWho is responsible? I will find him!\nI WANT MY POWER BACK!" },
+      { "speaker": "Kalista", "words": "I think there is a village not so far from here.\nI can see some smoke in the north...\nLet's go!" }
+    ]
+  },
+  {
+    "label": "Intro2",
+    "type": "Story",
+    "content": [
+      { "speaker": "Kalista", "words": "I don't recognize anything. What happened?\nI have been asleep for a very long time.\nA too long time... But how much?" }
+    ]
+  },
+  {
+    "label": "ShagirConversation0",
+    "type": "Simple",
+    "content": [
+      { "speaker": "Kalista", "words": "Hi! Can you help me?\nI am looking for a village nearby.\nAm I in the right direction?" },
+      { "speaker": "Shagir", "words": "Hummm... Yes!\nYou seem to be lost, you should be carefull!\nIt is said that an evil sorceress is haunting the woods..." },
+      { "speaker": "Kalista", "words": "Ho really?\n(Gniak! Gniark!)\nThanks for the advice. Goodbye!" }
+    ]
+  },
+  {
+    "label": "ShagirConversation1",
+    "type": "Simple",
+    "content": [
+      { "speaker": "Kalista", "words": "Where do I have to go to find the village?\nI do not remember what you told me." },
+      { "speaker": "Shagir", "words": "Go north, you will find a lovely place called Arabband." }
+    ]
+  },
+  {
+    "label": "Arraband1",
+    "type": "Story",
+    "content": [
+      { "speaker": "Kalista", "words": "What happened here?" },
+      { "speaker": "Villager #1", "words": "It has rained a lot in the last few days.\nThis rock has fallen from the moutain.\nIt's too heavy, nobody can move it." },
+      { "speaker": "Kalista", "words": "Really? I don't want to stay here.\nWho is in charge here?" },
+      { "speaker": "Villager #1", "words": "Nobody, but you can probably ask Grubee, the blacksmith.\nHe lives in the center of the village." }
+    ]
+  }
+]

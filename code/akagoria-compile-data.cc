@@ -40,6 +40,27 @@ namespace akgr {
     }
   }
 
+  // Dialog
+
+  void from_json(const nlohmann::json& j, DialogLine& data) {
+    j.at("speaker").get_to(data.speaker);
+    j.at("words").get_to(data.words);
+  }
+
+  NLOHMANN_JSON_SERIALIZE_ENUM(DialogType, {
+    { DialogType::Simple, "Simple" },
+    { DialogType::Quest, "Quest" },
+    { DialogType::Story, "Story" },
+  })
+
+  void from_json(const nlohmann::json& j, DialogData& data) {
+    j.at("label").get_to(data.label);
+    j.at("type").get_to(data.type);
+    j.at("content").get_to(data.content);
+  }
+
+  // Notification
+
   void from_json(const nlohmann::json& json, NotificationData& data) {
     json.at("label").get_to(data.label);
     json.at("message").get_to(data.message);
@@ -64,6 +85,20 @@ namespace {
 
       std::filesystem::copy_file(raw_directory / relative_path, out_directory / relative_path, std::filesystem::copy_options::overwrite_existing);
     }
+  }
+
+  void compile_json_dialogs(const std::filesystem::path& filename, akgr::DataLexicon<akgr::DialogData>& data, std::vector<std::string>& strings) {
+    gf::Log::info("Reading '{}'...", filename.string());
+    std::ifstream ifs(filename);
+    nlohmann::json::parse(ifs).get_to(data);
+
+    for (const auto& dialog : data) {
+      for (const auto& line : dialog.content) {
+        strings.push_back(line.words);
+      }
+    }
+
+    akgr::data_lexicon_sort(data);
   }
 
   void compile_json_notifications(const std::filesystem::path& filename, akgr::DataLexicon<akgr::NotificationData>& data, std::vector<std::string>& strings) {
@@ -94,6 +129,7 @@ int main() {
   data.map = gf::TiledMap(raw_directory / "akagoria.tmx");
 
   copy_textures(data.map, raw_directory, out_directory);
+  compile_json_dialogs(raw_directory / "database/dialogs.json", data.dialogs, strings);
   compile_json_notifications(raw_directory / "database/notifications.json", data.notifications, strings);
 
   data.save_to_file(out_directory / "akagoria.dat");

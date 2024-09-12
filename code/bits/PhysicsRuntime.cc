@@ -357,6 +357,7 @@ namespace akgr {
 
     auto body = gf::PhysicsBody::make_static();
     body.set_location(object.location);
+    body.set_rotation(gf::degrees_to_radians(object.rotation));
     world.add_body(body);
 
     auto shape = object_to_convex_shape(&body, object);

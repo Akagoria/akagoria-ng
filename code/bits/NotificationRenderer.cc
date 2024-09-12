@@ -23,7 +23,7 @@ namespace akgr {
   , m_style(compute_notification_style())
   , m_default_text_data(resources.notification_text.data)
   , m_text_entity(&m_atlas, &m_style, resources.notification_text, game->render_manager(), game->resource_manager())
-  , m_shape(resources.notification_background, game->render_manager(), game->resource_manager())
+  , m_background_shape(resources.notification_background, game->render_manager(), game->resource_manager())
   {
     static constexpr gf::Vec2F NotificationLocation = { 800.0f, 200.0f };
     static constexpr gf::Vec2F NotificationOrigin = { 0.5f, 0.5f };
@@ -31,8 +31,8 @@ namespace akgr {
     m_text_entity.set_location(NotificationLocation);
     m_text_entity.set_origin(NotificationOrigin);
 
-    m_shape.set_location(NotificationLocation);
-    m_shape.set_origin(NotificationOrigin);
+    m_background_shape.set_location(NotificationLocation);
+    m_background_shape.set_origin(NotificationOrigin);
   }
 
   void NotificationRenderer::update([[maybe_unused]] gf::Time time)
@@ -49,6 +49,7 @@ namespace akgr {
       gf::TextData data = m_default_text_data;
       data.content = current.data->message;
       m_text_entity.text().update(data, m_game->render_manager());
+
       m_last_notification = current.data->label.id;
     }
   }
@@ -61,7 +62,7 @@ namespace akgr {
       return;
     }
 
-    m_shape.render(recorder);
+    m_background_shape.render(recorder);
     m_text_entity.render(recorder);
   }
 

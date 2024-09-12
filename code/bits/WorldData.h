@@ -7,6 +7,7 @@
 #include <gf2/core/TiledMap.h>
 
 #include "DataLexicon.h"
+#include "DialogData.h"
 #include "NotificationData.h"
 
 namespace akgr {
@@ -15,6 +16,7 @@ namespace akgr {
     gf::TiledMap map;
 
     DataLexicon<NotificationData> notifications;
+    DataLexicon<DialogData> dialogs;
 
     void load_from_file(const std::filesystem::path& filename);
     void save_to_file(const std::filesystem::path& filename) const;
@@ -23,7 +25,7 @@ namespace akgr {
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<WorldData, Archive>& data)
   {
-    return ar | data.map | data.notifications;
+    return ar | data.map | data.notifications | data.dialogs;
   }
 
 }

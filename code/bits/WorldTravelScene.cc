@@ -2,6 +2,7 @@
 
 #include "Akagoria.h"
 #include "HeroState.h"
+#include "gf2/graphics/Scene.h"
 
 namespace akgr {
 
@@ -33,6 +34,13 @@ namespace akgr {
     settings.actions.emplace("right"_id, gf::continuous_action().add_scancode_control(gf::Scancode::Right));
 
     return settings;
+  }
+
+  void WorldTravelScene::on_rank_change(gf::SceneRank old_rank, gf::SceneRank new_rank)
+  {
+    if (old_rank == gf::SceneRank::Top && new_rank == gf::SceneRank::None) {
+      m_action_group.hard_reset();
+    }
   }
 
   void WorldTravelScene::do_process_event(const gf::Event& event)

@@ -7,6 +7,7 @@
 
 #include "Akagoria.h"
 #include "DataLexicon.h"
+#include "DataReference.h"
 
 namespace akgr {
 
@@ -71,8 +72,8 @@ namespace akgr {
         //   return &Script::addCharacter;
         // case "set_character_mood(_,_)"_id:
         //   return &Script::setCharacterMood;
-        // case "start_dialog(_)"_id:
-        //   return &Script::startDialog;
+        case "start_dialog(_)"_id:
+          return &Script::start_dialog;
         // case "attach_dialog_to_character(_,_)"_id:
         //   return &Script::attachDialogToCharacter;
         default:
@@ -106,6 +107,14 @@ namespace akgr {
 
     void vm_error([[maybe_unused]] AgateVM* vm, AgateErrorKind kind, const char* unit_name, int line, const char* message) {
       gf::Log::error("{}:{} [{}] {}", unit_name == nullptr ? "<main>" : unit_name, line, vm_error_to_string(kind), message);
+    }
+
+    template<typename T>
+    void check_reference(const DataReference<T>& data, const char* name) {
+      if (data.origin == nullptr) {
+        gf::Log::error("A binding failed. Reference was '{}'", name);
+        std::abort();
+      }
     }
 
   }
@@ -303,6 +312,7 @@ namespace akgr {
     NotificationState notification;
     notification.data.id = gf::hash_string(notification_id);
     notification.data.bind_from(data(vm).notifications);
+    check_reference(notification.data, notification_id);
     assert(notification.data.origin != nullptr);
 
     state(vm).notifications.push_back(notification);
@@ -330,6 +340,30 @@ namespace akgr {
 
     state(vm).hero.requirements.erase(gf::hash_string(requirement_id));
     agateSlotSetNil(vm, AGATE_RETURN_SLOT);
+  }
+
+  // start_dialog(name)
+  void Script::start_dialog(AgateVM* vm)
+  {
+    const char* dialog_id = agateSlotGetString(vm, 1);
+
+    auto& dialog = state(vm).hero.dialog;
+    dialog.data.id = gf::hash_string(dialog_id);
+    dialog.data.bind_from(data(vm).dialogs);
+    check_reference(dialog.data, dialog_id);
+    assert(dialog.data.origin != nullptr);
+
+    dialog.current_line = 0;
+
+    game(vm).replace_scene(&game(vm).world_act()->dialog_scene);
+
+    agateSlotSetNil(vm, AGATE_RETURN_SLOT);
+  }
+
+  Akagoria& Script::game(AgateVM* vm)
+  {
+    auto* script = static_cast<Script *>(agateGetUserData(vm));
+    return *script->m_game;
   }
 
   const WorldData& Script::data(AgateVM* vm)

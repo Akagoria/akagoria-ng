@@ -19,6 +19,8 @@ namespace akgr {
   private:
     static gf::ActionGroupSettings compute_settings();
 
+    void on_rank_change(gf::SceneRank old_rank, gf::SceneRank new_rank) override;
+
     void do_process_event(const gf::Event& event) override;
     void do_handle_actions() override;
 

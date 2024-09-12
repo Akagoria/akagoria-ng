@@ -26,7 +26,7 @@ namespace akgr {
     gf::RichTextStyle m_style;
     gf::TextData m_default_text_data;
     gf::RichTextEntity m_text_entity;
-    gf::ShapeEntity m_shape;
+    gf::ShapeEntity m_background_shape;
     gf::Id m_last_notification = gf::InvalidId;
   };
 

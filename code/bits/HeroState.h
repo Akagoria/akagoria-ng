@@ -7,6 +7,7 @@
 #include <gf2/core/Move.h>
 #include <gf2/core/TypeTraits.h>
 
+#include "DialogState.h"
 #include "Spot.h"
 
 namespace akgr {
@@ -33,12 +34,14 @@ namespace akgr {
     float rotation = 0.0f;
 
     std::set<gf::Id> requirements;
+
+    DialogState dialog;
   };
 
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<HeroState, Archive>& state)
   {
-    return ar | state.move | state.spot | state.rotation | state.requirements;
+    return ar | state.move | state.spot | state.rotation | state.requirements | state.dialog;
   }
 
 }

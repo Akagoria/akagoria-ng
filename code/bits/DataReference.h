@@ -30,6 +30,11 @@ namespace akgr {
       return id != gf::InvalidId;
     }
 
+    bool check() const noexcept
+    {
+      return origin != nullptr;
+    }
+
     const T* operator->() const
     {
       return origin;
@@ -39,6 +44,12 @@ namespace akgr {
     {
       assert(origin != nullptr);
       return *origin;
+    }
+
+    void reset()
+    {
+      id = gf::InvalidId;
+      origin = nullptr;
     }
   };
 

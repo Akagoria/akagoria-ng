@@ -20,6 +20,12 @@ namespace akgr {
     gf::RichTextResource notification_text;
     gf::ShapeResource notification_background;
 
+    gf::TextResource dialog_speaker_text;
+    gf::ShapeResource dialog_speaker_background;
+
+    gf::RichTextResource dialog_words_text;
+    gf::ShapeResource dialog_words_background;
+
     // bound from data
 
     std::vector<std::filesystem::path> map_textures;

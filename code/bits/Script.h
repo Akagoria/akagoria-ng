@@ -55,7 +55,10 @@ namespace akgr {
     static void add_requirement(AgateVM* vm);
     static void remove_requirement(AgateVM* vm);
 
+    static void start_dialog(AgateVM* vm);
+
   private:
+    static Akagoria& game(AgateVM* vm);
     static const WorldData& data(AgateVM* vm);
     static WorldState& state(AgateVM* vm);
     static WorldRuntime& runtime(AgateVM* vm);

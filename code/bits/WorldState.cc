@@ -34,9 +34,14 @@ namespace akgr {
 
   void WorldState::bind(const WorldData& data)
   {
+    if (hero.dialog.data) {
+      hero.dialog.data.bind_from(data.dialogs);
+      assert(hero.dialog.data.check());
+    }
+
     for (auto& notification : notifications) {
       notification.data.bind_from(data.notifications);
-      assert(notification.data.origin != nullptr);
+      assert(notification.data.check());
     }
   }
 

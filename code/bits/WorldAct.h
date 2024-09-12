@@ -4,6 +4,7 @@
 #include "WorldResources.h"
 
 #include "WorldBaseScene.h"
+#include "WorldDialogScene.h"
 #include "WorldTravelScene.h"
 
 namespace akgr {
@@ -14,6 +15,7 @@ namespace akgr {
 
     WorldBaseScene base_scene;
     WorldTravelScene travel_scene;
+    WorldDialogScene dialog_scene;
   };
 
 }
