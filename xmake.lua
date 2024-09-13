@@ -10,6 +10,13 @@ add_requires("nlohmann_json")
 add_rules("mode.debug", "mode.releasedbg", "mode.release")
 add_rules("plugin.compile_commands.autoupdate", {outputdir = "$(buildir)"})
 
+if is_mode("sanitizers") then
+    set_symbols("debug")
+    set_optimize("none")
+    set_policy("build.sanitizer.address", true)
+    set_policy("build.sanitizer.undefined", true)
+end
+
 set_policy("build.warning", true)
 set_warnings("allextra")
 set_languages("cxx17")
