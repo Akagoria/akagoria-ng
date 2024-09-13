@@ -9,6 +9,7 @@ namespace akgr {
     gf::RichTextStyle compute_dialog_style()
     {
       gf::RichTextStyle style;
+      style.set_style("clue", { 1.0f, gf::Chartreuse, gf::FontStyle::Bold });
       return style;
     }
 
@@ -48,7 +49,7 @@ namespace akgr {
     m_words_text_entity.set_origin(WordsOrigin);
   }
 
-  void DialogRenderer::update(gf::Time time)
+  void DialogRenderer::update([[maybe_unused]] gf::Time time)
   {
     const auto& dialog = m_game->world_state()->hero.dialog;
 

@@ -5,7 +5,7 @@
     "content": [
       { "speaker": "Kalista", "words": "Ouch! What a terrible headache!\nWhere am I? Why am I here?\nI am sooo hungry, I must find something to eat..." },
       { "speaker": "Kalista", "words": "What!?! I lost my power!\nWho is responsible? I will find him!\nI WANT MY POWER BACK!" },
-      { "speaker": "Kalista", "words": "I think there is a village not so far from here.\nI can see some smoke in the north...\nLet's go!" }
+      { "speaker": "Kalista", "words": "I think there is a village not so far from here.\nI can see some smoke in the <style=clue>north</>...\nLet's go!" }
     ]
   },
   {
@@ -29,7 +29,7 @@
     "type": "Simple",
     "content": [
       { "speaker": "Kalista", "words": "Where do I have to go to find the village?\nI do not remember what you told me." },
-      { "speaker": "Shagir", "words": "Go north, you will find a lovely place called Arabband." }
+      { "speaker": "Shagir", "words": "Go <style=clue>north</>, you will find a lovely place called Arabband." }
     ]
   },
   {
