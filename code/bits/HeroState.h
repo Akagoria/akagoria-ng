@@ -7,6 +7,8 @@
 #include <gf2/core/Move.h>
 #include <gf2/core/TypeTraits.h>
 
+#include "AspectState.h"
+#include "AttributeState.h"
 #include "DialogState.h"
 #include "Spot.h"
 
@@ -32,6 +34,9 @@ namespace akgr {
     HeroMove move;
     Spot spot;
     float rotation = 0.0f;
+
+    AspectState aspects;
+    AttributeState attributes;
 
     std::set<gf::Id> requirements;
 

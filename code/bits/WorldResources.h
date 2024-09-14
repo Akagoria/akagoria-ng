@@ -26,6 +26,8 @@ namespace akgr {
     gf::RichTextResource dialog_words_text;
     gf::ShapeResource dialog_words_background;
 
+    gf::TextResource aspect_text;
+
     // bound from data
 
     std::vector<std::filesystem::path> map_textures;

@@ -68,6 +68,11 @@ namespace akgr {
     dialog_words_background.buffer.color = RpgBlue * gf::opaque(0.9f);
     dialog_words_background.buffer.outline_color = gf::White;
     dialog_words_background.buffer.outline_thickness = 1.0f;
+
+    aspect_text.data.content = "?";
+    aspect_text.data.character_size = 15.0f;
+    aspect_text.data.color = gf::White;
+    aspect_text.font = "fonts/DejaVuSans.ttf";
   }
 
   void WorldResources::bind(const WorldData& data)
