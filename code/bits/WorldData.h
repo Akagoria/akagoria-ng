@@ -8,6 +8,7 @@
 
 #include "DataLexicon.h"
 #include "DialogData.h"
+#include "ItemData.h"
 #include "NotificationData.h"
 
 namespace akgr {
@@ -17,6 +18,7 @@ namespace akgr {
 
     DataLexicon<NotificationData> notifications;
     DataLexicon<DialogData> dialogs;
+    DataLexicon<ItemData> items;
 
     void load_from_file(const std::filesystem::path& filename);
     void save_to_file(const std::filesystem::path& filename) const;
@@ -25,7 +27,7 @@ namespace akgr {
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<WorldData, Archive>& data)
   {
-    return ar | data.map | data.notifications | data.dialogs;
+    return ar | data.map | data.notifications | data.dialogs | data.items;
   }
 
 }

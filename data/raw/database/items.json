@@ -1,0 +1,20 @@
+[
+  {
+    "label": "GemRuby",
+    "description": "Ruby",
+    "type": "Rare",
+    "sprite": { "texture": "sprites/items-s.png", "region": [ 0, 16, 16 ] }
+  },
+  {
+    "label": "GemEmerald",
+    "description": "Emerald",
+    "type": "Rare",
+    "sprite": { "texture": "sprites/items-s.png", "region": [ 1, 16, 16 ] }
+  },
+  {
+    "label": "ShortSword",
+    "description": "Short sword",
+    "type": "MeleeWeapon",
+    "sprite": { "texture": "sprites/items-s.png", "region": [ 2, 16, 16 ] }
+  }
+]

@@ -20,17 +20,32 @@ using namespace gf::literals;
 
 namespace gf {
 
-  void from_json(const nlohmann::json& json, Time& time) {
+  void from_json(const nlohmann::json& json, Time& time)
+  {
     int32_t ms = 0;
     json.get_to(ms);
     time = gf::milliseconds(ms);
+  }
+
+  void from_json(const nlohmann::json& json, SpriteResource& sprite)
+  {
+    json.at("texture").get_to(sprite.texture);
+
+    std::array<int, 3> region = {}; // index, width, height
+    json.at("region").get_to(region);
+
+    Vec2F position = vec(region[0] % region[1], region[0] / region[1]);
+    Vec2F size = vec(region[1], region[2]);
+
+    sprite.data.texture_region = RectF::from_position_size(position / size, 1.0f / size);
   }
 
 }
 
 namespace akgr {
 
-  void from_json(const nlohmann::json& json, DataLabel& label) {
+  void from_json(const nlohmann::json& json, DataLabel& label)
+  {
     if (json.is_null()) {
       label.tag = "";
       label.id = gf::InvalidId;
@@ -42,7 +57,8 @@ namespace akgr {
 
   // Dialog
 
-  void from_json(const nlohmann::json& j, DialogLine& data) {
+  void from_json(const nlohmann::json& j, DialogLine& data)
+  {
     j.at("speaker").get_to(data.speaker);
     j.at("words").get_to(data.words);
   }
@@ -53,15 +69,45 @@ namespace akgr {
     { DialogType::Story, "Story" },
   })
 
-  void from_json(const nlohmann::json& j, DialogData& data) {
-    j.at("label").get_to(data.label);
-    j.at("type").get_to(data.type);
-    j.at("content").get_to(data.content);
+  void from_json(const nlohmann::json& json, DialogData& data)
+  {
+    json.at("label").get_to(data.label);
+    json.at("type").get_to(data.type);
+    json.at("content").get_to(data.content);
+  }
+
+  // Item
+
+  NLOHMANN_JSON_SERIALIZE_ENUM(ItemType, {
+    { ItemType::None, "None" },
+    { ItemType::HeadArmor, "HeadArmor" },
+    { ItemType::TorsoArmor, "TorsoArmor" },
+    { ItemType::ArmsArmor, "ArmsArmor" },
+    { ItemType::LegsArmor, "LegsArmor" },
+    { ItemType::CamouflageCloth, "CamouflageCloth" },
+    { ItemType::MeleeWeapon, "MeleeWeapon" },
+    { ItemType::RangedWeapon, "RangedWeapon" },
+    { ItemType::Explosive, "Explosive" },
+    { ItemType::Potion, "Potion" },
+    { ItemType::Ingredient, "Ingredient" },
+    { ItemType::Recipes, "Recipes" },
+    { ItemType::Book, "Book" },
+    { ItemType::Parchment, "Parchment" },
+    { ItemType::Quest, "Quest" },
+  })
+
+  void from_json(const nlohmann::json& json, ItemData& data)
+  {
+    json.at("label").get_to(data.label);
+    json.at("type").get_to(data.type);
+    json.at("description").get_to(data.description);
+    json.at("sprite").get_to(data.sprite);
   }
 
   // Notification
 
-  void from_json(const nlohmann::json& json, NotificationData& data) {
+  void from_json(const nlohmann::json& json, NotificationData& data)
+  {
     json.at("label").get_to(data.label);
     json.at("message").get_to(data.message);
     json.at("duration").get_to(data.duration);
@@ -101,6 +147,13 @@ namespace {
     akgr::data_lexicon_sort(data);
   }
 
+  void compile_json_items(const std::filesystem::path& filename, akgr::DataLexicon<akgr::ItemData>& data) {
+    gf::Log::info("Reading '{}'...", filename.string());
+    std::ifstream ifs(filename);
+    nlohmann::json::parse(ifs).get_to(data);
+    akgr::data_lexicon_sort(data);
+  }
+
   void compile_json_notifications(const std::filesystem::path& filename, akgr::DataLexicon<akgr::NotificationData>& data, std::vector<std::string>& strings) {
     gf::Log::info("Reading '{}'...", filename.string());
     std::ifstream ifs(filename);
@@ -130,6 +183,7 @@ int main() {
 
   copy_textures(data.map, raw_directory, out_directory);
   compile_json_dialogs(raw_directory / "database/dialogs.json", data.dialogs, strings);
+  compile_json_items(raw_directory / "database/items.json", data.items);
   compile_json_notifications(raw_directory / "database/notifications.json", data.notifications, strings);
 
   data.save_to_file(out_directory / "akagoria.dat");
