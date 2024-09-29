@@ -43,6 +43,21 @@ namespace akgr {
       notification.data.bind_from(data.notifications);
       assert(notification.data.check());
     }
+
+    for (auto& item : items) {
+      item.data.bind_from(data.items);
+      assert(item.data.check());
+    }
+
+    for (auto& character : characters) {
+      character.data.bind_from(data.characters);
+      assert(character.data.check());
+
+      if (character.dialog) {
+        character.dialog.bind_from(data.dialogs);
+        assert(character.dialog.check());
+      }
+    }
   }
 
 }

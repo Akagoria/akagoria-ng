@@ -6,6 +6,7 @@
 
 #include <gf2/core/TypeTraits.h>
 
+#include "CharacterState.h"
 #include "HeroState.h"
 #include "ItemState.h"
 #include "NotificationState.h"
@@ -19,6 +20,7 @@ namespace akgr {
 
     std::vector<NotificationState> notifications;
     std::vector<ItemState> items;
+    std::vector<CharacterState> characters;
 
     void load_from_file(const std::filesystem::path& filename);
     void save_to_file(const std::filesystem::path& filename) const;
@@ -28,7 +30,7 @@ namespace akgr {
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<WorldState, Archive>& state)
   {
-    return ar | state.hero | state.notifications | state.items;
+    return ar | state.hero | state.notifications | state.items | state.characters;
   }
 
 }

@@ -6,6 +6,8 @@
 #include <gf2/core/TypeTraits.h>
 #include <gf2/core/TiledMap.h>
 
+#include "CharacterData.h"
+#include "CreatureData.h"
 #include "DataLexicon.h"
 #include "DialogData.h"
 #include "ItemData.h"
@@ -20,7 +22,8 @@ namespace akgr {
     DataLexicon<NotificationData> notifications;
     DataLexicon<DialogData> dialogs;
     DataLexicon<ItemData> items;
-    // TODO: creatures
+    DataLexicon<CharacterData> characters;
+    DataLexicon<CreatureData> creatures;
     DataLexicon<QuestData> quests;
 
     void load_from_file(const std::filesystem::path& filename);
@@ -30,7 +33,7 @@ namespace akgr {
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<WorldData, Archive>& data)
   {
-    return ar | data.map | data.notifications | data.dialogs | data.items;
+    return ar | data.map | data.notifications | data.dialogs | data.items | data.characters | data.quests;
   }
 
 }

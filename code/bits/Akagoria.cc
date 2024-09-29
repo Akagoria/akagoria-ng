@@ -18,19 +18,26 @@ namespace akgr {
 
   void Akagoria::load_world(AdventureChoice choice)
   {
-    m_world_async.run_async([this]() {
+    m_world_async.run_async([this, choice]() {
       m_world_model.data.load_from_file(resource_manager()->search("akagoria.dat"));
+
+      if (choice == AdventureChoice::Saved) {
+        // TODO
+      }
+
       m_world_model.state.bind(m_world_model.data);
       m_world_model.runtime.bind(m_world_model.data, m_world_model.state);
-
-      m_world_model.runtime.script.initialize();
 
       m_world_resources.bind(m_world_model.data);
       auto world_bundle = m_world_resources.bundle(this);
       world_bundle.load_from(resource_manager());
       m_world_act = std::make_unique<WorldAct>(this, m_world_resources);
 
-      m_world_model.runtime.script.start();
+      m_world_model.runtime.script.initialize();
+
+      if (choice == AdventureChoice::New) {
+        m_world_model.runtime.script.start();
+      }
     });
   }
 

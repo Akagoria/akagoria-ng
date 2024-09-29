@@ -36,6 +36,7 @@ namespace akgr {
     void start();
     void on_message(const std::string& name);
     void on_dialog(const std::string& name);
+    void on_quest(const std::string& name);
 
     void on_message_deferred(std::string name);
     void handle_deferred_messages();
@@ -57,6 +58,9 @@ namespace akgr {
 
     static void start_dialog(AgateVM* vm);
 
+    static void add_character(AgateVM* vm);
+    static void attach_dialog_to_character(AgateVM* vm);
+
   private:
     static Akagoria& game(AgateVM* vm);
     static const WorldData& data(AgateVM* vm);
@@ -73,6 +77,7 @@ namespace akgr {
     AgateHandle* m_method_start = nullptr;
     AgateHandle* m_method_on_message = nullptr;
     AgateHandle* m_method_on_dialog = nullptr;
+    AgateHandle* m_method_on_quest = nullptr;
 
     std::queue<std::string> m_messages;
   };

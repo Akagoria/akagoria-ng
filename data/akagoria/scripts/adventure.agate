@@ -30,16 +30,15 @@ class Adventure {
   static initialize() {
     @@messages = { }
     @@dialogs = { }
+    @@quests = { }
 
     # special messages
 
     Adventure.add_message_callback("MoveDown") {
-      IO.println("[adventure.wren] Message 'MoveDown' received")
       World.move_hero_down()
     }
 
     Adventure.add_message_callback("MoveUp") {
-      IO.println("[adventure.wren] Message 'MoveUp' received")
       World.move_hero_up()
     }
 
@@ -56,10 +55,9 @@ class Adventure {
     def callback = @@messages[message]
 
     if (callback) {
-      IO.println("[adventure.wren] Message '%(message)' sent")
       callback()
     } else {
-      IO.println("[adventure.wren] No callback for message '%(message)'")
+      IO.println("No callback for message '%(message)'")
     }
   }
 
@@ -67,10 +65,19 @@ class Adventure {
     def callback = @@dialogs[dialog]
 
     if (callback) {
-      IO.println("[adventure.wren] Dialog '%(dialog)' finished")
       callback()
     } else {
-      IO.println("[adventure.wren] No callback for dialog '%(dialog)'")
+      IO.println("No callback for dialog '%(dialog)'")
+    }
+  }
+
+  static on_quest(quest) {
+    def callback = @@quests[quest]
+
+    if (callback) {
+      callback()
+    } else {
+      IO.println("No callback for quest '%(quest)'")
     }
   }
 
@@ -84,5 +91,9 @@ class Adventure {
 
   static add_dialog_callback(dialog, fn) {
     @@dialogs[dialog] = fn
+  }
+
+  static add_quest_callback(quest, fn) {
+    @@quests[quest] = fn
   }
 }

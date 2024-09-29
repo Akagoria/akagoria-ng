@@ -68,19 +68,19 @@ namespace akgr {
         //   return &Script::addItem;
         // case "add_item_to_inventory(_)"_id:
         //   return &Script::addItemToInventory;
-        // case "add_character(_,_)"_id:
-        //   return &Script::addCharacter;
         // case "set_character_mood(_,_)"_id:
         //   return &Script::setCharacterMood;
         case "start_dialog(_)"_id:
           return &Script::start_dialog;
-        // case "attach_dialog_to_character(_,_)"_id:
-        //   return &Script::attachDialogToCharacter;
+        case "add_character(_,_)"_id:
+          return &Script::add_character;
+        case "attach_dialog_to_character(_,_)"_id:
+          return &Script::attach_dialog_to_character;
         default:
           break;
       }
 
-      return Script::not_implemented;
+      return &Script::not_implemented;
     }
 
     void vm_print([[maybe_unused]] AgateVM* vm, const char* text) {
@@ -126,7 +126,7 @@ namespace akgr {
 
   Script::~Script()
   {
-    for (auto* handle : { m_method_on_dialog, m_method_on_message, m_method_start, m_method_initialize, m_class_adventure }) {
+    for (auto* handle : { m_method_on_dialog, m_method_on_message, m_method_on_quest, m_method_start, m_method_initialize, m_class_adventure }) {
       if (handle != nullptr) {
         agateReleaseHandle(m_vm, handle);
       }
@@ -179,6 +179,8 @@ namespace akgr {
     assert(m_method_on_message);
     m_method_on_dialog = agateMakeCallHandle(m_vm, "on_dialog(_)");
     assert(m_method_on_dialog);
+    m_method_on_quest = agateMakeCallHandle(m_vm, "on_quest(_)");
+    assert(m_method_on_quest);
   }
 
   const char* Script::load_module(std::filesystem::path name)
@@ -191,6 +193,8 @@ namespace akgr {
 
   void Script::initialize()
   {
+    gf::Log::info("[SCRIPT] Adventure.initialize()");
+
     agateStackStart(m_vm);
     ptrdiff_t arg0 = agateSlotAllocate(m_vm);
     agateSlotSetHandle(m_vm, arg0, m_class_adventure);
@@ -204,6 +208,8 @@ namespace akgr {
 
   void Script::start()
   {
+    gf::Log::info("[SCRIPT] Adventure.start()");
+
     agateStackStart(m_vm);
     ptrdiff_t arg0 = agateSlotAllocate(m_vm);
     agateSlotSetHandle(m_vm, arg0, m_class_adventure);
@@ -217,6 +223,8 @@ namespace akgr {
 
   void Script::on_message(const std::string& name)
   {
+    gf::Log::info("[SCRIPT] Adventure.on_message({})", name);
+
     agateStackStart(m_vm);
     ptrdiff_t arg0 = agateSlotAllocate(m_vm);
     agateSlotSetHandle(m_vm, arg0, m_class_adventure);
@@ -232,6 +240,8 @@ namespace akgr {
 
   void Script::on_dialog(const std::string& name)
   {
+    gf::Log::info("[SCRIPT] Adventure.on_dialog({})", name);
+
     agateStackStart(m_vm);
     ptrdiff_t arg0 = agateSlotAllocate(m_vm);
     agateSlotSetHandle(m_vm, arg0, m_class_adventure);
@@ -242,6 +252,23 @@ namespace akgr {
 
     if (result != AGATE_STATUS_OK) {
       gf::Log::error("Could not execute 'Adventure.on_dialog(_)'");
+    }
+  }
+
+  void Script::on_quest(const std::string& name)
+  {
+    gf::Log::info("[SCRIPT] Adventure.on_quest({})", name);
+
+    agateStackStart(m_vm);
+    ptrdiff_t arg0 = agateSlotAllocate(m_vm);
+    agateSlotSetHandle(m_vm, arg0, m_class_adventure);
+    ptrdiff_t arg1 = agateSlotAllocate(m_vm);
+    agateSlotSetString(m_vm, arg1, name.c_str());
+    AgateStatus result = agateCallHandle(m_vm, m_method_on_quest);
+    agateStackFinish(m_vm);
+
+    if (result != AGATE_STATUS_OK) {
+      gf::Log::error("Could not execute 'Adventure.on_quest(_)'");
     }
   }
 
@@ -267,7 +294,7 @@ namespace akgr {
   {
     const char* location_id = agateSlotGetString(vm, 1);
 
-    gf::Log::info("[SCRIPT] move_hero({})", location_id);
+    gf::Log::info("[SCRIPT] World.move_hero({})", location_id);
 
     const LocationRuntime* location = data_lexicon_find(runtime(vm).locations, gf::hash_string(location_id));
     assert(location);
@@ -281,7 +308,7 @@ namespace akgr {
   // move_hero_down()
   void Script::move_hero_down(AgateVM* vm)
   {
-    gf::Log::info("[SCRIPT] move_hero_down()");
+    gf::Log::info("[SCRIPT] World.move_hero_down()");
 
     auto& hero = state(vm).hero;
     hero.spot.floor -= 2;
@@ -293,7 +320,7 @@ namespace akgr {
   // move_hero_up()
   void Script::move_hero_up(AgateVM* vm)
   {
-    gf::Log::info("[SCRIPT] move_hero_up()");
+    gf::Log::info("[SCRIPT] World.move_hero_up()");
 
     auto& hero = state(vm).hero;
     hero.spot.floor += 2;
@@ -307,7 +334,7 @@ namespace akgr {
   {
     const char* notification_id = agateSlotGetString(vm, 1);
 
-    gf::Log::info("[SCRIPT] post_notification({})", notification_id);
+    gf::Log::info("[SCRIPT] World.post_notification({})", notification_id);
 
     NotificationState notification;
     notification.data.id = gf::hash_string(notification_id);
@@ -325,7 +352,7 @@ namespace akgr {
   {
     const char* requirement_id = agateSlotGetString(vm, 1);
 
-    gf::Log::info("[SCRIPT] add_requirement({})", requirement_id);
+    gf::Log::info("[SCRIPT] World.add_requirement({})", requirement_id);
 
     state(vm).hero.requirements.insert(gf::hash_string(requirement_id));
     agateSlotSetNil(vm, AGATE_RETURN_SLOT);
@@ -336,7 +363,7 @@ namespace akgr {
   {
     const char* requirement_id = agateSlotGetString(vm, 1);
 
-    gf::Log::info("[SCRIPT] remove_requirement({})", requirement_id);
+    gf::Log::info("[SCRIPT] World.remove_requirement({})", requirement_id);
 
     state(vm).hero.requirements.erase(gf::hash_string(requirement_id));
     agateSlotSetNil(vm, AGATE_RETURN_SLOT);
@@ -346,6 +373,8 @@ namespace akgr {
   void Script::start_dialog(AgateVM* vm)
   {
     const char* dialog_id = agateSlotGetString(vm, 1);
+
+    gf::Log::info("[SCRIPT] World.start_dialog({})", dialog_id);
 
     auto& dialog = state(vm).hero.dialog;
     dialog.data.id = gf::hash_string(dialog_id);
@@ -359,6 +388,54 @@ namespace akgr {
 
     agateSlotSetNil(vm, AGATE_RETURN_SLOT);
   }
+
+  // add_character(character, location)
+  void Script::add_character(AgateVM* vm)
+  {
+    const char *character_id = agateSlotGetString(vm, 1);
+    const char *location_id = agateSlotGetString(vm, 2);
+
+    gf::Log::info("[SCRIPT] World.add_character({}, {})", character_id, location_id);
+
+    const LocationRuntime* location = data_lexicon_find(runtime(vm).locations, gf::hash_string(location_id));
+    assert(location);
+
+    CharacterState character;
+    character.data.id = gf::hash_string(character_id);
+    character.data.bind_from(data(vm).characters);
+    character.spot = location->spot;
+    character.rotation = 0.0f; // TODO
+
+    // TODO: physics
+
+    state(vm).characters.push_back(character);
+
+    agateSlotSetNil(vm, AGATE_RETURN_SLOT);
+  }
+
+  // attach_dialog_to_character(dialog, name)
+  void Script::attach_dialog_to_character(AgateVM* vm)
+  {
+    const char *dialog_id = agateSlotGetString(vm, 1);
+    const char *character_id = agateSlotGetString(vm, 2);
+
+    gf::Log::info("[SCRIPT] World.attach_dialog_to_character({}, {})", dialog_id, character_id);
+
+    gf::Id id = gf::hash_string(character_id);
+
+    for (auto& character : state(vm).characters) {
+      if (character.data.id == id) {
+        character.dialog.id = gf::hash_string(dialog_id);
+        character.dialog.bind_from(data(vm).dialogs);
+        assert(character.dialog.check());
+        break;
+      }
+    }
+
+    agateSlotSetNil(vm, AGATE_RETURN_SLOT);
+  }
+
+
 
   Akagoria& Script::game(AgateVM* vm)
   {
