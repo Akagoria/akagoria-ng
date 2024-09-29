@@ -1,0 +1,20 @@
+[
+  {
+    "label": "Init",
+    "title": "Get out of the ruins",
+    "description": "After you woke up, you are in ruins and you don't really known where you are. You must find your way out and find someone who can explain the situation.",
+    "scope": "History",
+    "steps": [
+      {
+        "type": "Explore",
+        "description": "March through the ruins to find the <style=location><exit</>",
+        "requirement": "EndOfRuins"
+      },
+      {
+        "type": "Talk",
+        "description": "Talk to <style=character>the knight</>",
+        "dialog": "ShagirConversation0"
+      }
+    ]
+  }
+]

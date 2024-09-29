@@ -11,14 +11,25 @@ namespace akgr {
   : m_state(&game->world_state()->hero)
   , m_animations(resources.hero_animations, game->render_manager(), game->resource_manager())
   {
-    m_animations.set_scale(0.5f);
+    // m_animations.set_scale(0.5f);
     m_animations.set_origin({ 0.5f, 0.5f });
   }
 
   void HeroRenderer::update(gf::Time time)
   {
     using namespace gf::literals;
-    m_animations.select("static"_id);
+
+    switch (m_state->move.linear) {
+      case gf::LinearMove::None:
+        m_animations.select("static"_id);
+        break;
+      case gf::LinearMove::Forward:
+        m_animations.select("forward"_id);
+        break;
+      case gf::LinearMove::Backward:
+        m_animations.select("backward"_id);
+        break;
+    }
 
     m_animations.update(time);
   }

@@ -10,6 +10,7 @@
 #include "DialogData.h"
 #include "ItemData.h"
 #include "NotificationData.h"
+#include "QuestData.h"
 
 namespace akgr {
 
@@ -19,6 +20,8 @@ namespace akgr {
     DataLexicon<NotificationData> notifications;
     DataLexicon<DialogData> dialogs;
     DataLexicon<ItemData> items;
+    // TODO: creatures
+    DataLexicon<QuestData> quests;
 
     void load_from_file(const std::filesystem::path& filename);
     void save_to_file(const std::filesystem::path& filename) const;

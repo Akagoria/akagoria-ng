@@ -12,6 +12,7 @@
 
 #include "bits/DataLabel.h"
 #include "bits/DataLexicon.h"
+#include "bits/DataReference.h"
 #include "bits/WorldData.h"
 
 #include "config.h"
@@ -53,6 +54,14 @@ namespace akgr {
       json.get_to(label.tag);
       label.id = gf::hash_string(label.tag);
     }
+  }
+
+  template<typename T>
+  void from_json(const nlohmann::json& json, DataReference<T>& reference)
+  {
+    std::string label;
+    json.get_to(label);
+    reference.id = gf::hash_string(label);
   }
 
   // Dialog
@@ -113,6 +122,91 @@ namespace akgr {
     json.at("duration").get_to(data.duration);
   }
 
+  // Quest
+
+  NLOHMANN_JSON_SERIALIZE_ENUM(QuestScope, {
+    { QuestScope::Short, "Short" },
+    { QuestScope::Medium, "Medium" },
+    { QuestScope::Long, "Long" },
+    { QuestScope::History, "History" },
+  })
+
+  NLOHMANN_JSON_SERIALIZE_ENUM(QuestType, {
+    { QuestType::None, "None" },
+    { QuestType::Hunt, "Hunt" },
+    { QuestType::Talk, "Talk" },
+    { QuestType::Farm, "Farm" },
+    { QuestType::Explore, "Explore" },
+  })
+
+  void from_json(const nlohmann::json& json, HuntQuestData& data)
+  {
+    json.at("creature").get_to(data.creature);
+    json.at("count").get_to(data.count);
+  }
+
+  void from_json(const nlohmann::json& json, TalkQuestData& data)
+  {
+    json.at("dialog").get_to(data.dialog);
+  }
+
+  void from_json(const nlohmann::json& json, FarmQuestData& data)
+  {
+    json.at("item").get_to(data.item);
+    json.at("count").get_to(data.count);
+  }
+
+  void from_json(const nlohmann::json& json, QuestStepData& data)
+  {
+    json.at("description").get_to(data.description);
+
+    QuestType type = QuestType::None;
+    json.at("type").get_to(type);
+
+    switch (type) {
+      case QuestType::None:
+        data.features = {};
+        break;
+      case QuestType::Hunt:
+        {
+          HuntQuestData features_data;
+          from_json(json, features_data);
+          data.features = features_data;
+        }
+        break;
+      case QuestType::Talk:
+        {
+          TalkQuestData features_data;
+          from_json(json, features_data);
+          data.features = features_data;
+        }
+        break;
+      case QuestType::Farm:
+        {
+          FarmQuestData features_data;
+          from_json(json, features_data);
+          data.features = features_data;
+        }
+        break;
+      case QuestType::Explore:
+        // {
+        //   ExploreQuestData features_data;
+        //   from_json(json, features_data);
+        //   data.features = features_data;
+        // }
+        break;
+    }
+  }
+
+  void from_json(const nlohmann::json& json, QuestData& data)
+  {
+    json.at("label").get_to(data.label);
+    json.at("title").get_to(data.title);
+    json.at("description").get_to(data.description);
+    json.at("scope").get_to(data.scope);
+    json.at("steps").get_to(data.steps);
+  }
+
 }
 
 
@@ -166,6 +260,23 @@ namespace {
     akgr::data_lexicon_sort(data);
   }
 
+  void compile_json_quests(const std::filesystem::path& filename, akgr::DataLexicon<akgr::QuestData>& data, std::vector<std::string>& strings) {
+    gf::Log::info("Reading '{}'...", filename.string());
+    std::ifstream ifs(filename);
+    nlohmann::json::parse(ifs).get_to(data);
+
+    for (const auto& quest : data) {
+      strings.push_back(quest.title);
+      strings.push_back(quest.description);
+
+      for (const auto& step : quest.steps) {
+        strings.push_back(step.description);
+      }
+    }
+
+    akgr::data_lexicon_sort(data);
+  }
+
 }
 
 int main() {
@@ -185,6 +296,7 @@ int main() {
   compile_json_dialogs(raw_directory / "database/dialogs.json", data.dialogs, strings);
   compile_json_items(raw_directory / "database/items.json", data.items);
   compile_json_notifications(raw_directory / "database/notifications.json", data.notifications, strings);
+  compile_json_quests(raw_directory / "database/quests.json", data.quests, strings);
 
   data.save_to_file(out_directory / "akagoria.dat");
 
