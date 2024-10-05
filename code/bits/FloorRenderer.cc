@@ -10,7 +10,7 @@ namespace akgr {
 
   FloorRenderer::~FloorRenderer() = default;
 
-  void FloorRenderer::update([[maybe_unused]] gf::Time time) {
+  void FloorRenderer::update([[maybe_unused]] gf::Time time, [[maybe_unused]] int32_t floor) {
   }
 
   /*
@@ -29,10 +29,10 @@ namespace akgr {
     });
   }
 
-  void FloorRendererContainer::update(gf::Time time)
+  void FloorRendererContainer::update(gf::Time time, int32_t floor)
   {
     for (FloorRenderer* renderer : m_renderers) {
-      renderer->update(time);
+      renderer->update(time, floor);
     }
   }
 

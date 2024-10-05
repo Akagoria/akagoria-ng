@@ -1,6 +1,8 @@
 #ifndef AKGR_MAP_RENDERER_H
 #define AKGR_MAP_RENDERER_H
 
+#include <cstdint>
+
 #include <map>
 
 #include <gf2/graphics/RichMapRenderer.h>
@@ -10,12 +12,12 @@
 namespace akgr {
   struct WorldState;
 
-  enum class PlaneType {
+  enum class PlaneType : uint8_t {
     Tile,
     Object,
   };
 
-  enum class Plane {
+  enum class Plane : uint8_t {
     High,
     Low,
     Ground,

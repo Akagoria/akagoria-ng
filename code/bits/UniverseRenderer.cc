@@ -13,6 +13,7 @@ namespace akgr {
   , m_high_tile_renderer(PlaneType::Tile, Plane::High, game->world_state(), rich_map_renderer)
   , m_high_object_renderer(PlaneType::Object, Plane::High, game->world_state(), rich_map_renderer)
   , m_hero_renderer(game, resources)
+  , m_character_renderer(game, resources)
   {
     m_renderers.add_renderer(&m_ground_renderer);
     m_renderers.add_renderer(&m_low_tile_renderer);
@@ -20,13 +21,15 @@ namespace akgr {
     m_renderers.add_renderer(&m_high_tile_renderer);
     m_renderers.add_renderer(&m_high_object_renderer);
     m_renderers.add_renderer(&m_hero_renderer);
+    m_renderers.add_renderer(&m_character_renderer);
 
     m_renderers.finish();
   }
 
   void UniverseRenderer::update(gf::Time time)
   {
-    m_renderers.update(time);
+    const int32_t floor = m_game->world_state()->hero.spot.floor;
+    m_renderers.update(time, floor);
   }
 
   void UniverseRenderer::render(gf::RenderRecorder& recorder)

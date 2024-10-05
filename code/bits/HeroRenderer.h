@@ -1,7 +1,7 @@
 #ifndef AKGR_HERO_RENDERER_H
 #define AKGR_HERO_RENDERER_H
 
-#include <gf2/graphics/AnimationEntity.h>
+#include <gf2/graphics/AnimationGroupEntity.h>
 
 #include "FloorRenderer.h"
 
@@ -14,7 +14,7 @@ namespace akgr {
   public:
     HeroRenderer(Akagoria* game, const WorldResources& resources);
 
-    void update(gf::Time time) override;
+    void update(gf::Time time, int32_t floor) override;
     void render_floor(gf::RenderRecorder& recorder, int32_t floor) override;
 
   private:

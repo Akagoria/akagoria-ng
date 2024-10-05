@@ -28,7 +28,7 @@ namespace akgr {
       return m_priority;
     }
 
-    virtual void update(gf::Time time);
+    virtual void update(gf::Time time, int32_t floor);
     virtual void render_floor(gf::RenderRecorder& recorder, int32_t floor) = 0;
 
   private:
@@ -40,7 +40,7 @@ namespace akgr {
     void add_renderer(FloorRenderer* renderer);
     void finish();
 
-    void update(gf::Time time);
+    void update(gf::Time time, int32_t floor);
     void render_floor(gf::RenderRecorder& recorder, int32_t floor);
 
   private:

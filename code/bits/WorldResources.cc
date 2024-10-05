@@ -6,26 +6,31 @@
 
 namespace akgr {
 
-  WorldResources::WorldResources()
+  gf::AnimationGroupResource compute_standard_character_animations(const std::filesystem::path& texture)
   {
     using namespace gf::literals;
 
-    hero_animations.textures = { "sprites/kalista.png" };
+    gf::AnimationGroupResource animations;
+    animations.textures = { texture };
 
-    gf::AnimationData animation;
-    animation.properties = gf::AnimationProperties::Loop;
-    animation.color = gf::White;
+    auto compute_animation = [&](gf::Time duration, int32_t frame_count, int32_t frame_offset, int32_t frame_direction = 1) {
+      gf::AnimationData animation;
+      animation.properties = gf::AnimationProperties::Loop;
+      animation.color = gf::White;
+      animation.add_tileset(0, gf::vec(16, 16), duration, frame_count, frame_offset, frame_direction);
+      return animation;
+    };
 
-    animation.add_tileset(0, gf::vec(16, 16), 1000_milliseconds, 1, 0);
-    hero_animations.data.animations.emplace("static"_id, animation);
+    animations.data.animations.emplace("static"_id, compute_animation(1000_milliseconds, 1, 0));
+    animations.data.animations.emplace("forward"_id, compute_animation(25_milliseconds, 16, 0));
+    animations.data.animations.emplace("backward"_id, compute_animation(50_milliseconds, 16, 15, -1));
 
-    animation.frames.clear();
-    animation.add_tileset(0, gf::vec(16, 16), 25_milliseconds, 16, 0);
-    hero_animations.data.animations.emplace("forward"_id, animation);
+    return animations;
+  }
 
-    animation.frames.clear();
-    animation.add_tileset(0, gf::vec(16, 16), 50_milliseconds, 16, 15, -1);
-    hero_animations.data.animations.emplace("backward"_id, animation);
+  WorldResources::WorldResources()
+  {
+    hero_animations = compute_standard_character_animations("sprites/character_default.png");
 
     notification_text.data.content = "404 Not Found";
     notification_text.data.character_size = 30.0f;
@@ -86,12 +91,22 @@ namespace akgr {
       map_textures.push_back(texture);
     }
 
+    // animation_textures
+
+    for (const auto& character : data.characters) {
+      animation_textures.push_back(character_animation_path(character));
+    }
+
   }
 
   gf::ResourceBundle WorldResources::bundle(Akagoria* game)
   {
     gf::ResourceBundle bundle([game, this](gf::ResourceBundle* bundle, gf::ResourceManager* resource_manager, gf::ResourceAction action) {
       for (const std::filesystem::path& texture : map_textures) {
+        bundle->handle<gf::Texture>(texture, game->render_manager(), resource_manager, action);
+      }
+
+      for (const std::filesystem::path& texture : animation_textures) {
         bundle->handle<gf::Texture>(texture, game->render_manager(), resource_manager, action);
       }
 

@@ -11,11 +11,11 @@ namespace akgr {
   : m_state(&game->world_state()->hero)
   , m_animations(resources.hero_animations, game->render_manager(), game->resource_manager())
   {
-    // m_animations.set_scale(0.5f);
+    m_animations.set_scale(0.8f);
     m_animations.set_origin({ 0.5f, 0.5f });
   }
 
-  void HeroRenderer::update(gf::Time time)
+  void HeroRenderer::update(gf::Time time, [[maybe_unused]] int32_t floor)
   {
     using namespace gf::literals;
 

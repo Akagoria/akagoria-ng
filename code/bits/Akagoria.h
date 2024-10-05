@@ -35,6 +35,11 @@ namespace akgr {
       return &m_world_model;
     }
 
+    WorldData* world_data()
+    {
+      return &m_world_model.data;
+    }
+
     WorldState* world_state()
     {
       return &m_world_model.state;

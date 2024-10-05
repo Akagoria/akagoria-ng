@@ -1,6 +1,7 @@
 #ifndef AKGR_WORLD_RESOURCES_H
 #define AKGR_WORLD_RESOURCES_H
 
+#include <filesystem>
 #include <vector>
 
 #include <gf2/core/AnimationData.h>
@@ -11,6 +12,8 @@
 namespace akgr {
   class Akagoria;
   struct WorldData;
+
+  gf::AnimationGroupResource compute_standard_character_animations(const std::filesystem::path& texture);
 
   struct WorldResources {
     WorldResources();
@@ -31,6 +34,7 @@ namespace akgr {
     // bound from data
 
     std::vector<std::filesystem::path> map_textures;
+    std::vector<std::filesystem::path> animation_textures;
 
     void bind(const WorldData& data);
     gf::ResourceBundle bundle(Akagoria* game);

@@ -24,8 +24,8 @@ class Kickoff {
   static initialize(W) {
     W.move_hero("Start")
     W.add_requirement("IntroDialogReq")
-#     W.add_character("Shagir", "Shagir")
-#     W.attach_dialog_to_character("ShagirConversation0", "Shagir")
+    W.add_character("Shagir", "Shagir")
+    W.attach_dialog_to_character("ShagirConversation0", "Shagir")
     W.post_notification("Welcome")
 
 #     W.add_character("Ling", "Ling")

@@ -64,6 +64,15 @@ namespace akgr {
     reference.id = gf::hash_string(label);
   }
 
+  // Character
+
+  void from_json(const nlohmann::json& json, CharacterData& data)
+  {
+    json.at("label").get_to(data.label);
+    json.at("name").get_to(data.name);
+    json.at("animations").get_to(data.animations);
+  }
+
   // Dialog
 
   void from_json(const nlohmann::json& j, DialogLine& data)
@@ -227,6 +236,13 @@ namespace {
     }
   }
 
+  void compile_json_characters(const std::filesystem::path& filename, akgr::DataLexicon<akgr::CharacterData>& data) {
+    gf::Log::info("Reading '{}'...", filename.string());
+    std::ifstream ifs(filename);
+    nlohmann::json::parse(ifs).get_to(data);
+    akgr::data_lexicon_sort(data);
+  }
+
   void compile_json_dialogs(const std::filesystem::path& filename, akgr::DataLexicon<akgr::DialogData>& data, std::vector<std::string>& strings) {
     gf::Log::info("Reading '{}'...", filename.string());
     std::ifstream ifs(filename);
@@ -296,6 +312,7 @@ int main() {
   compile_json_dialogs(raw_directory / "database/dialogs.json", data.dialogs, strings);
   compile_json_items(raw_directory / "database/items.json", data.items);
   compile_json_notifications(raw_directory / "database/notifications.json", data.notifications, strings);
+  compile_json_characters(raw_directory / "database/characters.json", data.characters);
   compile_json_quests(raw_directory / "database/quests.json", data.quests, strings);
 
   data.save_to_file(out_directory / "akagoria.dat");

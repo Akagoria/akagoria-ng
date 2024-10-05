@@ -3,6 +3,7 @@
 
 #include <gf2/graphics/Entity.h>
 
+#include "CharacterRenderer.h"
 #include "FloorRenderer.h"
 #include "HeroRenderer.h"
 #include "MapRenderer.h"
@@ -28,6 +29,7 @@ namespace akgr {
     MapRenderer m_high_object_renderer;
 
     HeroRenderer m_hero_renderer;
+    CharacterRenderer m_character_renderer;
 
     FloorRendererContainer m_renderers;
   };
