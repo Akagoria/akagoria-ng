@@ -51,7 +51,7 @@ class World {
   # characters
   #
 
-  static add_character(character, location) foreign
+  static add_character(name, character, location, rotation) foreign
   static set_character_mood(character, mood) foreign
 
   #
@@ -59,6 +59,6 @@ class World {
   #
 
   static start_dialog(dialog) foreign
-  static attach_dialog_to_character(dialog, character) foreign
+  static add_dialog_to_character(dialog, character) foreign
 
 }

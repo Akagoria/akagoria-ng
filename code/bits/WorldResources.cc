@@ -13,7 +13,7 @@ namespace akgr {
     gf::AnimationGroupResource animations;
     animations.textures = { texture };
 
-    auto compute_animation = [&](gf::Time duration, int32_t frame_count, int32_t frame_offset, int32_t frame_direction = 1) {
+    auto compute_animation = [](gf::Time duration, int32_t frame_count, int32_t frame_offset, int32_t frame_direction = 1) {
       gf::AnimationData animation;
       animation.properties = gf::AnimationProperties::Loop;
       animation.color = gf::White;

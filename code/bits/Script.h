@@ -56,10 +56,10 @@ namespace akgr {
     static void add_requirement(AgateVM* vm);
     static void remove_requirement(AgateVM* vm);
 
-    static void start_dialog(AgateVM* vm);
-
     static void add_character(AgateVM* vm);
-    static void attach_dialog_to_character(AgateVM* vm);
+
+    static void start_dialog(AgateVM* vm);
+    static void add_dialog_to_character(AgateVM* vm);
 
   private:
     static Akagoria& game(AgateVM* vm);

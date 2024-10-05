@@ -3,8 +3,6 @@
 #include <gf2/core/ShapeBuffer.h>
 
 #include "Akagoria.h"
-#include "gf2/core/Color.h"
-#include "gf2/core/Mat3.h"
 
 namespace akgr {
 
@@ -21,24 +19,29 @@ namespace akgr {
     // load all the animations, not really optimal but easy for now
 
     for (const auto& character_data : game->world_data()->characters) {
-      const gf::AnimationGroupResource resource = compute_standard_character_animations(character_animation_path(character_data));
-
-      const gf::Id character_id = character_data.label.id;
-
-      [[maybe_unused]] auto [ iterator, inserted ] = m_animation_states.emplace(character_id, resource.data);
-      assert(inserted);
-
       const gf::Id animation_id = gf::hash_string(character_data.animations.string());
 
       if (m_animation_graphics.find(animation_id) != m_animation_graphics.end()) {
         continue;
       }
 
+      const gf::AnimationGroupResource resource = compute_standard_character_animations(character_animation_path(character_data));
       gf::AnimationGroupGraphics graphics(resource, game->render_manager(), game->resource_manager());
       m_animation_graphics.emplace(animation_id, std::move(graphics));
     }
 
-    gf::Log::info("Characters: {} (animations: {})", m_animation_states.size(), m_animation_graphics.size());
+    // create the animation states
+
+    for (auto& character_state : m_game->world_state()->characters) {
+      const gf::Id character_name_id = gf::hash_string(character_state.name);
+
+      gf::AnimationGroupResource resource = compute_standard_character_animations(character_animation_path(character_state.data()));
+      gf::AnimationGroupState state(resource.data);
+
+      [[maybe_unused]] auto [ iterator, inserted ] = m_animation_states.emplace(character_name_id, std::move(state));
+      assert(inserted);
+    }
+
   }
 
   void CharacterRenderer::update(gf::Time time, int32_t floor)
@@ -87,10 +90,18 @@ namespace akgr {
         continue;
       }
 
-      const gf::Id character_id = character_state.data->label.id;
+      const gf::Id character_name_id = gf::hash_string(character_state.name);
 
-      auto iterator = m_animation_states.find(character_id);
-      assert(iterator != m_animation_states.end());
+      auto iterator = m_animation_states.find(character_name_id);
+
+      if (iterator == m_animation_states.end()) {
+        gf::AnimationGroupResource resource = compute_standard_character_animations(character_animation_path(*character_state.data.origin));
+        gf::AnimationGroupState state(resource.data);
+
+        auto [ new_iterator, inserted ] = m_animation_states.emplace(character_name_id, std::move(state));
+        assert(inserted);
+        iterator = new_iterator;
+      }
 
       auto& [ _, animation_state ] = *iterator;
 
@@ -106,16 +117,19 @@ namespace akgr {
     gf::RenderObject dialog_shape_object;
     dialog_shape_object.geometry = m_dialog_shape_group.geometry();
     dialog_shape_object.priority = 0;
-    recorder.record(dialog_shape_object);
+
+    if (dialog_shape_object.geometry.size > 0) {
+      recorder.record(dialog_shape_object);
+    }
 
     for (auto& character_state : m_game->world_state()->characters) {
       if (character_state.spot.floor != floor) {
         continue;
       }
 
-      const gf::Id character_id = character_state.data->label.id;
+      const gf::Id character_name_id = gf::hash_string(character_state.name);
 
-      auto state_iterator = m_animation_states.find(character_id);
+      auto state_iterator = m_animation_states.find(character_name_id);
       assert(state_iterator != m_animation_states.end());
 
       const auto& [ actual_character_id, animation_state ] = *state_iterator;
@@ -137,6 +151,7 @@ namespace akgr {
       character_object.geometry = animation_graphics.geometry(animation_state.current_animation_id(), animation_state.current_frame());
       character_object.priority = 0;
       character_object.transform = transform.compute_matrix(animation_graphics.bounds());
+      assert(character_object.geometry.size > 0);
       recorder.record(character_object);
     }
 

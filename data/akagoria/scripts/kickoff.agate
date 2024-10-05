@@ -24,12 +24,10 @@ class Kickoff {
   static initialize(W) {
     W.move_hero("Start")
     W.add_requirement("IntroDialogReq")
-    W.add_character("Shagir", "Shagir")
-    W.attach_dialog_to_character("ShagirConversation0", "Shagir")
+    W.add_character("Shagir", "ShagirArchetype", "ShagirLocation", 180.0)
+    W.add_dialog_to_character("ShagirConversation0", "Shagir")
     W.post_notification("Welcome")
 
-#     W.add_character("Ling", "Ling")
-#     W.set_character_mood("Ling", Mood.Angry)
 
 #     W.add_item("GemRuby", "Ruby #1")
 #     W.add_item("GemEmerald", "Emerald #1")

@@ -11,6 +11,7 @@
 namespace akgr {
 
   struct CharacterState {
+    std::string name;
     DataReference<CharacterData> data;
     DataReference<DialogData> dialog;
     Spot spot;
@@ -19,7 +20,7 @@ namespace akgr {
 
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<CharacterState, Archive>& state) {
-    return ar | state.data | state.dialog | state.spot;
+    return ar | state.name | state.data | state.dialog | state.spot;
   }
 
 }

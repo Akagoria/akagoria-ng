@@ -11,7 +11,6 @@ namespace akgr {
 
   struct CharacterData {
     DataLabel label;
-    std::string name;
     std::filesystem::path animations;
   };
 
@@ -25,7 +24,7 @@ namespace akgr {
 
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<CharacterData, Archive>& data) {
-    return ar | data.label | data.name | data.animations;
+    return ar | data.label | data.animations;
   }
 
 }

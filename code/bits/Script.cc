@@ -72,10 +72,10 @@ namespace akgr {
         //   return &Script::setCharacterMood;
         case "start_dialog(_)"_id:
           return &Script::start_dialog;
-        case "add_character(_,_)"_id:
+        case "add_character(_,_,_,_)"_id:
           return &Script::add_character;
-        case "attach_dialog_to_character(_,_)"_id:
-          return &Script::attach_dialog_to_character;
+        case "add_dialog_to_character(_,_)"_id:
+          return &Script::add_dialog_to_character;
         default:
           break;
       }
@@ -369,6 +369,33 @@ namespace akgr {
     agateSlotSetNil(vm, AGATE_RETURN_SLOT);
   }
 
+  // add_character(name, character, location, rotation)
+  void Script::add_character(AgateVM* vm)
+  {
+    const char *name = agateSlotGetString(vm, 1);
+    const char *character_id = agateSlotGetString(vm, 2);
+    const char *location_id = agateSlotGetString(vm, 3);
+    double rotation = agateSlotGetFloat(vm, 4);
+
+    gf::Log::info("[SCRIPT] World.add_character({}, {}, {}, {})", name, character_id, location_id, rotation);
+
+    const LocationRuntime* location = data_lexicon_find(runtime(vm).locations, gf::hash_string(location_id));
+    assert(location);
+
+    CharacterState character;
+    character.name = name;
+    character.data.id = gf::hash_string(character_id);
+    character.data.bind_from(data(vm).characters);
+    character.spot = location->spot;
+    character.rotation = static_cast<float>(gf::degrees_to_radians(rotation));
+
+    // TODO: physics
+
+    state(vm).characters.push_back(character);
+
+    agateSlotSetNil(vm, AGATE_RETURN_SLOT);
+  }
+
   // start_dialog(name)
   void Script::start_dialog(AgateVM* vm)
   {
@@ -389,42 +416,16 @@ namespace akgr {
     agateSlotSetNil(vm, AGATE_RETURN_SLOT);
   }
 
-  // add_character(character, location)
-  void Script::add_character(AgateVM* vm)
-  {
-    const char *character_id = agateSlotGetString(vm, 1);
-    const char *location_id = agateSlotGetString(vm, 2);
-
-    gf::Log::info("[SCRIPT] World.add_character({}, {})", character_id, location_id);
-
-    const LocationRuntime* location = data_lexicon_find(runtime(vm).locations, gf::hash_string(location_id));
-    assert(location);
-
-    CharacterState character;
-    character.data.id = gf::hash_string(character_id);
-    character.data.bind_from(data(vm).characters);
-    character.spot = location->spot;
-    character.rotation = 0.0f; // TODO
-
-    // TODO: physics
-
-    state(vm).characters.push_back(character);
-
-    agateSlotSetNil(vm, AGATE_RETURN_SLOT);
-  }
-
-  // attach_dialog_to_character(dialog, name)
-  void Script::attach_dialog_to_character(AgateVM* vm)
+  // add_dialog_to_character(dialog, name)
+  void Script::add_dialog_to_character(AgateVM* vm)
   {
     const char *dialog_id = agateSlotGetString(vm, 1);
-    const char *character_id = agateSlotGetString(vm, 2);
+    const char *character_name = agateSlotGetString(vm, 2);
 
-    gf::Log::info("[SCRIPT] World.attach_dialog_to_character({}, {})", dialog_id, character_id);
-
-    gf::Id id = gf::hash_string(character_id);
+    gf::Log::info("[SCRIPT] World.add_dialog_to_character({}, {})", dialog_id, character_name);
 
     for (auto& character : state(vm).characters) {
-      if (character.data.id == id) {
+      if (character.name == character_name) {
         character.dialog.id = gf::hash_string(dialog_id);
         character.dialog.bind_from(data(vm).dialogs);
         assert(character.dialog.check());

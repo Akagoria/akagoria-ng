@@ -29,11 +29,11 @@ class Chapter1 {
     }
 
     A.add_dialog_callback("ShagirConversation0") {
-      W.attach_dialog_to_character("ShagirConversation1", "Shagir")
+      W.add_dialog_to_character("ShagirConversation1", "Shagir")
     }
 
     A.add_message_callback("ShagirConversation1") {
-#       W.attach_dialog_to_character("ShagirConversation1", "Shagir")
+#       W.add_dialog_to_character("ShagirConversation1", "Shagir")
     }
   }
 

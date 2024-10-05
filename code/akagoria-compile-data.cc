@@ -69,7 +69,6 @@ namespace akgr {
   void from_json(const nlohmann::json& json, CharacterData& data)
   {
     json.at("label").get_to(data.label);
-    json.at("name").get_to(data.name);
     json.at("animations").get_to(data.animations);
   }
 
