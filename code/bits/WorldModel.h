@@ -21,6 +21,7 @@ namespace akgr {
 
   private:
     void update_hero(gf::Time time);
+    void update_characters(gf::Time time);
     void update_physics(gf::Time time);
     void update_notifications(gf::Time time);
   };

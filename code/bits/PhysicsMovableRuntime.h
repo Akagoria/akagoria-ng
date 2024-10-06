@@ -1,5 +1,5 @@
-#ifndef AKGR_HERO_RUNTIME_H
-#define AKGR_HERO_RUNTIME_H
+#ifndef AKGR_PHYSICS_MOVABLE_RUNTIME_H
+#define AKGR_PHYSICS_MOVABLE_RUNTIME_H
 
 #include <gf2/physics/PhysicsBody.h>
 #include <gf2/physics/PhysicsShape.h>
@@ -8,7 +8,7 @@
 
 namespace akgr {
 
-  struct HeroRuntime {
+  struct PhysicsMovableRuntime {
     gf::PhysicsBody controller;
     gf::PhysicsBody body;
     gf::PhysicsShape shape;
@@ -18,4 +18,4 @@ namespace akgr {
 
 }
 
-#endif // AKGR_HERO_RUNTIME_H
+#endif // AKGR_PHYSICS_MOVABLE_RUNTIME_H

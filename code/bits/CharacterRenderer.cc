@@ -105,8 +105,17 @@ namespace akgr {
 
       auto& [ _, animation_state ] = *iterator;
 
-      // TODO: compute the selected animation
-      animation_state.select("static"_id);
+      switch (character_state.action) {
+        case CharacterAction::Static:
+          animation_state.select("static"_id);
+          break;
+        case CharacterAction::Forward:
+          animation_state.select("forward"_id);
+          break;
+        case CharacterAction::Backward:
+          animation_state.select("backward"_id);
+          break;
+      }
 
       animation_state.update(time);
     }

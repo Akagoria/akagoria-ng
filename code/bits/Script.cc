@@ -389,9 +389,14 @@ namespace akgr {
     character.spot = location->spot;
     character.rotation = static_cast<float>(gf::degrees_to_radians(rotation));
 
-    // TODO: physics
+    character.behavior = CharacterStayState{ character.spot.location };
 
     state(vm).characters.push_back(character);
+
+    const gf::Id character_name_id = gf::hash_string(name);
+
+    auto& physics_runtime = runtime(vm).physics;
+    physics_runtime.characters.emplace(character_name_id, physics_runtime.create_character(character.spot, character.rotation));
 
     agateSlotSetNil(vm, AGATE_RETURN_SLOT);
   }

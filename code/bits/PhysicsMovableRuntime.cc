@@ -1,10 +1,10 @@
-#include "HeroRuntime.h"
+#include "PhysicsMovableRuntime.h"
 
 #include "PhysicsUtils.h"
 
 namespace akgr {
 
-  void HeroRuntime::set_spot(Spot spot)
+  void PhysicsMovableRuntime::set_spot(Spot spot)
   {
     controller.set_location(spot.location);
     controller.set_velocity({ 0.0f, 0.0f });
