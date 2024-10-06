@@ -25,6 +25,9 @@ namespace akgr {
     void do_process_event(const gf::Event& event) override;
     void do_handle_actions() override;
 
+    void handle_hero_operation();
+    bool handle_hero_dialogs();
+
     Akagoria* m_game = nullptr;
 
     gf::ActionGroup m_action_group;

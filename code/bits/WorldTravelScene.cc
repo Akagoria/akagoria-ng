@@ -2,13 +2,14 @@
 
 #include "Akagoria.h"
 #include "HeroState.h"
-#include "gf2/graphics/Scene.h"
 
 namespace akgr {
 
   namespace {
 
     constexpr gf::Vec2F WorldTravelSceneWorldSize = { 1600, 900 };
+
+    constexpr float DialogDistance = 100.0f;
 
   }
 
@@ -34,6 +35,7 @@ namespace akgr {
     settings.actions.emplace("down"_id, gf::continuous_action().add_scancode_control(gf::Scancode::Down));
     settings.actions.emplace("left"_id, gf::continuous_action().add_scancode_control(gf::Scancode::Left));
     settings.actions.emplace("right"_id, gf::continuous_action().add_scancode_control(gf::Scancode::Right));
+    settings.actions.emplace("operate"_id, gf::instantaneous_action().add_scancode_control(gf::Scancode::Return));
 
     return settings;
   }
@@ -76,6 +78,10 @@ namespace akgr {
       hero.move.angular = gf::AngularMove::None;
     }
 
+    if (m_action_group.active("operate"_id)) {
+      handle_hero_operation();
+    }
+
     auto stick = m_motion_group.last_gamepad_stick_location(gf::GamepadStick::Left);
 
     if (gf::square_length(stick) > gf::square(0.5f)) {
@@ -90,6 +96,38 @@ namespace akgr {
     }
 
     m_action_group.reset();
+  }
+
+  void WorldTravelScene::handle_hero_operation()
+  {
+    if (handle_hero_dialogs()) {
+      return;
+    }
+  }
+
+  bool WorldTravelScene::handle_hero_dialogs()
+  {
+    auto& hero = m_game->world_state()->hero;
+
+    for (auto& character : m_game->world_state()->characters) {
+      if (!character.dialog) {
+        continue;
+      }
+
+      if (character.spot.floor != hero.spot.floor) {
+        continue;
+      }
+
+      if (gf::square_distance(character.spot.location, hero.spot.location) < gf::square(DialogDistance)) {
+        hero.dialog.data = character.dialog;
+        hero.dialog.current_line = 0;
+        character.dialog.reset();
+        m_game->replace_scene(&m_game->world_act()->dialog_scene);
+        return true;
+      }
+    }
+
+    return false;
   }
 
 }
