@@ -48,19 +48,8 @@ namespace akgr {
     hero.move.linear = gf::LinearMove::None;
 
     if (m_action_group.active("next"_id)) {
-      auto& dialog = hero.dialog;
-      assert(dialog.data);
-
-      ++dialog.current_line;
-
-      if (dialog.current_line >= dialog.data->content.size()) {
-        // end of the dialog
-        const std::string& label = dialog.data->label.tag;
-        dialog.data.reset();
-        m_game->world_model()->runtime.script.on_dialog(label);
-
-        m_game->replace_scene(&m_game->world_act()->travel_scene);
-      }
+      ++hero.dialog.current_line;
+      // check of the end of the dialog is done in WorldModel
     }
 
     m_action_group.reset();

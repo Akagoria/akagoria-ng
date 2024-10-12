@@ -164,6 +164,11 @@ namespace akgr {
     json.at("count").get_to(data.count);
   }
 
+  void from_json(const nlohmann::json& json, ExploreQuestData& data)
+  {
+    json.at("location").get_to(data.location);
+  }
+
   void from_json(const nlohmann::json& json, QuestStepData& data)
   {
     json.at("description").get_to(data.description);
@@ -197,11 +202,11 @@ namespace akgr {
         }
         break;
       case QuestType::Explore:
-        // {
-        //   ExploreQuestData features_data;
-        //   from_json(json, features_data);
-        //   data.features = features_data;
-        // }
+        {
+          ExploreQuestData features_data;
+          from_json(json, features_data);
+          data.features = features_data;
+        }
         break;
     }
   }

@@ -1,6 +1,8 @@
 #ifndef AKGR_DIALOG_STATE_H
 #define AKGR_DIALOG_STATE_H
 
+#include <cstdint>
+
 #include <gf2/core/TypeTraits.h>
 
 #include "DataReference.h"
@@ -10,7 +12,7 @@ namespace akgr {
 
   struct DialogState {
     DataReference<DialogData> data;
-    std::size_t current_line = 0;
+    uint32_t current_line = 0;
   };
 
   template<typename Archive>

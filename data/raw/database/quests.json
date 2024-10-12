@@ -8,7 +8,7 @@
       {
         "type": "Explore",
         "description": "March through the ruins to find the <style=location><exit</>",
-        "requirement": "EndOfRuins"
+        "location": "EndOfRuins"
       },
       {
         "type": "Talk",

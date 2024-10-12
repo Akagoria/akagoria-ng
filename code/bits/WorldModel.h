@@ -15,15 +15,23 @@ namespace akgr {
 
     void update(gf::Time time) override;
 
+    Akagoria* game = nullptr;
+
     WorldData data;
     WorldRuntime runtime;
     WorldState state;
 
   private:
     void update_hero(gf::Time time);
+    void update_dialog(gf::Time time);
     void update_characters(gf::Time time);
     void update_physics(gf::Time time);
+    void update_quests(gf::Time time);
     void update_notifications(gf::Time time);
+
+    void check_quest_dialog(const std::string& label);
+
+    void advance_in_quest(QuestState& quest);
   };
 
 }

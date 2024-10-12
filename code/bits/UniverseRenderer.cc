@@ -20,8 +20,8 @@ namespace akgr {
     m_renderers.add_renderer(&m_low_object_renderer);
     m_renderers.add_renderer(&m_high_tile_renderer);
     m_renderers.add_renderer(&m_high_object_renderer);
-    m_renderers.add_renderer(&m_hero_renderer);
     m_renderers.add_renderer(&m_character_renderer);
+    m_renderers.add_renderer(&m_hero_renderer);
 
     m_renderers.finish();
   }

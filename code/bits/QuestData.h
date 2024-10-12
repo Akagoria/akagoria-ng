@@ -12,6 +12,7 @@
 
 #include "DataLabel.h"
 #include "DataReference.h"
+#include "LocationRuntime.h"
 
 namespace akgr {
   struct CreatureData;
@@ -62,9 +63,18 @@ namespace akgr {
     return ar | data.item | data.count;
   }
 
+  struct ExploreQuestData {
+    DataReference<LocationRuntime> location;
+  };
+
+  template<typename Archive>
+  Archive& operator|(Archive& ar, gf::MaybeConst<ExploreQuestData, Archive>& data) {
+    return ar | data.location;
+  }
+
   struct QuestStepData {
     std::string description;
-    std::variant<std::monostate, HuntQuestData, TalkQuestData, FarmQuestData> features;
+    std::variant<std::monostate, HuntQuestData, TalkQuestData, FarmQuestData, ExploreQuestData> features;
 
     QuestType type() const { return static_cast<QuestType>(features.index()); }
   };

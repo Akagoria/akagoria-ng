@@ -2,7 +2,8 @@
 
 #include <gf2/core/Math.h>
 #include <gf2/core/Log.h>
-#include "CharacterState.h"
+
+#include "Akagoria.h"
 
 namespace akgr {
 
@@ -14,7 +15,8 @@ namespace akgr {
   }
 
   WorldModel::WorldModel(Akagoria* game)
-  : runtime(game)
+  : game(game)
+  , runtime(game)
   {
   }
 
@@ -23,6 +25,7 @@ namespace akgr {
     update_hero(time);
     update_characters(time);
     update_physics(time);
+    update_quests(time);
     update_notifications(time);
   }
 
@@ -67,10 +70,30 @@ namespace akgr {
     runtime.physics.hero.controller.set_velocity(velocity * gf::unit(rotation));
   }
 
-  void WorldModel::update_characters(gf::Time time)
+  void WorldModel::update_dialog([[maybe_unused]] gf::Time time)
   {
-    const float dt = time.as_seconds();
+    auto& dialog = state.hero.dialog;
 
+    if (!dialog.data) {
+      return;
+    }
+
+    if (dialog.current_line >= dialog.data->content.size()) {
+      // end of the dialog
+      const std::string& label = dialog.data->label.tag;
+      dialog.data.reset();
+      dialog.current_line = 0;
+
+      runtime.script.on_dialog(label);
+      check_quest_dialog(label);
+
+      game->replace_scene(&game->world_act()->travel_scene);
+    }
+  }
+
+  void WorldModel::update_characters([[maybe_unused]] gf::Time time)
+  {
+    // const float dt = time.as_seconds();
 
     for (auto& character : state.characters) {
       auto physics_iterator = runtime.physics.characters.find(gf::hash_string(character.name));
@@ -130,6 +153,21 @@ namespace akgr {
     runtime.script.handle_deferred_messages();
   }
 
+  void WorldModel::update_quests([[maybe_unused]] gf::Time time)
+  {
+    for (auto iterator = state.hero.quests.begin(); iterator != state.hero.quests.end(); ) {
+      if (iterator->current_step == iterator->data->steps.size()) {
+        iterator = state.hero.quests.erase(iterator);
+      } else {
+        ++iterator;
+      }
+    }
+
+    std::stable_sort(state.hero.quests.begin(), state.hero.quests.end(), [](const QuestState& lhs, const QuestState& rhs) {
+      return lhs.type() < rhs.type();
+    });
+  }
+
   void WorldModel::update_notifications(gf::Time time)
   {
     if (state.notifications.empty()) {
@@ -141,6 +179,74 @@ namespace akgr {
 
     if (current.elapsed > current.data->duration) {
       state.notifications.erase(state.notifications.begin());
+    }
+  }
+
+  void WorldModel::check_quest_dialog(const std::string& label)
+  {
+    for (auto& quest : state.hero.quests) {
+      if (quest.type() != QuestType::Talk) {
+        continue;
+      }
+
+      assert(quest.current_step < quest.data->steps.size());
+
+      const QuestStepData& step = quest.data->steps[quest.current_step];
+      assert(step.type() == QuestType::Talk);
+
+      const auto& data = std::get<TalkQuestData>(step.features);
+
+      if (data.dialog->label.tag == label) {
+        advance_in_quest(quest);
+      }
+    }
+  }
+
+
+  void WorldModel::advance_in_quest(QuestState& quest)
+  {
+    ++quest.current_step;
+
+    if (quest.current_step == quest.data->steps.size()) {
+      runtime.script.on_quest(quest.data->label.tag);
+      // TODO: automatic notification for the end of the quest?
+      return;
+    }
+
+    const QuestStepData& step = quest.data->steps[quest.current_step];
+
+    switch (step.type()) {
+      case QuestType::None:
+        {
+          quest.features = {};
+        }
+        break;
+      case QuestType::Hunt:
+        {
+          HuntQuestState state = {};
+          state.amount = 0;
+          quest.features = state;
+        }
+        break;
+      case QuestType::Talk:
+        {
+          TalkQuestState state = {};
+          quest.features = state;
+        }
+        break;
+      case QuestType::Farm:
+        {
+          FarmQuestState state = {};
+          state.amount = 0;
+          quest.features = state;
+        }
+        break;
+      case QuestType::Explore:
+        {
+          ExploreQuestState state = {};
+          quest.features = state;
+        }
+        break;
     }
   }
 

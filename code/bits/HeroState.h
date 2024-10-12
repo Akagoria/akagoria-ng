@@ -10,6 +10,7 @@
 #include "AspectState.h"
 #include "AttributeState.h"
 #include "DialogState.h"
+#include "QuestState.h"
 #include "Spot.h"
 
 namespace akgr {
@@ -41,12 +42,13 @@ namespace akgr {
     std::set<gf::Id> requirements;
 
     DialogState dialog;
+    std::vector<QuestState> quests;
   };
 
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<HeroState, Archive>& state)
   {
-    return ar | state.move | state.spot | state.rotation | state.requirements | state.dialog;
+    return ar | state.move | state.spot | state.rotation | state.requirements | state.dialog | state.quests;
   }
 
 }
