@@ -31,7 +31,7 @@ namespace akgr {
 
     void check_quest_dialog(const std::string& label);
 
-    void advance_in_quest(QuestState& quest);
+    static bool advance_in_quest(QuestState& quest);
   };
 
 }

@@ -84,10 +84,11 @@ namespace akgr {
       dialog.data.reset();
       dialog.current_line = 0;
 
-      runtime.script.on_dialog(label);
       check_quest_dialog(label);
-
       game->replace_scene(&game->world_act()->travel_scene);
+
+      // the script can start another dialog so put it at the end
+      runtime.script.on_dialog(label);
     }
   }
 
@@ -155,17 +156,11 @@ namespace akgr {
 
   void WorldModel::update_quests([[maybe_unused]] gf::Time time)
   {
-    for (auto iterator = state.hero.quests.begin(); iterator != state.hero.quests.end(); ) {
-      if (iterator->current_step == iterator->data->steps.size()) {
-        iterator = state.hero.quests.erase(iterator);
-      } else {
-        ++iterator;
+    for (auto& quest : state.hero.quests) {
+      if (quest.current_step == quest.data->steps.size()) {
+        quest.status = QuestStatus::Finished;
       }
     }
-
-    std::stable_sort(state.hero.quests.begin(), state.hero.quests.end(), [](const QuestState& lhs, const QuestState& rhs) {
-      return lhs.type() < rhs.type();
-    });
   }
 
   void WorldModel::update_notifications(gf::Time time)
@@ -184,7 +179,13 @@ namespace akgr {
 
   void WorldModel::check_quest_dialog(const std::string& label)
   {
+    bool just_finished = false;
+
     for (auto& quest : state.hero.quests) {
+      if (quest.status == QuestStatus::Finished) {
+        continue;
+      }
+
       if (quest.type() != QuestType::Talk) {
         continue;
       }
@@ -197,20 +198,27 @@ namespace akgr {
       const auto& data = std::get<TalkQuestData>(step.features);
 
       if (data.dialog->label.tag == label) {
-        advance_in_quest(quest);
+        just_finished = advance_in_quest(quest);
+        break;
       }
+    }
+
+    // get out of the loop because the script can add a new quest
+    // and invalidate the current iterator
+
+    if (just_finished) {
+      // TODO: automatic notification for the end of the quest?
+      runtime.script.on_quest(label);
     }
   }
 
 
-  void WorldModel::advance_in_quest(QuestState& quest)
+  bool WorldModel::advance_in_quest(QuestState& quest)
   {
     ++quest.current_step;
 
     if (quest.current_step == quest.data->steps.size()) {
-      runtime.script.on_quest(quest.data->label.tag);
-      // TODO: automatic notification for the end of the quest?
-      return;
+      return true;
     }
 
     const QuestStepData& step = quest.data->steps[quest.current_step];
@@ -248,6 +256,8 @@ namespace akgr {
         }
         break;
     }
+
+    return false;
   }
 
 }

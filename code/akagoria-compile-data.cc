@@ -133,10 +133,10 @@ namespace akgr {
   // Quest
 
   NLOHMANN_JSON_SERIALIZE_ENUM(QuestScope, {
-    { QuestScope::Short, "Short" },
-    { QuestScope::Medium, "Medium" },
-    { QuestScope::Long, "Long" },
     { QuestScope::History, "History" },
+    { QuestScope::Long, "Long" },
+    { QuestScope::Medium, "Medium" },
+    { QuestScope::Short, "Short" },
   })
 
   NLOHMANN_JSON_SERIALIZE_ENUM(QuestType, {

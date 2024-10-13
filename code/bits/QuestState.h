@@ -44,9 +44,15 @@ namespace akgr {
     return ar;
   }
 
+  enum class QuestStatus : uint8_t {
+    Started,
+    Visible,
+    Finished,
+  };
+
   struct QuestState {
     DataReference<QuestData> data;
-    bool visible = true;
+    QuestStatus status = QuestStatus::Started;
     uint32_t current_step = 0;
     std::variant<std::monostate, HuntQuestState, TalkQuestState, FarmQuestState, ExploreQuestState> features;
 
@@ -55,7 +61,7 @@ namespace akgr {
 
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<QuestState, Archive>& state) {
-    return ar | state.data | state.visible | state.current_step | state.features;
+    return ar | state.data | state.status | state.current_step | state.features;
   }
 
 }

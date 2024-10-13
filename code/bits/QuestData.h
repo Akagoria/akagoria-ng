@@ -20,10 +20,10 @@ namespace akgr {
   struct ItemData;
 
   enum class QuestScope : uint8_t {
-    Short,
-    Medium,
-    Long,
     History,
+    Long,
+    Medium,
+    Short,
   };
 
   enum class QuestType : uint8_t {
