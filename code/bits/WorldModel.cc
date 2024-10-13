@@ -23,6 +23,7 @@ namespace akgr {
   void WorldModel::update(gf::Time time)
   {
     update_hero(time);
+    update_dialog(time);
     update_characters(time);
     update_physics(time);
     update_quests(time);
