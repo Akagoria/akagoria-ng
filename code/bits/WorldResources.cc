@@ -78,6 +78,16 @@ namespace akgr {
     aspect_text.data.character_size = 15.0f;
     aspect_text.data.color = gf::White;
     aspect_text.font = "fonts/DejaVuSans.ttf";
+
+    pinned_quest_text.data.content = "?";
+    pinned_quest_text.data.character_size = 20.0f;
+    pinned_quest_text.data.color = gf::Black;
+    pinned_quest_text.data.alignment = gf::Alignment::Left;
+    pinned_quest_text.data.paragraph_width = 200.0f;
+    pinned_quest_text.default_font = "fonts/DejaVuSans.ttf";
+    pinned_quest_text.bold_font = "fonts/DejaVuSans-Bold.ttf";
+    pinned_quest_text.italic_font = "fonts/DejaVuSans-Oblique.ttf";
+    pinned_quest_text.bold_italic_font = "fonts/DejaVuSans-BoldOblique.ttf";
   }
 
   void WorldResources::bind(const WorldData& data)
@@ -118,7 +128,7 @@ namespace akgr {
         bundle->handle<gf::FontFace>(resource.font, game->font_manager(), resource_manager, action);
       }
 
-      for (const gf::RichTextResource& resource : { notification_text, dialog_words_text }) {
+      for (const gf::RichTextResource& resource : { notification_text, dialog_words_text, pinned_quest_text }) {
         bundle->handle<gf::FontFace>(resource.default_font, game->font_manager(), resource_manager, action);
         bundle->handle<gf::FontFace>(resource.bold_font, game->font_manager(), resource_manager, action);
         bundle->handle<gf::FontFace>(resource.italic_font, game->font_manager(), resource_manager, action);

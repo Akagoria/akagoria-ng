@@ -61,4 +61,10 @@ class World {
   static start_dialog(dialog) foreign
   static add_dialog_to_character(dialog, character) foreign
 
+  #
+  # quests
+  #
+
+  static start_quest(quest) foreign
+
 }

@@ -1,7 +1,6 @@
 #ifndef AKGR_ASPECT_RENDERER_H
 #define AKGR_ASPECT_RENDERER_H
 
-#include <cstdint>
 #include <gf2/core/Id.h>
 #include <gf2/core/TextStyle.h>
 
@@ -10,7 +9,6 @@
 #include <gf2/graphics/TextEntity.h>
 
 #include "WorldResources.h"
-#include "gf2/core/ShapeBuffer.h"
 
 namespace akgr {
   class Akagoria;

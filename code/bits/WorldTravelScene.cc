@@ -18,12 +18,14 @@ namespace akgr {
   , m_action_group(compute_settings())
   , m_notification_renderer(game, resources)
   , m_aspect_renderer(game, resources)
+  , m_quest_renderer(game, resources)
   {
     set_world_size(WorldTravelSceneWorldSize);
     set_world_center(WorldTravelSceneWorldSize / 2.0f);
 
     add_world_entity(&m_notification_renderer);
     add_world_entity(&m_aspect_renderer);
+    add_world_entity(&m_quest_renderer);
   }
 
   gf::ActionGroupSettings WorldTravelScene::compute_settings()

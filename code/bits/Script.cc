@@ -1,13 +1,14 @@
 #include "Script.h"
 
 #include <cassert>
+#include <ctime>
+
 #include <fstream>
 
 #include <gf2/core/Id.h>
 
 #include "Akagoria.h"
-#include "DataLexicon.h"
-#include "DataReference.h"
+#include "QuestState.h"
 
 namespace akgr {
 
@@ -76,6 +77,8 @@ namespace akgr {
           return &Script::add_character;
         case "add_dialog_to_character(_,_)"_id:
           return &Script::add_dialog_to_character;
+        case "start_quest(_)"_id:
+          return &Script::start_quest;
         default:
           break;
       }
@@ -441,6 +444,25 @@ namespace akgr {
     agateSlotSetNil(vm, AGATE_RETURN_SLOT);
   }
 
+  // start_quest(quest)
+  void Script::start_quest(AgateVM* vm)
+  {
+    const char* quest_id = agateSlotGetString(vm, 1);
+
+    gf::Log::info("[SCRIPT] World.start_quest({})", quest_id);
+
+    QuestState quest;
+    quest.data.id = gf::hash_string(quest_id);
+    quest.data.bind_from(data(vm).quests);
+    check_reference(quest.data, quest_id);
+    quest.last_update = std::time(nullptr);
+    quest.status = (quest.data->scope == QuestScope::History) ? QuestStatus::Visible : QuestStatus::Started;
+    quest.reset_features();
+
+    state(vm).hero.quests.push_back(quest);
+
+    agateSlotSetNil(vm, AGATE_RETURN_SLOT);
+  }
 
 
   Akagoria& Script::game(AgateVM* vm)

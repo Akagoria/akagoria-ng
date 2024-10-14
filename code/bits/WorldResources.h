@@ -31,6 +31,8 @@ namespace akgr {
 
     gf::TextResource aspect_text;
 
+    gf::RichTextResource pinned_quest_text;
+
     // bound from data
 
     std::vector<std::filesystem::path> map_textures;

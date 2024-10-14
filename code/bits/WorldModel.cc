@@ -1,5 +1,7 @@
 #include "WorldModel.h"
 
+#include <ctime>
+
 #include <gf2/core/Math.h>
 #include <gf2/core/Log.h>
 
@@ -217,47 +219,13 @@ namespace akgr {
   bool WorldModel::advance_in_quest(QuestState& quest)
   {
     ++quest.current_step;
+    quest.last_update = static_cast<int64_t>(std::time(nullptr));
 
     if (quest.current_step == quest.data->steps.size()) {
       return true;
     }
 
-    const QuestStepData& step = quest.data->steps[quest.current_step];
-
-    switch (step.type()) {
-      case QuestType::None:
-        {
-          quest.features = {};
-        }
-        break;
-      case QuestType::Hunt:
-        {
-          HuntQuestState state = {};
-          state.amount = 0;
-          quest.features = state;
-        }
-        break;
-      case QuestType::Talk:
-        {
-          TalkQuestState state = {};
-          quest.features = state;
-        }
-        break;
-      case QuestType::Farm:
-        {
-          FarmQuestState state = {};
-          state.amount = 0;
-          quest.features = state;
-        }
-        break;
-      case QuestType::Explore:
-        {
-          ExploreQuestState state = {};
-          quest.features = state;
-        }
-        break;
-    }
-
+    quest.reset_features();
     return false;
   }
 

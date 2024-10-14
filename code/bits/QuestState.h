@@ -53,15 +53,18 @@ namespace akgr {
   struct QuestState {
     DataReference<QuestData> data;
     QuestStatus status = QuestStatus::Started;
+    int64_t last_update = 0;
     uint32_t current_step = 0;
     std::variant<std::monostate, HuntQuestState, TalkQuestState, FarmQuestState, ExploreQuestState> features;
 
     QuestType type() const { return static_cast<QuestType>(features.index()); }
+
+    void reset_features();
   };
 
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<QuestState, Archive>& state) {
-    return ar | state.data | state.status | state.current_step | state.features;
+    return ar | state.data | state.status | state.last_update | state.current_step | state.features;
   }
 
 }

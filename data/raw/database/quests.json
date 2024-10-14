@@ -1,13 +1,13 @@
 [
   {
-    "label": "Init",
+    "label": "Intro0",
     "title": "Get out of the ruins",
     "description": "After you woke up, you are in ruins and you don't really known where you are. You must find your way out and find someone who can explain the situation.",
     "scope": "History",
     "steps": [
       {
         "type": "Explore",
-        "description": "March through the ruins to find the <style=location><exit</>",
+        "description": "March through the ruins to find the <style=location>exit</>",
         "location": "EndOfRuins"
       },
       {

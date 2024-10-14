@@ -7,6 +7,7 @@
 
 #include "AspectRenderer.h"
 #include "NotificationRenderer.h"
+#include "QuestPinnedRenderer.h"
 #include "WorldResources.h"
 
 namespace akgr {
@@ -35,6 +36,7 @@ namespace akgr {
 
     NotificationRenderer m_notification_renderer;
     AspectRenderer m_aspect_renderer;
+    QuestPinnedRenderer m_quest_renderer;
   };
 
 }

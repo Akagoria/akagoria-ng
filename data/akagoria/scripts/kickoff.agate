@@ -27,7 +27,7 @@ class Kickoff {
     W.add_character("Shagir", "ShagirArchetype", "ShagirLocation", 180.0)
     W.add_dialog_to_character("ShagirConversation0", "Shagir")
     W.post_notification("Welcome")
-
+    W.start_quest("Intro0")
 
 #     W.add_item("GemRuby", "Ruby #1")
 #     W.add_item("GemEmerald", "Emerald #1")
