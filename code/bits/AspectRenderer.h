@@ -21,7 +21,6 @@ namespace akgr {
     void render(gf::RenderRecorder& recorder) override;
 
   private:
-
     gf::ShapeGroupBuffer compute_shape_buffer();
 
     Akagoria* m_game = nullptr;

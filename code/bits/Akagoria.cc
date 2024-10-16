@@ -20,6 +20,7 @@ namespace akgr {
   {
     m_world_async.run_async([this, choice]() {
       m_world_model.data.load_from_file(resource_manager()->search("akagoria.dat"));
+      m_world_model.data.bind();
 
       if (choice == AdventureChoice::Saved) {
         // TODO

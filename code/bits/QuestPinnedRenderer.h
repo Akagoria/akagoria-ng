@@ -5,6 +5,7 @@
 
 #include <gf2/graphics/Entity.h>
 #include <gf2/graphics/TextEntity.h>
+#include <gf2/graphics/ShapeEntity.h>
 
 #include "WorldResources.h"
 
@@ -21,6 +22,7 @@ namespace akgr {
 
   private:
     gf::RichTextEntity initial_text(const WorldResources& resources);
+    gf::ShapeGroupBuffer compute_shape_buffer();
 
     static constexpr std::size_t PinnedQuestCount = 5;
 
@@ -32,6 +34,8 @@ namespace akgr {
 
     std::size_t m_quest_count = 0;
     std::array<gf::RichTextEntity, PinnedQuestCount> m_quest_texts;
+
+    gf::ShapeGroupEntity m_background_shape;
   };
 
 }

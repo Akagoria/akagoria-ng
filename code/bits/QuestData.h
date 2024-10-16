@@ -12,7 +12,7 @@
 
 #include "DataLabel.h"
 #include "DataReference.h"
-#include "LocationRuntime.h"
+#include "LocationData.h"
 
 namespace akgr {
   struct CreatureData;
@@ -64,7 +64,7 @@ namespace akgr {
   }
 
   struct ExploreQuestData {
-    DataReference<LocationRuntime> location;
+    DataReference<LocationData> location;
   };
 
   template<typename Archive>

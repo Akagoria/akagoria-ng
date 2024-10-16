@@ -80,10 +80,10 @@ namespace akgr {
     aspect_text.font = "fonts/DejaVuSans.ttf";
 
     pinned_quest_text.data.content = "?";
-    pinned_quest_text.data.character_size = 20.0f;
-    pinned_quest_text.data.color = gf::Black;
-    pinned_quest_text.data.alignment = gf::Alignment::Left;
-    pinned_quest_text.data.paragraph_width = 200.0f;
+    pinned_quest_text.data.character_size = 15.0f;
+    pinned_quest_text.data.color = gf::White;
+    pinned_quest_text.data.alignment = gf::Alignment::Justify;
+    pinned_quest_text.data.paragraph_width = 300.0f;
     pinned_quest_text.default_font = "fonts/DejaVuSans.ttf";
     pinned_quest_text.bold_font = "fonts/DejaVuSans-Bold.ttf";
     pinned_quest_text.italic_font = "fonts/DejaVuSans-Oblique.ttf";

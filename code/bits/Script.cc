@@ -299,7 +299,7 @@ namespace akgr {
 
     gf::Log::info("[SCRIPT] World.move_hero({})", location_id);
 
-    const LocationRuntime* location = data_lexicon_find(runtime(vm).locations, gf::hash_string(location_id));
+    const LocationData* location = data_lexicon_find(data(vm).locations, gf::hash_string(location_id));
     assert(location);
 
     state(vm).hero.spot = location->spot;
@@ -382,7 +382,7 @@ namespace akgr {
 
     gf::Log::info("[SCRIPT] World.add_character({}, {}, {}, {})", name, character_id, location_id, rotation);
 
-    const LocationRuntime* location = data_lexicon_find(runtime(vm).locations, gf::hash_string(location_id));
+    const LocationData* location = data_lexicon_find(data(vm).locations, gf::hash_string(location_id));
     assert(location);
 
     CharacterState character;

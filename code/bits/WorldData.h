@@ -11,6 +11,7 @@
 #include "DataLexicon.h"
 #include "DialogData.h"
 #include "ItemData.h"
+#include "LocationData.h"
 #include "NotificationData.h"
 #include "QuestData.h"
 
@@ -26,8 +27,17 @@ namespace akgr {
     DataLexicon<CreatureData> creatures;
     DataLexicon<QuestData> quests;
 
+    // from map (so no serialization)
+    DataLexicon<LocationData> locations;
+
     void load_from_file(const std::filesystem::path& filename);
     void save_to_file(const std::filesystem::path& filename) const;
+    void bind();
+
+  private:
+    void bind_quests();
+    void bind_map();
+    void bind_map_object_layer(const gf::MapLayerStructure& layer, int32_t floor, const gf::TiledMap& map);
   };
 
   template<typename Archive>
