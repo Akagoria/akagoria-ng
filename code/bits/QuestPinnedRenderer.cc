@@ -14,8 +14,8 @@ namespace akgr {
       style.set_style("history", { 1.0f, gf::Yellow, gf::FontStyle::Bold });
       style.set_style("current", { 1.0f, gf::White, gf::FontStyle::Italic });
       style.set_style("progress", { 1.0f, gf::White, gf::None });
-      style.set_style("character", { 1.0f, gf::Chartreuse, gf::None });
-      style.set_style("location", { 1.0f, gf::Orange, gf::None });
+      style.set_style("character", { 1.0f, gf::Chartreuse, gf::FontStyle::Bold });
+      style.set_style("location", { 1.0f, gf::Orange, gf::FontStyle::Bold });
       return style;
     }
 
@@ -111,7 +111,7 @@ namespace akgr {
         case QuestType::Explore:
           {
             data.content += '\n';
-            data.content += fmt::format("→ {}", quest->data->steps[step_index].description);
+            data.content += fmt::format("→ <style=current>{}</>", quest->data->steps[step_index].description);
           }
           break;
       }
