@@ -2,6 +2,8 @@
 
 #include <ctime>
 
+#include <optional>
+
 #include <gf2/core/Math.h>
 #include <gf2/core/Log.h>
 
@@ -13,6 +15,8 @@ namespace akgr {
 
     constexpr float LinearVelocity = 200.0f;
     constexpr float AngularVelocity = 3.0f;
+
+    constexpr float ExplorationDistance = 50.0f;
 
   }
 
@@ -26,6 +30,7 @@ namespace akgr {
   {
     update_hero(time);
     update_dialog(time);
+    update_exploration(time);
     update_characters(time);
     update_physics(time);
     update_quests(time);
@@ -92,6 +97,19 @@ namespace akgr {
 
       // the script can start another dialog so put it at the end
       runtime.script.on_dialog(label);
+    }
+  }
+
+  void WorldModel::update_exploration([[maybe_unused]] gf::Time time)
+  {
+    for (auto& location : data.locations) {
+      if (location.spot.floor != state.hero.spot.floor) {
+        continue;
+      }
+
+      if (gf::square_distance(state.hero.spot.location, location.spot.location) < gf::square(ExplorationDistance)) {
+        check_quest_explore(location.label.tag);
+      }
     }
   }
 
@@ -182,26 +200,44 @@ namespace akgr {
 
   void WorldModel::check_quest_dialog(const std::string& label)
   {
-    bool just_finished = false;
+    check_quest(QuestType::Talk, [&label](const QuestStepData& step) {
+      const auto& data = std::get<TalkQuestData>(step.features);
+      return data.dialog->label.tag == label;
+    });
+  }
+
+  void WorldModel::check_quest_explore(const std::string& label)
+  {
+    check_quest(QuestType::Explore, [&label](const QuestStepData& step) {
+      const auto& data = std::get<ExploreQuestData>(step.features);
+      return data.location.origin->label.tag == label;
+    });
+  }
+
+  template<typename Predicate>
+  void WorldModel::check_quest(QuestType type, Predicate predicate)
+  {
+    std::optional<std::string> finished_quest;
 
     for (auto& quest : state.hero.quests) {
       if (quest.status == QuestStatus::Finished) {
         continue;
       }
 
-      if (quest.type() != QuestType::Talk) {
+      if (quest.type() != type) {
         continue;
       }
 
       assert(quest.current_step < quest.data->steps.size());
 
       const QuestStepData& step = quest.data->steps[quest.current_step];
-      assert(step.type() == QuestType::Talk);
+      assert(step.type() == type);
 
-      const auto& data = std::get<TalkQuestData>(step.features);
+      if (predicate(step)) {
+        if (advance_in_quest(quest)) {
+          finished_quest = quest.data->label.tag;
+        }
 
-      if (data.dialog->label.tag == label) {
-        just_finished = advance_in_quest(quest);
         break;
       }
     }
@@ -209,12 +245,11 @@ namespace akgr {
     // get out of the loop because the script can add a new quest
     // and invalidate the current iterator
 
-    if (just_finished) {
+    if (finished_quest) {
       // TODO: automatic notification for the end of the quest?
-      runtime.script.on_quest(label);
+      runtime.script.on_quest(*finished_quest);
     }
   }
-
 
   bool WorldModel::advance_in_quest(QuestState& quest)
   {
