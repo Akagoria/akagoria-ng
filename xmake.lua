@@ -59,3 +59,13 @@ target("akagoria-editor")
     add_files("code/akagoria-editor.cc")
     add_includedirs("$(buildir)/config")
     add_packages("gamedevframework2", { components = { "imgui", "graphics" } })
+
+
+target("akagoria-tileset")
+    set_kind("binary")
+    add_files("tools/akagoria-tileset.cc")
+    add_files("tools/bits/Tileset*.cc")
+    add_includedirs("$(buildir)/config")
+    add_packages("gamedevframework2", { components = { "framework", "imgui" } })
+    add_packages("nlohmann_json")
+    set_rundir("$(projectdir)")
