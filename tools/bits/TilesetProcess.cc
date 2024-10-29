@@ -375,6 +375,21 @@ namespace akgr {
     return colors.create_image();
   }
 
+  gf::Image generate_empty_atom(const TileSettings& settings)
+  {
+    return { settings.tile_size(), gf::Transparent };
+  }
+
+  gf::Image generate_empty_wang2(const TileSettings& settings)
+  {
+    return { Wang2TilesetSize * (settings.tile_size() + 1) - 1, gf::Transparent };
+  }
+
+  gf::Image generate_empty_wang3(const TileSettings& settings)
+  {
+    return { Wang3TilesetSize * (settings.tile_size() + 1) - 1, gf::Transparent };
+  }
+
   /*
    * DecoratedTileset
    */

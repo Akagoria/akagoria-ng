@@ -6,17 +6,17 @@
 
 #include <imgui.h>
 
+#include <gf2/core/Log.h>
 #include <gf2/graphics/RenderManager.h>
 
 #include "TilesetProcess.h"
-#include "gf2/core/Id.h"
 
 namespace akgr {
 
   namespace {
 
     constexpr int BottomMargin = 200; // TODO: find something better?
-    constexpr float EmptySize = 22.0f;
+    constexpr float EmptySize = 38.0f;
 
     constexpr const char *PigmentStyleList[] = { "Plain", "Randomize", "Striped", "Paved" }; // see PigmentStyle
     constexpr const char *BorderEffectList[] = { "None", "Fade", "Outline", "Sharpen", "Lighten", "Blur", "Blend" }; // see BorderEffect
@@ -61,6 +61,9 @@ namespace akgr {
   , m_datafile(std::move(datafile))
   , m_data(TilesetData::load(m_datafile))
   , m_size(m_data.settings.image_size())
+  , m_pigmentPreview(generate_empty_atom(m_data.settings.tile), m_render_manager)
+  , m_wang2Preview(generate_empty_wang2(m_data.settings.tile), m_render_manager)
+  , m_wang3Preview(generate_empty_wang3(m_data.settings.tile), m_render_manager)
   {
   }
 
@@ -177,7 +180,7 @@ namespace akgr {
 
                 auto generatePreview = [this]() {
                   m_data.temporary.atom = m_editedAtom;
-                  m_pigmentPreview = gf::Texture(generate_atom_preview(m_editedAtom, m_random, m_data.settings.tile), m_render_manager);
+                  m_pigmentPreview.update(generate_atom_preview(m_editedAtom, m_random, m_data.settings.tile), m_render_manager);
                   m_data.temporary.atom = Atom();
                 };
 
@@ -408,7 +411,7 @@ namespace akgr {
 
                 auto generate_preview = [this]() {
                   m_data.temporary.wang2 = m_editedWang2;
-                  m_wang2Preview = gf::Texture(generate_wang2_preview(m_editedWang2, m_random, m_data), m_render_manager);
+                  m_wang2Preview.update(generate_wang2_preview(m_editedWang2, m_random, m_data), m_render_manager);
                   m_data.temporary.wang2 = Wang2();
                 };
 
@@ -687,7 +690,7 @@ namespace akgr {
                 };
 
                 auto generate_preview = [this]() {
-                  m_wang3Preview = gf::Texture(generate_wang3_preview(m_editedWang3, m_random, m_data), m_render_manager);
+                  m_wang3Preview.update(generate_wang3_preview(m_editedWang3, m_random, m_data), m_render_manager);
                 };
 
                 if (ImGui::Button("Edit")) {

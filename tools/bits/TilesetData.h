@@ -84,7 +84,7 @@ namespace akgr {
   };
 
   struct AtomId {
-    gf::Id hash = gf::InvalidId;
+    gf::Id hash = Void;
     std::string name;
   };
 

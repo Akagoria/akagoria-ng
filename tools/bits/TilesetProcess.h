@@ -34,6 +34,10 @@ namespace akgr {
   gf::Image generate_wang2_preview(const Wang2& wang, gf::Random& random, const TilesetData& db);
   gf::Image generate_wang3_preview(const Wang3& wang, gf::Random& random, const TilesetData& db);
 
+  gf::Image generate_empty_atom(const TileSettings& settings);
+  gf::Image generate_empty_wang2(const TileSettings& settings);
+  gf::Image generate_empty_wang3(const TileSettings& settings);
+
 
   struct DecoratedTileset {
     std::vector<Tileset> atoms;
