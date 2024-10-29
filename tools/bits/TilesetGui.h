@@ -30,24 +30,24 @@ namespace akgr {
     gf::Vec2I m_size;
 
     // edit for atoms
-    Atom m_editedAtom;
+    Atom m_edited_atom;
     static constexpr std::size_t NameBufferSize = 256;
-    char m_nameBuffer[NameBufferSize];
-    int m_pigmentChoice = 0;
-    gf::Texture m_pigmentPreview;
-    bool m_newAtom = false;
+    char m_name_buffer[NameBufferSize];
+    int m_pigment_choice = 0;
+    gf::Texture m_pigment_preview;
+    bool m_new_atom = false;
 
     // edit for wang2
-    Wang2 m_editedWang2;
-    int m_borderEffectChoices[2] = { 0, 0 };
-    gf::Texture m_wang2Preview;
-    bool m_newWang2 = false;
+    Wang2 m_edited_wang2;
+    int m_border_effect_choices[2] = { 0, 0 };
+    gf::Texture m_wang2_preview;
+    bool m_new_wang2 = false;
 
     // edit for wang3
-    Wang3 m_editedWang3;
-    gf::Id m_idsChoice[3];
-    gf::Texture m_wang3Preview;
-    bool m_newWang3 = false;
+    Wang3 m_edited_wang3;
+    gf::Id m_ids_choice[3];
+    gf::Texture m_wang3_preview;
+    bool m_new_wang3 = false;
   };
 
 }

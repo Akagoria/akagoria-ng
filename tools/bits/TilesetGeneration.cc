@@ -144,7 +144,7 @@ namespace akgr {
         tmp.pop_back();
       }
 
-      tmp.push_back(points[points.size() - 1]);
+      tmp.push_back(points.back());
 
       // normalize
 
@@ -161,7 +161,7 @@ namespace akgr {
         out.insert(out.end(), line.begin(), line.end());
       }
 
-      out.push_back(points[points.size() - 1]);
+      out.push_back(tmp.back());
 
       return out;
     }

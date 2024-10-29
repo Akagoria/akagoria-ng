@@ -18,19 +18,19 @@ namespace akgr {
     constexpr int BottomMargin = 200; // TODO: find something better?
     constexpr float EmptySize = 38.0f;
 
-    constexpr const char *PigmentStyleList[] = { "Plain", "Randomize", "Striped", "Paved" }; // see PigmentStyle
-    constexpr const char *BorderEffectList[] = { "None", "Fade", "Outline", "Sharpen", "Lighten", "Blur", "Blend" }; // see BorderEffect
+    constexpr const char* PigmentStyleList[] = { "Plain", "Randomize", "Striped", "Paved" }; // see PigmentStyle
+    constexpr const char* BorderEffectList[] = { "None", "Fade", "Outline", "Sharpen", "Lighten", "Blur", "Blend" }; // see BorderEffect
 
 
-    bool AtomCombo(const TilesetData& data, const char *label, gf::Id *current, std::initializer_list<gf::Id> forbidden) {
-      auto currentAtom = data.get_atom(*current);
+    bool atom_combo(const TilesetData& data, const char *label, gf::Id *current, std::initializer_list<gf::Id> forbidden) {
+      auto current_atom = data.get_atom(*current);
 
-      bool res = ImGui::BeginCombo(label, currentAtom.id.name.c_str());
+      bool res = ImGui::BeginCombo(label, current_atom.id.name.c_str());
 
       if (res) {
         res = false;
 
-        for (auto& atom : data.atoms) {
+        for (const auto& atom : data.atoms) {
           ImGuiSelectableFlags flags = ImGuiSelectableFlags_None;
 
           if (std::find(forbidden.begin(), forbidden.end(), atom.id.hash) != forbidden.end()) {
@@ -50,7 +50,7 @@ namespace akgr {
       }
 
       ImGui::SameLine();
-      ImGui::ColorButton("##Color", ImVec4(currentAtom.color.r, currentAtom.color.g, currentAtom.color.b, currentAtom.color.a));
+      ImGui::ColorButton("##Color", ImVec4(current_atom.color.r, current_atom.color.g, current_atom.color.b, current_atom.color.a));
 
       return res;
     }
@@ -61,18 +61,18 @@ namespace akgr {
   , m_datafile(std::move(datafile))
   , m_data(TilesetData::load(m_datafile))
   , m_size(m_data.settings.image_size())
-  , m_pigmentPreview(generate_empty_atom(m_data.settings.tile), m_render_manager)
-  , m_wang2Preview(generate_empty_wang2(m_data.settings.tile), m_render_manager)
-  , m_wang3Preview(generate_empty_wang3(m_data.settings.tile), m_render_manager)
+  , m_pigment_preview(generate_empty_atom(m_data.settings.tile), m_render_manager)
+  , m_wang2_preview(generate_empty_wang2(m_data.settings.tile), m_render_manager)
+  , m_wang3_preview(generate_empty_wang3(m_data.settings.tile), m_render_manager)
   {
   }
 
-  void TilesetGui::update(gf::Time time)
+  void TilesetGui::update([[maybe_unused]] gf::Time time)
   {
     auto size = m_render_manager->surface_size();
 
     ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::SetNextWindowSize(ImVec2(size.w - 10, size.h - 10));
+    ImGui::SetNextWindowSize(ImVec2(float(size.w - 10), float(size.h - 10)));
 
     if (ImGui::Begin("Tileset", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings)) {
 
@@ -126,7 +126,7 @@ namespace akgr {
           ImGui::Text("Atom count: %zu/%i", m_data.atoms.size(), m_data.settings.max_atom_count);
           ImGui::Spacing();
 
-          if (ImGui::BeginChild("##AtomChild", ImVec2(0, size.h - BottomMargin))) {
+          if (ImGui::BeginChild("##AtomChild", ImVec2(0.0f, float(size.h - BottomMargin)))) {
 
             if (ImGui::BeginTable("##AtomTable", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
               ImGui::TableSetupColumn("Atom");
@@ -136,12 +136,12 @@ namespace akgr {
               ImGui::TableHeadersRow();
 
               std::size_t index = 0;
-              gf::Id atomToDelete = gf::InvalidId;
+              gf::Id atom_to_delete = gf::InvalidId;
 
               for (auto& atom : m_data.atoms) {
                 ImGui::TableNextColumn();
 
-                ImGui::PushID(index);
+                ImGui::PushID(int(index));
                 ImGui::ColorButton("##Color", ImVec4(atom.color.r, atom.color.g, atom.color.b, atom.color.a));
                 ImGui::SameLine();
                 ImGui::Text("%s", atom.id.name.c_str());
@@ -170,59 +170,59 @@ namespace akgr {
 
                 ImGui::SameLine();
 
-                auto prepareEditedAtom = [&]() {
-                  m_editedAtom = atom;
-                  assert(m_editedAtom.id.name.size() < NameBufferSize - 1);
-                  std::copy(m_editedAtom.id.name.begin(), m_editedAtom.id.name.end(), std::begin(m_nameBuffer));
-                  m_nameBuffer[m_editedAtom.id.name.size()] = '\0';
-                  m_pigmentChoice = static_cast<int>(m_editedAtom.pigment.style);
+                auto prepare_edited_atom = [&]() {
+                  m_edited_atom = atom;
+                  assert(m_edited_atom.id.name.size() < NameBufferSize - 1);
+                  std::copy(m_edited_atom.id.name.begin(), m_edited_atom.id.name.end(), std::begin(m_name_buffer));
+                  m_name_buffer[m_edited_atom.id.name.size()] = '\0';
+                  m_pigment_choice = static_cast<int>(m_edited_atom.pigment.style);
                 };
 
-                auto generatePreview = [this]() {
-                  m_data.temporary.atom = m_editedAtom;
-                  m_pigmentPreview.update(generate_atom_preview(m_editedAtom, m_random, m_data.settings.tile), m_render_manager);
+                auto generate_preview = [this]() {
+                  m_data.temporary.atom = m_edited_atom;
+                  m_pigment_preview.update(generate_atom_preview(m_edited_atom, m_random, m_data.settings.tile), m_render_manager);
                   m_data.temporary.atom = Atom();
                 };
 
                 if (ImGui::Button("Edit")) {
                   ImGui::OpenPopup("Edit");
-                  prepareEditedAtom();
-                  generatePreview();
+                  prepare_edited_atom();
+                  generate_preview();
                 }
 
-                if (m_newAtom && index + 1 == m_data.atoms.size()) {
+                if (m_new_atom && index + 1 == m_data.atoms.size()) {
                   ImGui::SetScrollHereY(1.0f);
                   ImGui::OpenPopup("Edit");
-                  prepareEditedAtom();
-                  generatePreview();
-                  m_newAtom = false;
+                  prepare_edited_atom();
+                  generate_preview();
+                  m_new_atom = false;
                 }
 
                 if (ImGui::BeginPopupModal("Edit", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
                   bool changed = false;
 
-                  ImGui::InputText("Name##Atom", m_nameBuffer, NameBufferSize);
-                  changed = ImGui::ColorEdit4("Color##Atom", &m_editedAtom.color.r) || changed;
+                  ImGui::InputText("Name##Atom", std::data(m_name_buffer), NameBufferSize);
+                  changed = ImGui::ColorEdit4("Color##Atom", &m_edited_atom.color.r) || changed;
 
-                  if (ImGui::Combo("Pigment##PigmentStyle", &m_pigmentChoice, PigmentStyleList, IM_ARRAYSIZE(PigmentStyleList))) {
-                    m_editedAtom.pigment.style = static_cast<PigmentStyle>(m_pigmentChoice);
+                  if (ImGui::Combo("Pigment##PigmentStyle", &m_pigment_choice, std::data(PigmentStyleList), std::size(PigmentStyleList))) {
+                    m_edited_atom.pigment.style = static_cast<PigmentStyle>(m_pigment_choice);
 
-                    switch (m_editedAtom.pigment.style) {
+                    switch (m_edited_atom.pigment.style) {
                       case PigmentStyle::Plain:
                         break;
                       case PigmentStyle::Randomize:
-                        m_editedAtom.pigment.randomize.ratio = 0.1f;
-                        m_editedAtom.pigment.randomize.deviation = 0.1f;
-                        m_editedAtom.pigment.randomize.size = 1;
+                        m_edited_atom.pigment.randomize.ratio = 0.1f;
+                        m_edited_atom.pigment.randomize.deviation = 0.1f;
+                        m_edited_atom.pigment.randomize.size = 1;
                         break;
                       case PigmentStyle::Striped:
-                        m_editedAtom.pigment.striped.width = 3;
-                        m_editedAtom.pigment.striped.stride = 8;
+                        m_edited_atom.pigment.striped.width = 3;
+                        m_edited_atom.pigment.striped.stride = 8;
                         break;
                       case PigmentStyle::Paved:
-                        m_editedAtom.pigment.paved.width = 8;
-                        m_editedAtom.pigment.paved.length = 16;
-                        m_editedAtom.pigment.paved.modulation = 0.5f;
+                        m_edited_atom.pigment.paved.width = 8;
+                        m_edited_atom.pigment.paved.length = 16;
+                        m_edited_atom.pigment.paved.modulation = 0.5f;
                         break;
                     }
 
@@ -231,22 +231,22 @@ namespace akgr {
 
                   ImGui::Indent();
 
-                  switch (m_editedAtom.pigment.style) {
+                  switch (m_edited_atom.pigment.style) {
                     case PigmentStyle::Plain:
                       break;
                     case PigmentStyle::Randomize:
-                      changed = ImGui::SliderFloat("Ratio##AtomRandomize", &m_editedAtom.pigment.randomize.ratio, 0.0f, 1.0f, "%.2f") || changed;
-                      changed = ImGui::SliderFloat("Deviation##AtomRandomize", &m_editedAtom.pigment.randomize.deviation, 0.0f, 0.5f, "%.2f") || changed;
-                      changed = ImGui::SliderInt("Size##AtomRandomize", &m_editedAtom.pigment.randomize.size, 1, 5) || changed;
+                      changed = ImGui::SliderFloat("Ratio##AtomRandomize", &m_edited_atom.pigment.randomize.ratio, 0.0f, 1.0f, "%.2f") || changed;
+                      changed = ImGui::SliderFloat("Deviation##AtomRandomize", &m_edited_atom.pigment.randomize.deviation, 0.0f, 0.5f, "%.2f") || changed;
+                      changed = ImGui::SliderInt("Size##AtomRandomize", &m_edited_atom.pigment.randomize.size, 1, 5) || changed;
                       break;
                     case PigmentStyle::Striped:
-                      changed = ImGui::SliderInt("Width##AtomStriped", &m_editedAtom.pigment.striped.width, 1, 8) || changed;
-                      changed = ImGui::SliderInt("Stride##AtomStriped", &m_editedAtom.pigment.striped.stride, 1, 16) || changed;
+                      changed = ImGui::SliderInt("Width##AtomStriped", &m_edited_atom.pigment.striped.width, 1, 8) || changed;
+                      changed = ImGui::SliderInt("Stride##AtomStriped", &m_edited_atom.pigment.striped.stride, 1, 16) || changed;
                       break;
                     case PigmentStyle::Paved:
-                      changed = ImGui::SliderInt("Width##AtomPaved", &m_editedAtom.pigment.paved.width, 4, 16) || changed;
-                      changed = ImGui::SliderInt("Length##AtomPaved", &m_editedAtom.pigment.paved.length, 4, 32) || changed;
-                      changed = ImGui::SliderFloat("Modulation##AtomPaved", &m_editedAtom.pigment.paved.modulation, -0.8f, 0.8f, "%.2f") || changed;
+                      changed = ImGui::SliderInt("Width##AtomPaved", &m_edited_atom.pigment.paved.width, 4, 16) || changed;
+                      changed = ImGui::SliderInt("Length##AtomPaved", &m_edited_atom.pigment.paved.length, 4, 32) || changed;
+                      changed = ImGui::SliderFloat("Modulation##AtomPaved", &m_edited_atom.pigment.paved.modulation, -0.8f, 0.8f, "%.2f") || changed;
                       break;
                   }
 
@@ -257,19 +257,19 @@ namespace akgr {
                   static constexpr float PreviewSize = 128.0f;
 
                   if (changed) {
-                    generatePreview();
+                    generate_preview();
                   }
 
                   ImGui::SetCursorPosX((ImGui::GetWindowWidth() - PreviewSize) / 2);
-                  ImGui::Image(static_cast<void*>(&m_pigmentPreview), ImVec2(PreviewSize, PreviewSize));
+                  ImGui::Image(static_cast<void*>(&m_pigment_preview), ImVec2(PreviewSize, PreviewSize));
 
                   ImGui::Spacing();
 
 
                   if (ImGui::Button("Save")) {
-                    m_editedAtom.id.name = m_nameBuffer;
-                    m_editedAtom.id.hash = gf::hash_string(m_editedAtom.id.name);
-                    m_data.update_atom(atom, m_editedAtom);
+                    m_edited_atom.id.name = std::data(m_name_buffer);
+                    m_edited_atom.id.hash = gf::hash_string(m_edited_atom.id.name);
+                    m_data.update_atom(atom, m_edited_atom);
                     ImGui::CloseCurrentPopup();
                     m_modified = true;
                   }
@@ -283,7 +283,7 @@ namespace akgr {
                   ImGui::SameLine();
 
                   if (ImGui::Button("Preview")) {
-                    generatePreview();
+                    generate_preview();
                   }
 
                   ImGui::EndPopup();
@@ -309,7 +309,7 @@ namespace akgr {
                   ImGui::SameLine();
 
                   if (ImGui::Button("Yes, I want to delete")) {
-                    m_data.atoms.erase(m_data.atoms.begin() + index);
+                    m_data.atoms.erase(std::next(m_data.atoms.begin(), std::ptrdiff_t(index)));
                     ImGui::CloseCurrentPopup();
                     m_modified = true;
                   }
@@ -323,8 +323,8 @@ namespace akgr {
 
               ImGui::EndTable();
 
-              if (atomToDelete != gf::InvalidId) {
-                m_data.delete_atom(atomToDelete);
+              if (atom_to_delete != gf::InvalidId) {
+                m_data.delete_atom(atom_to_delete);
               }
             }
 
@@ -338,7 +338,7 @@ namespace akgr {
             atom.color = gf::White;
             atom.pigment.style = PigmentStyle::Plain;
             m_data.atoms.emplace_back(std::move(atom));
-            m_newAtom = true;
+            m_new_atom = true;
             m_modified = true;
           }
 
@@ -366,7 +366,7 @@ namespace akgr {
 
                 ImGui::PushID(int(index));
 
-                for (auto& border : wang.borders) {
+                for (const auto& border : wang.borders) {
                   if (border.id.hash == Void) {
                     ImGui::ColorButton("##Color", ImVec4(0, 0, 0, 0), ImGuiColorEditFlags_AlphaPreview);
                     ImGui::SameLine();
@@ -404,14 +404,14 @@ namespace akgr {
                 ImGui::SameLine();
 
                 auto prepare_edited_wang2 = [&]() {
-                  m_editedWang2 = wang;
-                  m_borderEffectChoices[0] = static_cast<int>(m_editedWang2.borders[0].effect);
-                  m_borderEffectChoices[1] = static_cast<int>(m_editedWang2.borders[1].effect);
+                  m_edited_wang2 = wang;
+                  m_border_effect_choices[0] = static_cast<int>(m_edited_wang2.borders[0].effect);
+                  m_border_effect_choices[1] = static_cast<int>(m_edited_wang2.borders[1].effect);
                 };
 
                 auto generate_preview = [this]() {
-                  m_data.temporary.wang2 = m_editedWang2;
-                  m_wang2Preview.update(generate_wang2_preview(m_editedWang2, m_random, m_data), m_render_manager);
+                  m_data.temporary.wang2 = m_edited_wang2;
+                  m_wang2_preview.update(generate_wang2_preview(m_edited_wang2, m_random, m_data), m_render_manager);
                   m_data.temporary.wang2 = Wang2();
                 };
 
@@ -421,19 +421,19 @@ namespace akgr {
                   generate_preview();
                 }
 
-                if (m_newWang2 && index + 1 == m_data.wang2.size()) {
+                if (m_new_wang2 && index + 1 == m_data.wang2.size()) {
                   ImGui::SetScrollHereY(1.0f);
                   ImGui::OpenPopup("Edit");
                   prepare_edited_wang2();
                   generate_preview();
-                  m_newWang2 = false;
+                  m_new_wang2 = false;
                 }
 
                 if (ImGui::BeginPopupModal("Edit", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
                   bool changed = false;
                   int j = 0;
 
-                  for (auto& border : m_editedWang2.borders) {
+                  for (auto& border : m_edited_wang2.borders) {
                     ImGui::PushID(j);
 
                     ImGui::Text("Atom #%i\n", j+1);
@@ -455,16 +455,16 @@ namespace akgr {
                     }
 
                     if (border.id.hash != Void) {
-                      if (AtomCombo(m_data, "##Wang2Atom", &border.id.hash, { m_editedWang2.borders[1 - j].id.hash })) {
+                      if (atom_combo(m_data, "##Wang2Atom", &border.id.hash, { m_edited_wang2.borders[1 - j].id.hash })) {
                         changed = true;
                         auto atom = m_data.get_atom(border.id.hash);
                         border.id = atom.id;
                       }
 
-                      if (ImGui::Combo("Border##BorderEffect", &m_borderEffectChoices[j], BorderEffectList, IM_ARRAYSIZE(BorderEffectList))) {
+                      if (ImGui::Combo("Border##BorderEffect", &m_border_effect_choices[j], std::data(BorderEffectList), std::size(BorderEffectList))) {
                         changed = true;
 
-                        border.effect = static_cast<BorderEffect>(m_borderEffectChoices[j]);
+                        border.effect = static_cast<BorderEffect>(m_border_effect_choices[j]);
 
                         switch (border.effect) {
                           case BorderEffect::None:
@@ -527,17 +527,17 @@ namespace akgr {
 
                   ImGui::Spacing();
 
-                  changed = ImGui::SliderInt("Offset##Wang2Offset", &m_editedWang2.edge.offset, -m_data.settings.tile.size / 4, m_data.settings.tile.size / 4) || changed;
+                  changed = ImGui::SliderInt("Offset##Wang2Offset", &m_edited_wang2.edge.offset, -m_data.settings.tile.size / 4, m_data.settings.tile.size / 4) || changed;
 
-                  if (ImGui::RadioButton("Limit##Wang2Limit", m_editedWang2.edge.limit)) {
-                    m_editedWang2.edge.limit = !m_editedWang2.edge.limit;
+                  if (ImGui::RadioButton("Limit##Wang2Limit", m_edited_wang2.edge.limit)) {
+                    m_edited_wang2.edge.limit = !m_edited_wang2.edge.limit;
                   }
 
                   ImGui::Spacing();
 
-                  changed = ImGui::SliderInt("Iterations##Wang2Iterations", &m_editedWang2.edge.displacement.iterations, 0, 5) || changed;
-                  changed = ImGui::SliderFloat("Initial factor##Wang2Initial", &m_editedWang2.edge.displacement.initial, 0.1f, 1.0f, "%.2f") || changed;
-                  changed = ImGui::SliderFloat("Reduction factor##Wang2Reduction", &m_editedWang2.edge.displacement.reduction, 0.1f, 1.0f, "%.2f") || changed;
+                  changed = ImGui::SliderInt("Iterations##Wang2Iterations", &m_edited_wang2.edge.displacement.iterations, 0, 5) || changed;
+                  changed = ImGui::SliderFloat("Initial factor##Wang2Initial", &m_edited_wang2.edge.displacement.initial, 0.1f, 1.0f, "%.2f") || changed;
+                  changed = ImGui::SliderFloat("Reduction factor##Wang2Reduction", &m_edited_wang2.edge.displacement.reduction, 0.1f, 1.0f, "%.2f") || changed;
 
                   ImGui::Spacing();
 
@@ -548,12 +548,12 @@ namespace akgr {
                   }
 
                   ImGui::SetCursorPosX((ImGui::GetWindowWidth() - PreviewSize) / 2);
-                  ImGui::Image(static_cast<void*>(&m_wang2Preview), ImVec2(PreviewSize, PreviewSize));
+                  ImGui::Image(static_cast<void*>(&m_wang2_preview), ImVec2(PreviewSize, PreviewSize));
 
                   ImGui::Spacing();
 
                   if (ImGui::Button("Save")) {
-                    wang = m_editedWang2;
+                    wang = m_edited_wang2;
                     ImGui::CloseCurrentPopup();
                     m_modified = true;
                   }
@@ -593,7 +593,7 @@ namespace akgr {
                   ImGui::SameLine();
 
                   if (ImGui::Button("Yes, I want to delete")) {
-                    m_data.wang2.erase(m_data.wang2.begin() + index);
+                    m_data.wang2.erase(std::next(m_data.wang2.begin(), std::ptrdiff_t(index)));
                     ImGui::CloseCurrentPopup();
                     m_modified = true;
                   }
@@ -620,7 +620,7 @@ namespace akgr {
             wang.borders[1].id = m_data.atoms[1].id;
             wang.borders[1].effect = BorderEffect::None;
             m_data.wang2.emplace_back(std::move(wang));
-            m_newWang2 = true;
+            m_new_wang2 = true;
             m_modified = true;
           }
 
@@ -648,7 +648,7 @@ namespace akgr {
 
                 ImGui::PushID(int(index));
 
-                for (auto& id : wang.ids) {
+                for (const auto& id : wang.ids) {
                   if (id.hash == Void) {
                     ImGui::ColorButton("##Color", ImVec4(0, 0, 0, 0), ImGuiColorEditFlags_AlphaPreview);
                     ImGui::SameLine();
@@ -686,11 +686,11 @@ namespace akgr {
                 ImGui::SameLine();
 
                 auto prepare_edited_wang3 = [&]() {
-                  m_editedWang3 = wang;
+                  m_edited_wang3 = wang;
                 };
 
                 auto generate_preview = [this]() {
-                  m_wang3Preview.update(generate_wang3_preview(m_editedWang3, m_random, m_data), m_render_manager);
+                  m_wang3_preview.update(generate_wang3_preview(m_edited_wang3, m_random, m_data), m_render_manager);
                 };
 
                 if (ImGui::Button("Edit")) {
@@ -699,19 +699,19 @@ namespace akgr {
                   generate_preview();
                 }
 
-                if (m_newWang3 && index + 1 == m_data.wang3.size()) {
+                if (m_new_wang3 && index + 1 == m_data.wang3.size()) {
                   ImGui::SetScrollHereY(1.0f);
                   ImGui::OpenPopup("Edit");
                   prepare_edited_wang3();
                   generate_preview();
-                  m_newWang3 = false;
+                  m_new_wang3 = false;
                 }
 
                 if (ImGui::BeginPopupModal("Edit", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
                   bool changed = false;
                   int j = 0;
 
-                  for (auto& id : m_editedWang3.ids) {
+                  for (auto& id : m_edited_wang3.ids) {
                     ImGui::PushID(j);
 
                     ImGui::Text("Atom #%i\n", j+1);
@@ -730,7 +730,7 @@ namespace akgr {
                     }
 
                     if (id.hash != Void) {
-                      if (AtomCombo(m_data, "##Wang3Atom", &id.hash, { m_editedWang3.ids[(j + 1) % 3].hash, m_editedWang3.ids[(j + 2) % 3].hash })) {
+                      if (atom_combo(m_data, "##Wang3Atom", &id.hash, { m_edited_wang3.ids[(j + 1) % 3].hash, m_edited_wang3.ids[(j + 2) % 3].hash })) {
                         changed = true;
                         auto atom = m_data.get_atom(id.hash);
                         id = atom.id;
@@ -752,13 +752,13 @@ namespace akgr {
                   }
 
                   ImGui::SetCursorPosX((ImGui::GetWindowWidth() - PreviewSize) / 2);
-                  ImGui::Image(static_cast<void*>(&m_wang3Preview), ImVec2(PreviewSize, PreviewSize));
+                  ImGui::Image(static_cast<void*>(&m_wang3_preview), ImVec2(PreviewSize, PreviewSize));
 
                   ImGui::Spacing();
 
                   if (ImGui::Button("Save")) {
                     // TODO: add missing wang2
-                    wang = m_editedWang3;
+                    wang = m_edited_wang3;
                     ImGui::CloseCurrentPopup();
                     m_modified = true;
                   }
@@ -824,7 +824,7 @@ namespace akgr {
             wang.ids[1] = m_data.atoms[1].id;
             wang.ids[2] = m_data.atoms[2].id;
             m_data.wang3.emplace_back(std::move(wang));
-            m_newWang3 = true;
+            m_new_wang3 = true;
             m_modified = true;
           }
 
