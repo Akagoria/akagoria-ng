@@ -48,7 +48,7 @@ namespace akgr {
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<HeroState, Archive>& state)
   {
-    return ar | state.move | state.spot | state.rotation | state.requirements | state.dialog | state.quests;
+    return ar | state.move | state.spot | state.rotation | state.aspects | state.attributes | state.requirements | state.dialog | state.quests;
   }
 
 }

@@ -22,7 +22,7 @@ namespace akgr {
   };
 
   template<typename Archive>
-  Archive& operator|(Archive& ar, gf::MaybeConst<TalkQuestState, Archive>& state) {
+  Archive& operator|(Archive& ar, [[maybe_unused]] gf::MaybeConst<TalkQuestState, Archive>& state) {
     return ar;
   }
 
@@ -40,7 +40,7 @@ namespace akgr {
   };
 
   template<typename Archive>
-  Archive& operator|(Archive& ar, gf::MaybeConst<ExploreQuestState, Archive>& state) {
+  Archive& operator|(Archive& ar, [[maybe_unused]] gf::MaybeConst<ExploreQuestState, Archive>& state) {
     return ar;
   }
 

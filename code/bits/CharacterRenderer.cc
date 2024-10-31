@@ -13,7 +13,7 @@ namespace akgr {
 
   }
 
-  CharacterRenderer::CharacterRenderer(Akagoria* game, const WorldResources& resources)
+  CharacterRenderer::CharacterRenderer(Akagoria* game, [[maybe_unused]] const WorldResources& resources)
   : m_game(game)
   {
     // load all the animations, not really optimal but easy for now

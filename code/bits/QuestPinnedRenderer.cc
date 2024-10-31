@@ -32,7 +32,7 @@ namespace akgr {
     m_background_shape.set_location({ 1230.0f, 280.0f });
   }
 
-  void QuestPinnedRenderer::update(gf::Time time)
+  void QuestPinnedRenderer::update([[maybe_unused]] gf::Time time)
   {
     std::vector<QuestState*> visible_quests;
 
