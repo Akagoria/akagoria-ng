@@ -1,5 +1,7 @@
 #include "WorldBaseScene.h"
 
+#include <gf2/core/Log.h>
+
 #include "Akagoria.h"
 
 namespace akgr {
@@ -84,6 +86,7 @@ namespace akgr {
     }
 
     if (m_action_group.active("save_debug"_id)) {
+      gf::Log::debug("Save debug!");
       m_game->slot_manager()->save_slot_debug(m_game->world_state(), "Here");
     }
 

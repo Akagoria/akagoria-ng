@@ -94,6 +94,7 @@ namespace akgr {
       }
     }
 
+    data_lexicon_sort(areas);
     data_lexicon_sort(locations);
   }
 
@@ -107,6 +108,17 @@ namespace akgr {
     const auto& kind_property = object_properties("kind");
     assert(kind_property.is_string());
     const std::string kind = kind_property.as_string();
+
+    if (kind == "areas") {
+      for (const auto& object : object_layer.objects) {
+        assert(object.type == gf::MapObjectType::Point);
+
+        AreaData area;
+        area.label = object.name;
+        area.position = object.location;
+        areas.push_back(std::move(area));
+      }
+    }
 
     if (kind == "locations") {
       for (const auto& object : object_layer.objects) {

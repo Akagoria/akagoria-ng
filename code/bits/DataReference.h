@@ -13,6 +13,7 @@ namespace akgr {
 
   template<typename T>
   struct DataReference {
+    std::string tag;
     gf::Id id = gf::InvalidId;
     const T* origin = nullptr;
 
@@ -21,7 +22,7 @@ namespace akgr {
       origin = data_lexicon_find(lexicon, id);
 
       if (origin == nullptr) {
-        gf::Log::error("Could not bind reference {:x}", static_cast<uint64_t>(id));
+        gf::Log::error("Could not bind reference '{}' ({:x})", tag, static_cast<uint64_t>(id));
       }
     }
 
@@ -48,6 +49,7 @@ namespace akgr {
 
     void reset()
     {
+      tag.clear();
       id = gf::InvalidId;
       origin = nullptr;
     }
@@ -58,7 +60,7 @@ namespace akgr {
     template<typename Archive, typename Self>
     Archive& handle_data_reference_serialization(Archive& ar, Self& self)
     {
-      return ar | self.id;
+      return ar | self.tag | self.id;
     }
 
   }

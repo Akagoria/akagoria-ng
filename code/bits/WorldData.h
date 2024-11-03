@@ -6,6 +6,7 @@
 #include <gf2/core/TypeTraits.h>
 #include <gf2/core/TiledMap.h>
 
+#include "AreaData.h"
 #include "CharacterData.h"
 #include "CreatureData.h"
 #include "DataLexicon.h"
@@ -28,6 +29,7 @@ namespace akgr {
     DataLexicon<QuestData> quests;
 
     // from map (so no serialization)
+    DataLexicon<AreaData> areas;
     DataLexicon<LocationData> locations;
 
     void load_from_file(const std::filesystem::path& filename);

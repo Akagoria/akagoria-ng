@@ -62,6 +62,7 @@ namespace akgr {
     std::string label;
     json.get_to(label);
     reference.id = gf::hash_string(label);
+    reference.tag = std::move(label);
   }
 
   // Character
