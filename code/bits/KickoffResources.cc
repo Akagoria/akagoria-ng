@@ -62,13 +62,20 @@ namespace akgr {
 
     back_text.font = "fonts/DejaVuSans.ttf";
     back_text.data.content = "Back"; // TODO: i18n
-    back_text.data.character_size = 1.0f;
+    back_text.data.character_size = 30.0f;
+    back_text.data.color = gf::White;
+
+    slot_default_text.font = "fonts/DejaVuSans.ttf";
+    slot_default_text.data.content = "-\n-\n-";
+    slot_default_text.data.character_size = 28.0f;
+    slot_default_text.data.color = gf::White;
 
     // loading
 
     loading_text.font = "fonts/Philosopher-Regular.ttf";
     loading_text.data.content = "Adventure is coming..."; // TODO: i18n
     loading_text.data.character_size = 50.0f;
+
   }
 
   gf::ResourceBundle KickoffResources::bundle(Akagoria* game)
@@ -76,7 +83,7 @@ namespace akgr {
     gf::ResourceBundle bundle([game, this](gf::ResourceBundle* bundle, gf::ResourceManager* resources, gf::ResourceAction action) {
       // fonts
 
-      for (const gf::TextResource* resource : { &main_title_text, &additional_title_text, &subtitle_text, &icon_arrow_text, &icon_left_text, &icon_right_text, &start_text, &load_text, &quit_text, &back_text, &loading_text }) {
+      for (const gf::TextResource* resource : { &main_title_text, &additional_title_text, &subtitle_text, &icon_arrow_text, &icon_left_text, &icon_right_text, &start_text, &load_text, &quit_text, &back_text, &slot_default_text, &loading_text }) {
         bundle->handle<gf::FontFace>(resource->font, game->font_manager(), resources, action);
       }
 

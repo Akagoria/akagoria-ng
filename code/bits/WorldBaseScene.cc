@@ -54,6 +54,7 @@ namespace akgr {
     settings.actions.emplace("quit"_id, gf::instantaneous_action().add_scancode_control(gf::Scancode::Escape));
 
     settings.actions.emplace("physics_debug"_id, gf::instantaneous_action().add_scancode_control(gf::Scancode::F12));
+    settings.actions.emplace("save_debug"_id, gf::instantaneous_action().add_scancode_control(gf::Scancode::F11));
 
     return settings;
   }
@@ -80,6 +81,10 @@ namespace akgr {
 
     if (m_action_group.active("physics_debug"_id)) {
       m_physics_debug.set_awake(!m_physics_debug.awake());
+    }
+
+    if (m_action_group.active("save_debug"_id)) {
+      m_game->slot_manager()->save_slot_debug(m_game->world_state(), "Here");
     }
 
     m_action_group.reset();

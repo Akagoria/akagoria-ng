@@ -39,6 +39,11 @@ namespace akgr {
       assert(hero.dialog.data.check());
     }
 
+    for (auto& quest : hero.quests) {
+      quest.data.bind_from(data.quests);
+      assert(quest.data.check());
+    }
+
     for (auto& notification : notifications) {
       notification.data.bind_from(data.notifications);
       assert(notification.data.check());

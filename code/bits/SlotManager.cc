@@ -70,11 +70,11 @@ namespace akgr {
     }
   }
 
-  void SlotManager::save_slot(const WorldState& state, const std::string& area, std::size_t index)
+  void SlotManager::save_slot(const WorldState* state, const std::string& area, std::size_t index)
   {
     assert(index < SlotCount);
     Slot& current_slot = m_slots[index];
-    state.save_to_file(current_slot.saved_state_path);
+    state->save_to_file(current_slot.saved_state_path);
 
     current_slot.header.area = area.empty() ? "?" : area;
     current_slot.header.time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -100,6 +100,12 @@ namespace akgr {
     description += time_description.data();
 
     return description;
+  }
+
+  const Slot& SlotManager::slot(std::size_t index) const
+  {
+    assert(index < SlotCount);
+    return m_slots[index];
   }
 
 }

@@ -36,14 +36,15 @@ namespace akgr {
   class SlotManager {
   public:
     void load_slot_headers();
-    void save_slot(const WorldState& state, const std::string& area, std::size_t index);
+    void save_slot(const WorldState* state, const std::string& area, std::size_t index);
 
-    void save_slot_debug(const WorldState& state, const std::string& area)
+    void save_slot_debug(const WorldState* state, const std::string& area)
     {
       save_slot(state, area, SlotCount - 1);
     }
 
     std::string slot_description(std::size_t index) const;
+    const Slot& slot(std::size_t index) const;
 
   private:
     std::array<Slot, SlotCount> m_slots;

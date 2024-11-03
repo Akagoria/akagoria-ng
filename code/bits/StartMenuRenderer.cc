@@ -53,11 +53,19 @@ namespace akgr {
 
   void StartMenuRenderer::update(gf::Time time)
   {
+    if (!m_active) {
+      return;
+    }
+
     m_frame_widget.update(time);
   }
 
   void StartMenuRenderer::render(gf::RenderRecorder& recorder)
   {
+    if (!m_active) {
+      return;
+    }
+
     m_frame_widget.render(recorder);
   }
 

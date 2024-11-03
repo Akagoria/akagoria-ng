@@ -7,7 +7,6 @@
 #include <gf2/graphics/FontAtlas.h>
 #include <gf2/graphics/Text.h>
 
-#include "gf2/graphics/RenderRecorder.h"
 #include "ui/State.h"
 #include "ui/Theme.h"
 #include "ui/Widgets.h"
@@ -27,6 +26,8 @@ namespace akgr {
   public:
     StartMenuRenderer(Akagoria* game, const KickoffResources& resources, gf::FontAtlas* atlas);
 
+    void set_active(bool active) { m_active = active; }
+
     void compute_next_choice();
     void compute_prev_choice();
     StartMenuChoice choice() const;
@@ -35,6 +36,7 @@ namespace akgr {
     void render(gf::RenderRecorder& recorder) override;
 
   private:
+    bool m_active = false;
     ui::IndexState m_menu_index;
 
     gf::Text m_icon_arrow_text;

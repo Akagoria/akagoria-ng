@@ -1,12 +1,15 @@
 #ifndef AKGR_KICKOFF_MENU_SCENE_H
 #define AKGR_KICKOFF_MENU_SCENE_H
 
+#include <cstdint>
+
 #include <gf2/graphics/ActionGroup.h>
 #include <gf2/graphics/FontAtlas.h>
 #include <gf2/graphics/Scene.h>
 
 #include "KickoffResources.h"
 #include "StartMenuRenderer.h"
+#include "SlotSelectorRenderer.h"
 
 namespace akgr {
 
@@ -17,6 +20,11 @@ namespace akgr {
     KickoffMenuScene(Akagoria* game, const KickoffResources& resources);
 
   private:
+    enum class Menu : uint8_t {
+      StartMenu,
+      SlotSelector,
+    };
+
     static gf::ActionGroupSettings compute_settings();
 
     void do_process_event(const gf::Event& event) override;
@@ -27,7 +35,10 @@ namespace akgr {
 
     gf::ActionGroup m_action_group;
 
+    Menu m_menu = Menu::StartMenu;
+
     StartMenuRenderer m_start_menu;
+    SlotSelectorRenderer m_slot_selector;
   };
 
 }

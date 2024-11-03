@@ -33,6 +33,8 @@ namespace akgr {
     gf::TextResource quit_text;
     gf::TextResource back_text;
 
+    gf::TextResource slot_default_text;
+
     // loading
 
     gf::TextResource loading_text;

@@ -1,4 +1,5 @@
 #include "Widgets.h"
+
 #include <utility>
 
 #include <gf2/core/Color.h>
@@ -8,19 +9,8 @@
 
 #include <gf2/graphics/RenderRecorder.h>
 #include <gf2/graphics/Texture.h>
-#include "gf2/core/ShapeBuffer.h"
 
 namespace akgr::ui {
-
-  namespace {
-
-    constexpr gf::Color RpgBlue(0.015625, 0.03125, 0.515625, 0.9f);
-    constexpr float Padding = 0.01f;
-    constexpr float Thickness = 0.002f;
-
-    constexpr float ArrowSize = 64.0f;
-
-  } // namespace
 
   /*
    * ContainerWidget
@@ -68,7 +58,7 @@ namespace akgr::ui {
   }
 
   void BoxWidget::layout_request() {
-    gf::Log::debug("BoxWidget::do_layout_request()");
+    // gf::Log::debug("BoxWidget::do_layout_request()");
 
     gf::Vec2F container = m_theme->padding.ne + m_theme->padding.sw;
 
@@ -89,14 +79,14 @@ namespace akgr::ui {
     container += m_offset;
     set_size(gf::max(container, size()));
 
-    gf::Log::debug("container: {} x {}", container.w, container.h);
+    // gf::Log::debug("container: {} x {}", container.w, container.h);
   }
 
   void BoxWidget::layout_allocation() {
-    gf::Log::debug("BoxWidget::do_layout_allocation()");
+    // gf::Log::debug("BoxWidget::do_layout_allocation()");
 
     gf::Vec2F container = size();
-    gf::Log::debug("container: {} x {}", container.w, container.h);
+    // gf::Log::debug("container: {} x {}", container.w, container.h);
 
     float gf::Vec2F::* axis0 = m_aspect == Aspect::Horizontal ? &gf::Vec2F::w : &gf::Vec2F::h;
     float gf::Vec2F::* axis1 = m_aspect == Aspect::Vertical   ? &gf::Vec2F::w : &gf::Vec2F::h;
@@ -122,7 +112,7 @@ namespace akgr::ui {
           break;
       }
 
-      gf::Log::debug("child: {}x{}, {}x{}", position.x, position.y, size.w, size.h);
+      // gf::Log::debug("child: {}x{}, {}x{}", position.x, position.y, size.w, size.h);
 
       child->set_position(m_offset + position);
       child->set_size(size);
@@ -213,7 +203,7 @@ namespace akgr::ui {
       widget->layout_request();
       gf::Vec2F size = widget->size();
       container.h += size.h;
-      container.w = std::max(container.w, size.w + 2 * m_margin.w);
+      container.w = std::max(container.w, size.w + (2 * m_margin.w));
     }
 
     if (count > 0) {
@@ -300,7 +290,7 @@ namespace akgr::ui {
 
     m_shape.update(group_buffer, m_render_manager);
 
-    gf::Log::debug("FrameWidget: {} x {}.  {} x {}", widget_position.x, widget_position.y, widget_size.x, widget_size.y);
+    // gf::Log::debug("FrameWidget: {} x {}.  {} x {}", widget_position.x, widget_position.y, widget_size.x, widget_size.y);
   }
 
   /*

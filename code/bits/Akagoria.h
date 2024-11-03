@@ -1,6 +1,8 @@
 #ifndef AKGR_AKAGORIA_H
 #define AKGR_AKAGORIA_H
 
+#include <cstdint>
+
 #include <filesystem>
 
 #include <gf2/framework/SceneSystem.h>
@@ -9,14 +11,14 @@
 
 #include "KickoffAct.h"
 #include "KickoffResources.h"
-
+#include "SlotManager.h"
 #include "WorldAct.h"
 #include "WorldModel.h"
 #include "WorldResources.h"
 
 namespace akgr {
 
-  enum class AdventureChoice {
+  enum class AdventureChoice : uint8_t {
     New,
     Saved,
   };
@@ -24,6 +26,11 @@ namespace akgr {
   class Akagoria : public gf::SceneSystem {
   public:
     Akagoria(const std::filesystem::path& asset_directory);
+
+    SlotManager* slot_manager()
+    {
+      return &m_slot_manager;
+    }
 
     KickoffAct* kickoff_act()
     {
@@ -50,10 +57,12 @@ namespace akgr {
       return m_world_act.get();
     }
 
-    void load_world(AdventureChoice choice);
+    void load_world(AdventureChoice choice, std::size_t index = 0);
     bool world_loaded();
 
   private:
+    SlotManager m_slot_manager;
+
     KickoffResources m_kickoff_resources;
     std::unique_ptr<KickoffAct> m_kickoff_act = nullptr;
 

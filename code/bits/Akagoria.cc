@@ -7,6 +7,8 @@ namespace akgr {
   , m_world_async(render_manager())
   , m_world_model(this)
   {
+    m_slot_manager.load_slot_headers();
+
     auto kickoff_bundle = m_kickoff_resources.bundle(this);
     kickoff_bundle.load_from(resource_manager());
 
@@ -16,14 +18,14 @@ namespace akgr {
     push_scenes(scenes);
   }
 
-  void Akagoria::load_world(AdventureChoice choice)
+  void Akagoria::load_world(AdventureChoice choice, std::size_t index)
   {
-    m_world_async.run_async([this, choice]() {
+    m_world_async.run_async([this, choice, index]() {
       m_world_model.data.load_from_file(resource_manager()->search("akagoria.dat"));
       m_world_model.data.bind();
 
       if (choice == AdventureChoice::Saved) {
-        // TODO
+        m_world_model.state.load_from_file(m_slot_manager.slot(index).saved_state_path);
       }
 
       m_world_model.state.bind(m_world_model.data);
