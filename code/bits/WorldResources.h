@@ -30,6 +30,7 @@ namespace akgr {
     gf::ShapeResource dialog_words_background;
 
     gf::TextResource aspect_text;
+    gf::TextResource area_text;
 
     gf::RichTextResource pinned_quest_text;
 

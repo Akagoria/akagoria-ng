@@ -5,6 +5,7 @@
 #include <gf2/graphics/MotionGroup.h>
 #include <gf2/graphics/Scene.h>
 
+#include "AreaRenderer.h"
 #include "AspectRenderer.h"
 #include "NotificationRenderer.h"
 #include "QuestPinnedRenderer.h"
@@ -36,6 +37,7 @@ namespace akgr {
 
     NotificationRenderer m_notification_renderer;
     AspectRenderer m_aspect_renderer;
+    AreaRenderer m_area_renderer;
     QuestPinnedRenderer m_quest_renderer;
   };
 

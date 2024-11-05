@@ -1,12 +1,34 @@
 #include "WorldData.h"
 
+#include <cassert>
+
+#include <memory>
+
 #include <gf2/core/Streams.h>
 #include <gf2/core/Serialization.h>
 #include <gf2/core/SerializationOps.h>
 
+#include "AreaData.h"
 #include "Version.h"
 
 namespace akgr {
+
+  const AreaData* WorldData::compute_closest_area(gf::Vec2F location) const
+  {
+    auto distance = [location](const AreaData& area) {
+      return gf::natural_distance(area.position, location);
+    };
+
+    auto iterator = std::min_element(areas.begin(), areas.end(), [&](const AreaData& lhs, const AreaData& rhs) {
+      return distance(lhs) < distance(rhs);
+    });
+
+    if (iterator != areas.end()) {
+      return std::addressof(*iterator);
+    }
+
+    return nullptr;
+  }
 
   void WorldData::load_from_file(const std::filesystem::path& filename)
   {
@@ -43,24 +65,28 @@ namespace akgr {
             {
               auto& data  = std::get<HuntQuestData>(step.features);
               data.creature.bind_from(creatures);
+              assert(data.creature.check());
             }
             break;
           case QuestType::Talk:
             {
               auto& data  = std::get<TalkQuestData>(step.features);
               data.dialog.bind_from(dialogs);
+              assert(data.dialog.check());
             }
             break;
           case QuestType::Farm:
             {
               auto& data  = std::get<FarmQuestData>(step.features);
               data.item.bind_from(items);
+              assert(data.item.check());
             }
             break;
           case QuestType::Explore:
             {
               auto& data  = std::get<ExploreQuestData>(step.features);
               data.location.bind_from(locations);
+              assert(data.location.check());
             }
             break;
         }

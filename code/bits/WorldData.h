@@ -5,6 +5,7 @@
 
 #include <gf2/core/TypeTraits.h>
 #include <gf2/core/TiledMap.h>
+#include <gf2/core/Vec2.h>
 
 #include "AreaData.h"
 #include "CharacterData.h"
@@ -31,6 +32,8 @@ namespace akgr {
     // from map (so no serialization)
     DataLexicon<AreaData> areas;
     DataLexicon<LocationData> locations;
+
+    const AreaData* compute_closest_area(gf::Vec2F location) const;
 
     void load_from_file(const std::filesystem::path& filename);
     void save_to_file(const std::filesystem::path& filename) const;

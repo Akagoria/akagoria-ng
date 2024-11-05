@@ -2,7 +2,6 @@
 
 #include "Akagoria.h"
 #include "Colors.h"
-#include "gf2/core/ShapeBuffer.h"
 
 namespace akgr {
 
@@ -79,6 +78,13 @@ namespace akgr {
     aspect_text.data.color = gf::White;
     aspect_text.font = "fonts/DejaVuSans.ttf";
 
+    area_text.data.content = "?";
+    area_text.data.character_size = 20.0f;
+    area_text.data.color = gf::White;
+    area_text.data.paragraph_width = 340.0f;
+    area_text.data.alignment = gf::Alignment::Center;
+    area_text.font = "fonts/DejaVuSans.ttf";
+
     pinned_quest_text.data.content = "?";
     pinned_quest_text.data.character_size = 15.0f;
     pinned_quest_text.data.color = gf::White;
@@ -124,7 +130,7 @@ namespace akgr {
         bundle->handle<gf::Texture>(texture, game->render_manager(), resource_manager, action);
       }
 
-      for (const gf::TextResource& resource : { dialog_speaker_text }) {
+      for (const gf::TextResource& resource : { dialog_speaker_text, aspect_text, area_text }) {
         bundle->handle<gf::FontFace>(resource.font, game->font_manager(), resource_manager, action);
       }
 

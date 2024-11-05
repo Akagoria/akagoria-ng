@@ -38,6 +38,7 @@ namespace akgr {
 
     const T* operator->() const
     {
+      assert(origin != nullptr);
       return origin;
     }
 
