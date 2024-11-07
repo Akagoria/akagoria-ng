@@ -798,7 +798,7 @@ namespace akgr {
                   ImGui::SameLine();
 
                   if (ImGui::Button("Yes, I want to delete")) {
-                    m_data.wang3.erase(m_data.wang3.begin() + index);
+                    m_data.wang3.erase(std::next(m_data.wang3.begin(), std::ptrdiff_t(index)));
                     ImGui::CloseCurrentPopup();
                     m_modified = true;
                   }
