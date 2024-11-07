@@ -60,9 +60,9 @@ namespace akgr {
   {
     gf::TextData data = m_slot_default_text.data;
 
-    for (std::size_t i = 0; i < m_slot_texts.size(); ++i) {
+    for (auto&& [i, text] : gf::enumerate(m_slot_texts)) {
       data.content = m_slot_manager->slot_description(i);
-      m_slot_texts[i].update(data, m_render_manager);
+      text.update(data, m_render_manager);
     }
   }
 
