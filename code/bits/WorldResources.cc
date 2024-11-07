@@ -1,5 +1,7 @@
 #include "WorldResources.h"
 
+#include <gf2/framework/BundleBuilder.h>
+
 #include "Akagoria.h"
 #include "Colors.h"
 
@@ -115,34 +117,30 @@ namespace akgr {
 
   }
 
-  gf::ResourceBundle WorldResources::bundle(Akagoria* game)
+  gf::ResourceBundle WorldResources::bundle(Akagoria* game) const
   {
-    gf::ResourceBundle bundle([game, this](gf::ResourceBundle* bundle, gf::ResourceManager* resource_manager, gf::ResourceAction action) {
-      for (const std::filesystem::path& texture : map_textures) {
-        bundle->handle<gf::Texture>(texture, game->render_manager(), resource_manager, action);
-      }
+    gf::BundleBuilder builder(game);
 
-      for (const std::filesystem::path& texture : animation_textures) {
-        bundle->handle<gf::Texture>(texture, game->render_manager(), resource_manager, action);
-      }
+    builder.add_in_bundle(hero_animations);
 
-      for (const std::filesystem::path& texture : hero_animations.textures) {
-        bundle->handle<gf::Texture>(texture, game->render_manager(), resource_manager, action);
-      }
+    builder.add_in_bundle(notification_text);
+    builder.add_in_bundle(dialog_speaker_text);
+    builder.add_in_bundle(dialog_words_text);
 
-      for (const gf::TextResource& resource : { dialog_speaker_text, aspect_text, area_text }) {
-        bundle->handle<gf::FontFace>(resource.font, game->font_manager(), resource_manager, action);
-      }
+    builder.add_in_bundle(aspect_text);
+    builder.add_in_bundle(area_text);
 
-      for (const gf::RichTextResource& resource : { notification_text, dialog_words_text, pinned_quest_text }) {
-        bundle->handle<gf::FontFace>(resource.default_font, game->font_manager(), resource_manager, action);
-        bundle->handle<gf::FontFace>(resource.bold_font, game->font_manager(), resource_manager, action);
-        bundle->handle<gf::FontFace>(resource.italic_font, game->font_manager(), resource_manager, action);
-        bundle->handle<gf::FontFace>(resource.bold_italic_font, game->font_manager(), resource_manager, action);
-      }
-    });
+    builder.add_in_bundle(pinned_quest_text);
 
-    return bundle;
+    for (const std::filesystem::path& texture : map_textures) {
+      builder.add_raw_texture(texture);
+    }
+
+    for (const std::filesystem::path& texture : animation_textures) {
+      builder.add_raw_texture(texture);
+    }
+
+    return builder.make_bundle();
   }
 
 

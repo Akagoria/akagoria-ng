@@ -12,7 +12,7 @@ namespace akgr {
   struct KickoffResources {
     KickoffResources();
 
-    gf::ResourceBundle bundle(Akagoria* game);
+    gf::ResourceBundle bundle(Akagoria* game) const;
 
     // title
 

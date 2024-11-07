@@ -12,8 +12,6 @@
 #include <gf2/imgui/ImguiManager.h>
 
 #include "config.h"
-#include "bits/WorldData.h"
-#include "gf2/core/Log.h"
 
 namespace {
 

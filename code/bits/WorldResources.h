@@ -40,7 +40,7 @@ namespace akgr {
     std::vector<std::filesystem::path> animation_textures;
 
     void bind(const WorldData& data);
-    gf::ResourceBundle bundle(Akagoria* game);
+    gf::ResourceBundle bundle(Akagoria* game) const;
   };
 
 }

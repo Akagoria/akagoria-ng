@@ -1,6 +1,7 @@
 #include "KickoffResources.h"
 
 #include <gf2/core/Color.h>
+#include <gf2/framework/BundleBuilder.h>
 
 #include "Akagoria.h"
 
@@ -78,23 +79,29 @@ namespace akgr {
 
   }
 
-  gf::ResourceBundle KickoffResources::bundle(Akagoria* game)
+  gf::ResourceBundle KickoffResources::bundle(Akagoria* game) const
   {
-    gf::ResourceBundle bundle([game, this](gf::ResourceBundle* bundle, gf::ResourceManager* resources, gf::ResourceAction action) {
-      // fonts
+    gf::BundleBuilder builder(game);
 
-      for (const gf::TextResource* resource : { &main_title_text, &additional_title_text, &subtitle_text, &icon_arrow_text, &icon_left_text, &icon_right_text, &start_text, &load_text, &quit_text, &back_text, &slot_default_text, &loading_text }) {
-        bundle->handle<gf::FontFace>(resource->font, game->font_manager(), resources, action);
-      }
+    builder.add_in_bundle(title_sprite);
+    builder.add_in_bundle(main_title_text);
+    builder.add_in_bundle(additional_title_text);
+    builder.add_in_bundle(subtitle_text);
 
-      // textures
+    builder.add_in_bundle(icon_arrow_text);
+    builder.add_in_bundle(icon_left_text);
+    builder.add_in_bundle(icon_right_text);
 
-      for (const gf::SpriteResource* resource : { &title_sprite }) {
-        bundle->handle<gf::Texture>(resource->texture, game->render_manager(), resources, action);
-      }
-    });
+    builder.add_in_bundle(start_text);
+    builder.add_in_bundle(load_text);
+    builder.add_in_bundle(quit_text);
+    builder.add_in_bundle(back_text);
 
-    return bundle;
+    builder.add_in_bundle(slot_default_text);
+
+    builder.add_in_bundle(load_text);
+
+    return builder.make_bundle();
   }
 
 }
