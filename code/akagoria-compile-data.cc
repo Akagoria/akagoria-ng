@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <unordered_set>
 
 #include <nlohmann/json.hpp>
 
@@ -226,30 +227,47 @@ namespace akgr {
 
 namespace {
 
+  void copy_textures(const std::filesystem::path& path, const std::filesystem::path& raw_directory, const std::filesystem::path& out_directory)
+  {
+    gf::Log::info("\tCopying texture '{}'...", path.string());
+
+    std::filesystem::path relative_directory = path;
+    relative_directory.remove_filename();
+    std::filesystem::create_directories(out_directory / relative_directory);
+
+    std::filesystem::copy_file(raw_directory / path, out_directory / path, std::filesystem::copy_options::overwrite_existing);
+  }
+
   void copy_textures(const gf::TiledMap& map, const std::filesystem::path& raw_directory, const std::filesystem::path& out_directory)
   {
-    gf::Log::info("# Copying textures...");
     for (const auto& texture : map.textures) {
       const std::filesystem::path relative_path = std::filesystem::proximate(texture.string(), raw_directory);
-      gf::Log::info("\t- Copying texture '{}'...", relative_path.string());
+      copy_textures(relative_path, raw_directory, out_directory);
+    }
+  }
 
-      std::filesystem::path relative_directory = relative_path;
-      relative_directory.remove_filename();
-      std::filesystem::create_directories(out_directory / relative_directory);
+  void copy_textures(const akgr::DataLexicon<akgr::ItemData>& data, const std::filesystem::path& raw_directory, const std::filesystem::path& out_directory)
+  {
+    std::unordered_set<std::filesystem::path> paths;
 
-      std::filesystem::copy_file(raw_directory / relative_path, out_directory / relative_path, std::filesystem::copy_options::overwrite_existing);
+    for (const auto& item : data) {
+      paths.insert(item.sprite.texture);
+    }
+
+    for (const auto& path : paths) {
+      copy_textures(path, raw_directory, out_directory);
     }
   }
 
   void compile_json_characters(const std::filesystem::path& filename, akgr::DataLexicon<akgr::CharacterData>& data) {
-    gf::Log::info("Reading '{}'...", filename.string());
+    gf::Log::info("\tReading '{}'...", filename.string());
     std::ifstream ifs(filename);
     nlohmann::json::parse(ifs).get_to(data);
     akgr::data_lexicon_sort(data);
   }
 
   void compile_json_dialogs(const std::filesystem::path& filename, akgr::DataLexicon<akgr::DialogData>& data, std::vector<std::string>& strings) {
-    gf::Log::info("Reading '{}'...", filename.string());
+    gf::Log::info("\tReading '{}'...", filename.string());
     std::ifstream ifs(filename);
     nlohmann::json::parse(ifs).get_to(data);
 
@@ -263,14 +281,14 @@ namespace {
   }
 
   void compile_json_items(const std::filesystem::path& filename, akgr::DataLexicon<akgr::ItemData>& data) {
-    gf::Log::info("Reading '{}'...", filename.string());
+    gf::Log::info("\tReading '{}'...", filename.string());
     std::ifstream ifs(filename);
     nlohmann::json::parse(ifs).get_to(data);
     akgr::data_lexicon_sort(data);
   }
 
   void compile_json_notifications(const std::filesystem::path& filename, akgr::DataLexicon<akgr::NotificationData>& data, std::vector<std::string>& strings) {
-    gf::Log::info("Reading '{}'...", filename.string());
+    gf::Log::info("\tReading '{}'...", filename.string());
     std::ifstream ifs(filename);
     nlohmann::json::parse(ifs).get_to(data);
 
@@ -282,7 +300,7 @@ namespace {
   }
 
   void compile_json_quests(const std::filesystem::path& filename, akgr::DataLexicon<akgr::QuestData>& data, std::vector<std::string>& strings) {
-    gf::Log::info("Reading '{}'...", filename.string());
+    gf::Log::info("\tReading '{}'...", filename.string());
     std::ifstream ifs(filename);
     nlohmann::json::parse(ifs).get_to(data);
 
@@ -311,9 +329,11 @@ int main() {
   std::vector<std::string> strings;
 
   gf::Log::info("# Reading map...");
+
   data.map = gf::TiledMap(raw_directory / "akagoria.tmx");
 
-  copy_textures(data.map, raw_directory, out_directory);
+  gf::Log::info("# Creating database...");
+
   compile_json_dialogs(raw_directory / "database/dialogs.json", data.dialogs, strings);
   compile_json_items(raw_directory / "database/items.json", data.items);
   compile_json_notifications(raw_directory / "database/notifications.json", data.notifications, strings);
@@ -321,6 +341,11 @@ int main() {
   compile_json_quests(raw_directory / "database/quests.json", data.quests, strings);
 
   data.save_to_file(out_directory / "akagoria.dat");
+
+  gf::Log::info("# Copying textures...");
+
+  copy_textures(data.map, raw_directory, out_directory);
+  copy_textures(data.items, raw_directory, out_directory);
 
   auto duration = clock.elapsed_time();
   gf::Log::info("Data successfully compiled in {} ms", duration.as_milliseconds());
