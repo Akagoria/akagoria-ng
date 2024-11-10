@@ -61,6 +61,8 @@ namespace akgr {
     static void start_dialog(AgateVM* vm);
     static void add_dialog_to_character(AgateVM* vm);
 
+    static void add_item(AgateVM* vm);
+
     static void start_quest(AgateVM* vm);
 
   private:

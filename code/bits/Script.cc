@@ -65,8 +65,8 @@ namespace akgr {
           return &Script::add_requirement;
         case "remove_requirement(_)"_id:
           return &Script::remove_requirement;
-        // case "add_item(_,_)"_id:
-        //   return &Script::addItem;
+        case "add_item(_,_,_)"_id:
+          return &Script::add_item;
         // case "add_item_to_inventory(_)"_id:
         //   return &Script::addItemToInventory;
         // case "set_character_mood(_,_)"_id:
@@ -440,6 +440,32 @@ namespace akgr {
         break;
       }
     }
+
+    agateSlotSetNil(vm, AGATE_RETURN_SLOT);
+  }
+
+  // add_item(item, location)
+  void Script::add_item(AgateVM* vm)
+  {
+    const char *name = agateSlotGetString(vm, 1);
+    const char *item_id = agateSlotGetString(vm, 2);
+    const char *location_id = agateSlotGetString(vm, 3);
+
+    gf::Log::info("[SCRIPT] World.add_item({}, {}, {})", name, item_id, location_id);
+
+    const LocationData* location = data_lexicon_find(data(vm).locations, gf::hash_string(location_id));
+    assert(location);
+
+    ItemState item;
+    item.name = name;
+    item.data.id = gf::hash_string(item_id);
+    item.data.bind_from(data(vm).items);
+    assert(item.data.check());
+
+    item.spot = location->spot;
+    item.rotation = 0.0f; // TODO
+
+    state(vm).items.push_back(std::move(item));
 
     agateSlotSetNil(vm, AGATE_RETURN_SLOT);
   }

@@ -6,6 +6,7 @@
 #include "CharacterRenderer.h"
 #include "FloorRenderer.h"
 #include "HeroRenderer.h"
+#include "ItemRenderer.h"
 #include "MapRenderer.h"
 
 namespace akgr {
@@ -30,6 +31,7 @@ namespace akgr {
 
     HeroRenderer m_hero_renderer;
     CharacterRenderer m_character_renderer;
+    ItemRenderer m_item_renderer;
 
     FloorRendererContainer m_renderers;
   };

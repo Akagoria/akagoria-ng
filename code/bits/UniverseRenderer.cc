@@ -14,12 +14,14 @@ namespace akgr {
   , m_high_object_renderer(PlaneType::Object, Plane::High, game->world_state(), rich_map_renderer)
   , m_hero_renderer(game, resources)
   , m_character_renderer(game, resources)
+  , m_item_renderer(game, resources)
   {
     m_renderers.add_renderer(&m_ground_renderer);
     m_renderers.add_renderer(&m_low_tile_renderer);
     m_renderers.add_renderer(&m_low_object_renderer);
     m_renderers.add_renderer(&m_high_tile_renderer);
     m_renderers.add_renderer(&m_high_object_renderer);
+    m_renderers.add_renderer(&m_item_renderer);
     m_renderers.add_renderer(&m_character_renderer);
     m_renderers.add_renderer(&m_hero_renderer);
 

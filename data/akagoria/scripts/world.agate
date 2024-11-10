@@ -44,7 +44,7 @@ class World {
   # items
   #
 
-  static add_item(item, location) foreign
+  static add_item(name, item, location) foreign
   static add_item_to_inventory(item) foreign
 
   #
