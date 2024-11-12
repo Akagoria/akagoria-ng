@@ -29,10 +29,6 @@ class Kickoff {
     W.post_notification("Welcome")
     W.start_quest("Intro0")
 
-    W.add_item("GemRuby#1", "GemRuby", "GemRubyLocation#1")
-    W.add_item("GemRuby#2", "GemRuby", "GemRubyLocation#2")
-    W.add_item("GemRuby#3", "GemRuby", "GemRubyLocation#3")
-    W.add_item("GemRuby#4", "GemRuby", "GemRubyLocation#4")
 #     W.add_item("GemEmerald", "Emerald #1")
 #     W.add_item_to_inventory("GemEmerald")
 #     W.add_item_to_inventory("GemRuby")

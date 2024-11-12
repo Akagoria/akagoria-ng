@@ -9,6 +9,7 @@
 
 #include "Akagoria.h"
 #include "QuestState.h"
+#include "agate.h"
 
 namespace akgr {
 
@@ -129,7 +130,7 @@ namespace akgr {
 
   Script::~Script()
   {
-    for (auto* handle : { m_method_on_dialog, m_method_on_message, m_method_on_quest, m_method_start, m_method_initialize, m_class_adventure }) {
+    for (auto* handle : { m_method_on_dialog, m_method_on_message, m_method_on_quest, m_method_on_quest_step, m_method_start, m_method_initialize, m_class_adventure }) {
       if (handle != nullptr) {
         agateReleaseHandle(m_vm, handle);
       }
@@ -184,6 +185,8 @@ namespace akgr {
     assert(m_method_on_dialog);
     m_method_on_quest = agateMakeCallHandle(m_vm, "on_quest(_)");
     assert(m_method_on_quest);
+    m_method_on_quest_step = agateMakeCallHandle(m_vm, "on_quest_step(_,_)");
+    assert(m_method_on_quest_step);
   }
 
   const char* Script::load_module(std::filesystem::path name)
@@ -272,6 +275,25 @@ namespace akgr {
 
     if (result != AGATE_STATUS_OK) {
       gf::Log::error("Could not execute 'Adventure.on_quest(_)'");
+    }
+  }
+
+  void Script::on_quest_step(const std::string& name, std::size_t step)
+  {
+    gf::Log::info("[SCRIPT] Adventure.on_quest_step({}, {})", name, step);
+
+    agateStackStart(m_vm);
+    ptrdiff_t arg0 = agateSlotAllocate(m_vm);
+    agateSlotSetHandle(m_vm, arg0, m_class_adventure);
+    ptrdiff_t arg1 = agateSlotAllocate(m_vm);
+    agateSlotSetString(m_vm, arg1, name.c_str());
+    ptrdiff_t arg2 = agateSlotAllocate(m_vm);
+    agateSlotSetInt(m_vm, arg2, int64_t(step));
+    AgateStatus result = agateCallHandle(m_vm, m_method_on_quest_step);
+    agateStackFinish(m_vm);
+
+    if (result != AGATE_STATUS_OK) {
+      gf::Log::error("Could not execute 'Adventure.on_quest_step(_,_)'");
     }
   }
 

@@ -31,6 +31,7 @@ class Adventure {
     @@messages = { }
     @@dialogs = { }
     @@quests = { }
+    @@quest_steps = { }
 
     # special messages
 
@@ -81,6 +82,21 @@ class Adventure {
     }
   }
 
+  static on_quest_step(quest, step) {
+    def callback_array = @@quest_steps[quest]
+
+    if (callback_array) {
+      def callback = callback_array[step]
+
+      if (callback) {
+        callback()
+        return
+      }
+    }
+
+    IO.println("No callback for quest step '%(quest)/%(step)'")
+  }
+
   #
   # Others
   #
@@ -96,4 +112,19 @@ class Adventure {
   static add_quest_callback(quest, fn) {
     @@quests[quest] = fn
   }
+
+  static add_quest_step_callback(quest, step, fn) {
+    def quest_steps = @@quest_steps[quest]
+
+    if (!quest_steps) {
+      quest_steps = @@quest_steps[quest] = []
+    }
+
+    while (step >= quest_steps.size) {
+      quest_steps.append(nil)
+    }
+
+    quest_steps[step] = fn
+  }
+
 }

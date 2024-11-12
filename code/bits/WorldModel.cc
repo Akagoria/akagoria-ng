@@ -249,7 +249,13 @@ namespace akgr {
   template<typename Predicate>
   void WorldModel::check_quest(QuestType type, Predicate predicate)
   {
+    struct QuestStepInfo {
+      std::string name;
+      std::size_t step;
+    };
+
     std::optional<std::string> finished_quest;
+    std::optional<QuestStepInfo> finished_quest_step;
 
     for (auto& quest : state.hero.quests) {
       if (quest.status == QuestStatus::Finished) {
@@ -270,12 +276,18 @@ namespace akgr {
           finished_quest = quest.data->label.tag;
         }
 
+        finished_quest_step = { quest.data->label.tag, quest.current_step };
         break;
       }
     }
 
     // get out of the loop because the script can add a new quest
     // and invalidate the current iterator
+
+    if (finished_quest_step) {
+      const QuestStepInfo& info = *finished_quest_step;
+      runtime.script.on_quest_step(info.name, info.step);
+    }
 
     if (finished_quest) {
       // TODO: automatic notification for the end of the quest?
