@@ -1,5 +1,7 @@
 #include "WorldTravelScene.h"
 
+#include <gf2/core/Log.h>
+
 #include "Akagoria.h"
 #include "HeroState.h"
 
@@ -10,6 +12,7 @@ namespace akgr {
     constexpr gf::Vec2F WorldTravelSceneWorldSize = { 1600, 900 };
 
     constexpr float DialogDistance = 100.0f;
+    constexpr float ItemDistance = 100.0f;
 
   }
 
@@ -107,6 +110,10 @@ namespace akgr {
     if (handle_hero_dialogs()) {
       return;
     }
+
+    if (handle_hero_items()) {
+      return;
+    }
   }
 
   bool WorldTravelScene::handle_hero_dialogs()
@@ -127,6 +134,26 @@ namespace akgr {
         hero.dialog.current_line = 0;
         character.dialog.reset();
         m_game->replace_scene(&m_game->world_act()->dialog_scene);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  bool WorldTravelScene::handle_hero_items()
+  {
+    auto& hero = m_game->world_state()->hero;
+    auto& items = m_game->world_state()->items;
+
+    for (auto& item : items) {
+      if (item.spot.floor != hero.spot.floor) {
+        continue;
+      }
+
+      if (gf::square_distance(item.spot.location, hero.spot.location) < gf::square(ItemDistance)) {
+        item.picked = true;
+        // item is actually removed in WorldModel
         return true;
       }
     }

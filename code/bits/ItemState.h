@@ -16,11 +16,12 @@ namespace akgr {
     DataReference<ItemData> data;
     Spot spot;
     float rotation = 0.0f;
+    bool picked = false;
   };
 
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<ItemState, Archive>& state) {
-    return ar | state.name | state.data | state.spot | state.rotation;
+    return ar | state.name | state.data | state.spot | state.rotation | state.picked;
   }
 
 }

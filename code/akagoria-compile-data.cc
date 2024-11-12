@@ -121,6 +121,7 @@ namespace akgr {
     json.at("type").get_to(data.type);
     json.at("description").get_to(data.description);
     json.at("sprite").get_to(data.sprite);
+    json.at("scale").get_to(data.scale);
   }
 
   // Notification

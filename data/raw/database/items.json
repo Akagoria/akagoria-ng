@@ -3,24 +3,28 @@
     "label": "GemDiamond",
     "description": "Diamond",
     "type": "Rare",
-    "sprite": { "texture": "sprites/sprites-64.png", "region": [ 0, 16, 16 ] }
+    "sprite": { "texture": "sprites/sprites-64.png", "region": [ 0, 16, 16 ] },
+    "scale": 0.25
   },
   {
     "label": "GemEmerald",
     "description": "Emerald",
     "type": "Rare",
-    "sprite": { "texture": "sprites/sprites-64.png", "region": [ 1, 16, 16 ] }
+    "sprite": { "texture": "sprites/sprites-64.png", "region": [ 1, 16, 16 ] },
+    "scale": 0.25
   },
   {
     "label": "GemRuby",
     "description": "Ruby",
     "type": "Rare",
-    "sprite": { "texture": "sprites/sprites-64.png", "region": [ 2, 16, 16 ] }
+    "sprite": { "texture": "sprites/sprites-64.png", "region": [ 2, 16, 16 ] },
+    "scale": 0.25
   },
   {
     "label": "GemSapphire",
     "description": "Sapphire",
     "type": "Rare",
-    "sprite": { "texture": "sprites/sprites-64.png", "region": [ 3, 16, 16 ] }
+    "sprite": { "texture": "sprites/sprites-64.png", "region": [ 3, 16, 16 ] },
+    "scale": 0.25
   }
 ]

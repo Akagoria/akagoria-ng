@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="2048" height="2048" tilewidth="32" tileheight="32" infinite="0" nextlayerid="15" nextobjectid="305">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="2048" height="2048" tilewidth="32" tileheight="32" infinite="0" nextlayerid="15" nextobjectid="308">
  <tileset firstgid="1" source="tilesets/biomes.tsx"/>
  <tileset firstgid="11665" name="sprites-128" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="tilesets/sprites-128.png" width="1024" height="1024"/>
@@ -215,6 +215,15 @@
     <point/>
    </object>
    <object id="304" name="GemRubyLocation#1" x="11728" y="57220">
+    <point/>
+   </object>
+   <object id="305" name="GemRubyLocation#2" x="11693" y="56973">
+    <point/>
+   </object>
+   <object id="306" name="GemRubyLocation#3" x="11381" y="57330">
+    <point/>
+   </object>
+   <object id="307" name="GemRubyLocation#4" x="11291" y="56993">
     <point/>
    </object>
   </objectgroup>

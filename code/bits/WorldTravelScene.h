@@ -29,6 +29,7 @@ namespace akgr {
 
     void handle_hero_operation();
     bool handle_hero_dialogs();
+    bool handle_hero_items();
 
     Akagoria* m_game = nullptr;
 

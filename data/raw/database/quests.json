@@ -11,6 +11,12 @@
         "dialog": "ShagirConversation0"
       },
       {
+        "type": "Farm",
+        "description": "Pick <b>4</> <style=item>ruby gems</>",
+        "item": "GemRuby",
+        "count": 4
+      },
+      {
         "type": "Explore",
         "description": "Find the <style=location>exit</>",
         "location": "Start",

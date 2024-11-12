@@ -37,6 +37,7 @@ namespace akgr {
     // bound from data
 
     std::vector<std::filesystem::path> map_textures;
+    std::vector<std::filesystem::path> item_textures;
     std::vector<std::filesystem::path> animation_textures;
 
     void bind(const WorldData& data);

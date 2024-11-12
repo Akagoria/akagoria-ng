@@ -109,11 +109,18 @@ namespace akgr {
       map_textures.push_back(texture);
     }
 
+    // item_textures
+
+    for (const auto& item : data.items) {
+      item_textures.push_back(item.sprite.texture);
+    }
+
     // animation_textures
 
     for (const auto& character : data.characters) {
       animation_textures.push_back(character_animation_path(character));
     }
+
 
   }
 
@@ -133,6 +140,10 @@ namespace akgr {
     builder.add_in_bundle(pinned_quest_text);
 
     for (const std::filesystem::path& texture : map_textures) {
+      builder.add_raw_texture(texture);
+    }
+
+    for (const std::filesystem::path& texture : item_textures) {
       builder.add_raw_texture(texture);
     }
 

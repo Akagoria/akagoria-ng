@@ -33,11 +33,12 @@ namespace akgr {
     ItemType type;
     std::string description;
     gf::SpriteResource sprite;
+    float scale = 1.0f;
   };
 
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<ItemData, Archive>& data) {
-    return ar | data.label | data.type |  data.description | data.sprite;
+    return ar | data.label | data.type |  data.description | data.sprite | data.scale;
   }
 
 }

@@ -16,6 +16,7 @@ namespace akgr {
       style.set_style("progress", { 1.0f, gf::White, gf::None });
       style.set_style("character", { 1.0f, gf::Chartreuse, gf::FontStyle::Bold });
       style.set_style("location", { 1.0f, gf::Orange, gf::FontStyle::Bold });
+      style.set_style("item", { 1.0f, gf::Purple, gf::FontStyle::Bold });
       return style;
     }
 

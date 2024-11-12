@@ -1,6 +1,8 @@
 #ifndef AKGR_ITEM_RENDERER_H
 #define AKGR_ITEM_RENDERER_H
 
+#include <gf2/graphics/SpriteGroup.h>
+
 #include "FloorRenderer.h"
 
 namespace akgr {
@@ -17,6 +19,9 @@ namespace akgr {
 
   private:
     Akagoria* m_game = nullptr;
+
+    gf::SpriteGroupResource m_sprite_group_resource;
+    gf::SpriteGroup m_sprite_group;
   };
 
 

@@ -32,6 +32,7 @@ namespace akgr {
     update_dialog(time);
     update_exploration(time);
     update_characters(time);
+    update_items(time);
     update_physics(time);
     update_quests(time);
     update_notifications(time);
@@ -157,6 +158,22 @@ namespace akgr {
     }
   }
 
+  void WorldModel::update_items([[maybe_unused]] gf::Time time)
+  {
+    bool need_update = false;
+
+    for (auto& item : state.items) {
+      if (item.picked) {
+        need_update = true;
+        check_quest_farm(item.data->label.tag);
+      }
+    }
+
+    if (need_update) {
+      state.items.erase(std::remove_if(state.items.begin(), state.items.end(), [](const ItemState& item) { return item.picked; }), state.items.end());
+    }
+  }
+
   void WorldModel::update_physics(gf::Time time)
   {
     runtime.physics.world.update(time);
@@ -200,7 +217,7 @@ namespace akgr {
 
   void WorldModel::check_quest_dialog(const std::string& label)
   {
-    check_quest(QuestType::Talk, [&label](const QuestStepData& step) {
+    check_quest(QuestType::Talk, [&label]([[maybe_unused]] QuestState& quest, const QuestStepData& step) {
       const auto& data = std::get<TalkQuestData>(step.features);
       return data.dialog->label.tag == label;
     });
@@ -208,9 +225,24 @@ namespace akgr {
 
   void WorldModel::check_quest_explore(const std::string& label)
   {
-    check_quest(QuestType::Explore, [&label](const QuestStepData& step) {
+    check_quest(QuestType::Explore, [&label]([[maybe_unused]] QuestState& quest, const QuestStepData& step) {
       const auto& data = std::get<ExploreQuestData>(step.features);
       return data.location.origin->label.tag == label;
+    });
+  }
+
+  void WorldModel::check_quest_farm(const std::string& label)
+  {
+    check_quest(QuestType::Farm, [&label](QuestState& quest, const QuestStepData& step) {
+      const auto& data = std::get<FarmQuestData>(step.features);
+      auto& state = std::get<FarmQuestState>(quest.features);
+
+      if (data.item->label.tag == label) {
+        ++state.amount;
+        return state.amount == data.count;
+      }
+
+      return false;
     });
   }
 
@@ -233,7 +265,7 @@ namespace akgr {
       const QuestStepData& step = quest.data->steps[quest.current_step];
       assert(step.type() == type);
 
-      if (predicate(step)) {
+      if (predicate(quest, step)) {
         if (advance_in_quest(quest)) {
           finished_quest = quest.data->label.tag;
         }
