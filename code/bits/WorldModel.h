@@ -1,6 +1,8 @@
 #ifndef AKGR_WORLD_MODEL_H
 #define AKGR_WORLD_MODEL_H
 
+#include <queue>
+
 #include <gf2/core/Model.h>
 
 #include "WorldData.h"
@@ -31,6 +33,10 @@ namespace akgr {
     void update_quests(gf::Time time);
     void update_notifications(gf::Time time);
 
+    // quest handling
+
+    std::queue<std::string> m_advancing_quests;
+
     void check_quest_dialog(const std::string& label);
     void check_quest_explore(const std::string& label);
     void check_quest_farm(const std::string& label);
@@ -38,7 +44,8 @@ namespace akgr {
     template<typename Predicate>
     void check_quest(QuestType type, Predicate predicate);
 
-    static bool advance_in_quest(QuestState& quest);
+    bool advance_in_quest(QuestState& quest);
+    void initialize_quest_from_state(QuestState& quest);
   };
 
 }

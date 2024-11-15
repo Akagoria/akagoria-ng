@@ -166,6 +166,7 @@ namespace akgr {
       if (item.picked) {
         need_update = true;
         check_quest_farm(item.data->label.tag);
+        state.hero.inventory.add_item(item.data);
       }
     }
 
@@ -194,9 +195,24 @@ namespace akgr {
 
   void WorldModel::update_quests([[maybe_unused]] gf::Time time)
   {
-    for (auto& quest : state.hero.quests) {
-      if (quest.current_step == quest.data->steps.size()) {
-        quest.status = QuestStatus::Finished;
+    while (!m_advancing_quests.empty()) {
+      const std::string quest_name = std::move(m_advancing_quests.front());
+      m_advancing_quests.pop();
+
+      auto iterator = std::find_if(state.hero.quests.begin(), state.hero.quests.end(), [&](const QuestState& quest_state) {
+        return quest_state.data->label.tag == quest_name;
+      });
+
+      assert(iterator != state.hero.quests.end());
+
+      QuestState& quest_state = *iterator;
+
+      runtime.script.on_quest_step(quest_name, quest_state.current_step + 1);
+
+      if (advance_in_quest(quest_state)) {
+        // TODO: automatic notification for the end of the quest?
+        quest_state.status = QuestStatus::Finished;
+        runtime.script.on_quest(quest_name);
       }
     }
   }
@@ -249,14 +265,6 @@ namespace akgr {
   template<typename Predicate>
   void WorldModel::check_quest(QuestType type, Predicate predicate)
   {
-    struct QuestStepInfo {
-      std::string name;
-      std::size_t step;
-    };
-
-    std::optional<std::string> finished_quest;
-    std::optional<QuestStepInfo> finished_quest_step;
-
     for (auto& quest : state.hero.quests) {
       if (quest.status == QuestStatus::Finished) {
         continue;
@@ -272,27 +280,10 @@ namespace akgr {
       assert(step.type() == type);
 
       if (predicate(quest, step)) {
-        if (advance_in_quest(quest)) {
-          finished_quest = quest.data->label.tag;
-        }
-
-        finished_quest_step = { quest.data->label.tag, quest.current_step };
-        break;
+        m_advancing_quests.push(quest.data->label.tag);
       }
     }
 
-    // get out of the loop because the script can add a new quest
-    // and invalidate the current iterator
-
-    if (finished_quest_step) {
-      const QuestStepInfo& info = *finished_quest_step;
-      runtime.script.on_quest_step(info.name, info.step);
-    }
-
-    if (finished_quest) {
-      // TODO: automatic notification for the end of the quest?
-      runtime.script.on_quest(*finished_quest);
-    }
   }
 
   bool WorldModel::advance_in_quest(QuestState& quest)
@@ -305,7 +296,48 @@ namespace akgr {
     }
 
     quest.reset_features();
+    initialize_quest_from_state(quest);
     return false;
+  }
+
+  void WorldModel::initialize_quest_from_state(QuestState& quest)
+  {
+    assert(quest.current_step < quest.data->steps.size());
+
+    const QuestStepData& step = quest.data->steps[quest.current_step];
+
+    switch (step.type()) {
+      case QuestType::None:
+      case QuestType::Talk:
+      case QuestType::Explore:
+        break;
+      case QuestType::Hunt:
+        {
+          auto& quest_state = std::get<HuntQuestState>(quest.features);
+          quest_state.amount = 0; // TODO
+        }
+        break;
+      case QuestType::Farm:
+        {
+          const auto& quest_data = std::get<FarmQuestData>(step.features);
+          auto& quest_state = std::get<FarmQuestState>(quest.features);
+          quest_state.amount = 0;
+
+          for (auto& item : state.hero.inventory.items) {
+            if (quest_data.item->label.id == item.data->label.id) {
+              quest_state.amount += item.count;
+
+              if (quest_state.amount >= quest_data.count) {
+                m_advancing_quests.push(quest.data->label.tag);
+              }
+            }
+          }
+
+
+        }
+        break;
+    }
+
   }
 
 }
