@@ -5,6 +5,7 @@
 
 #include "KickoffResources.h"
 #include "SlotManager.h"
+#include "UiToolkit.h"
 #include "ui/State.h"
 #include "ui/Theme.h"
 #include "ui/Widgets.h"
@@ -17,11 +18,9 @@ namespace akgr {
     Back,
   };
 
-  class SlotSelectorRenderer : public gf::Entity {
+  class SlotSelectorRenderer : public UiEntity {
   public:
     SlotSelectorRenderer(Akagoria* game, const KickoffResources& resources, gf::FontAtlas* atlas);
-
-    void set_active(bool active) { m_active = active; }
 
     void synchronize_with_slots();
     void compute_next_choice();
@@ -36,7 +35,6 @@ namespace akgr {
     gf::RenderManager* m_render_manager = nullptr;
     SlotManager* m_slot_manager = nullptr;
 
-    bool m_active = false;
     ui::IndexState m_menu_index;
 
     gf::Text m_icon_arrow_text;
@@ -52,6 +50,22 @@ namespace akgr {
     ui::LabelTheme m_label_theme;
 
     ui::FrameWidget m_frame_widget;
+  };
+
+  class SlotSelectorElement : public UiElement {
+  public:
+    SlotSelectorElement(Akagoria* game, SlotSelectorRenderer* entity);
+
+    void on_down(UiToolkit& toolkit) override;
+    void on_up(UiToolkit& toolkit) override;
+    void on_use(UiToolkit& toolkit) override;
+    void on_visibility_change(bool visible) override;
+
+    UiEntity* entity() override;
+
+  private:
+    Akagoria* m_game = nullptr;
+    SlotSelectorRenderer* m_entity = nullptr;
   };
 
 }

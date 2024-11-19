@@ -283,7 +283,6 @@ namespace akgr {
         m_advancing_quests.push(quest.data->label.tag);
       }
     }
-
   }
 
   bool WorldModel::advance_in_quest(QuestState& quest)

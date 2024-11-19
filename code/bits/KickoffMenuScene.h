@@ -10,6 +10,7 @@
 #include "KickoffResources.h"
 #include "StartMenuRenderer.h"
 #include "SlotSelectorRenderer.h"
+#include "UiToolkit.h"
 
 namespace akgr {
 
@@ -25,8 +26,6 @@ namespace akgr {
       SlotSelector,
     };
 
-    static gf::ActionGroupSettings compute_settings();
-
     void do_process_event(const gf::Event& event) override;
     void do_handle_actions() override;
 
@@ -38,7 +37,11 @@ namespace akgr {
     Menu m_menu = Menu::StartMenu;
 
     StartMenuRenderer m_start_menu;
+    StartMenuElement m_start_menu_element;
     SlotSelectorRenderer m_slot_selector;
+    SlotSelectorElement m_slot_selector_element;
+
+    UiToolkit m_ui;
   };
 
 }

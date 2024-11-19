@@ -7,6 +7,9 @@
 #include "ui/Properties.h"
 
 namespace akgr {
+  /*
+   * SlotSelectorRenderer
+   */
 
   SlotSelectorRenderer::SlotSelectorRenderer(Akagoria* game, const KickoffResources& resources, gf::FontAtlas* atlas)
   : m_render_manager(game->render_manager())
@@ -91,7 +94,7 @@ namespace akgr {
 
   void SlotSelectorRenderer::update(gf::Time time)
   {
-    if (!m_active) {
+    if (!visible()) {
       return;
     }
 
@@ -100,11 +103,64 @@ namespace akgr {
 
   void SlotSelectorRenderer::render(gf::RenderRecorder& recorder)
   {
-    if (!m_active) {
+    if (!visible()) {
       return;
     }
 
     m_frame_widget.render(recorder);
+  }
+
+  /*
+   * SlotSelectorElement
+   */
+
+  SlotSelectorElement::SlotSelectorElement(Akagoria* game, SlotSelectorRenderer* entity)
+  : m_game(game)
+  , m_entity(entity)
+  {
+  }
+
+  void SlotSelectorElement::on_down([[maybe_unused]] UiToolkit& toolkit)
+  {
+    m_entity->compute_next_choice();
+  }
+
+  void SlotSelectorElement::on_up([[maybe_unused]] UiToolkit& toolkit)
+  {
+    m_entity->compute_prev_choice();
+  }
+
+  void SlotSelectorElement::on_use(UiToolkit& toolkit)
+  {
+    using namespace gf::literals;
+
+    switch (m_entity->choice()) {
+      case SlotSelectorChoice::Slot:
+        {
+          auto index = m_entity->selected_slot();
+
+          if (m_game->slot_manager()->slot(index).active) {
+            m_game->load_world(AdventureChoice::Saved, index);
+            m_game->replace_scene(&m_game->kickoff_act()->loading_scene);
+          }
+        }
+        break;
+      case SlotSelectorChoice::Back:
+        toolkit.change_ui_element("start_menu"_id);
+        break;
+    }
+  }
+
+  void SlotSelectorElement::on_visibility_change(bool visible)
+  {
+    if (visible) {
+      m_entity->synchronize_with_slots();
+    }
+  }
+
+  UiEntity* SlotSelectorElement::entity()
+  {
+    return m_entity;
   }
 
 }

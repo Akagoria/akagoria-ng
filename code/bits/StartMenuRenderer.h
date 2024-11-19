@@ -3,7 +3,6 @@
 
 #include <cstdint>
 
-#include <gf2/graphics/Entity.h>
 #include <gf2/graphics/FontAtlas.h>
 #include <gf2/graphics/Text.h>
 
@@ -12,6 +11,7 @@
 #include "ui/Widgets.h"
 
 #include "KickoffResources.h"
+#include "UiToolkit.h"
 
 namespace akgr {
   class Akagoria;
@@ -22,11 +22,9 @@ namespace akgr {
     Quit = 2,
   };
 
-  class StartMenuRenderer : public gf::Entity {
+  class StartMenuRenderer : public UiEntity {
   public:
     StartMenuRenderer(Akagoria* game, const KickoffResources& resources, gf::FontAtlas* atlas);
-
-    void set_active(bool active) { m_active = active; }
 
     void compute_next_choice();
     void compute_prev_choice();
@@ -36,7 +34,6 @@ namespace akgr {
     void render(gf::RenderRecorder& recorder) override;
 
   private:
-    bool m_active = false;
     ui::IndexState m_menu_index;
 
     gf::Text m_icon_arrow_text;
@@ -50,6 +47,21 @@ namespace akgr {
     ui::LabelTheme m_label_theme;
 
     ui::FrameWidget m_frame_widget;
+  };
+
+  class StartMenuElement : public UiElement {
+  public:
+    StartMenuElement(Akagoria* game, StartMenuRenderer* entity);
+
+    void on_down(UiToolkit& toolkit) override;
+    void on_up(UiToolkit& toolkit) override;
+    void on_use(UiToolkit& toolkit) override;
+
+    UiEntity* entity() override;
+
+  private:
+    Akagoria* m_game = nullptr;
+    StartMenuRenderer* m_entity = nullptr;
   };
 
 }

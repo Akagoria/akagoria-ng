@@ -5,6 +5,9 @@
 #include "ui/Widgets.h"
 
 namespace akgr {
+  /*
+   * StartMenuRenderer
+   */
 
   StartMenuRenderer::StartMenuRenderer(Akagoria* game, const KickoffResources& resources, gf::FontAtlas* atlas)
   : m_icon_arrow_text(atlas, resources.icon_arrow_text, game->render_manager(), game->resource_manager())
@@ -53,7 +56,7 @@ namespace akgr {
 
   void StartMenuRenderer::update(gf::Time time)
   {
-    if (!m_active) {
+    if (!visible()) {
       return;
     }
 
@@ -62,11 +65,54 @@ namespace akgr {
 
   void StartMenuRenderer::render(gf::RenderRecorder& recorder)
   {
-    if (!m_active) {
+    if (!visible()) {
       return;
     }
 
     m_frame_widget.render(recorder);
+  }
+
+  /*
+   * StartMenuElement
+   */
+
+  StartMenuElement::StartMenuElement(Akagoria* game, StartMenuRenderer* entity)
+  : m_game(game)
+  , m_entity(entity)
+  {
+  }
+
+  void StartMenuElement::on_down([[maybe_unused]] UiToolkit& toolkit)
+  {
+    m_entity->compute_next_choice();
+  }
+
+  void StartMenuElement::on_up([[maybe_unused]] UiToolkit& toolkit)
+  {
+    m_entity->compute_prev_choice();
+  }
+
+  void StartMenuElement::on_use(UiToolkit& toolkit)
+  {
+    using namespace gf::literals;
+
+    switch (m_entity->choice()) {
+      case StartMenuChoice::StartAdventure:
+        m_game->load_world(AdventureChoice::New);
+        m_game->replace_scene(&m_game->kickoff_act()->loading_scene);
+        break;
+      case StartMenuChoice::LoadAdventure:
+        toolkit.change_ui_element("slot_selector"_id);
+        break;
+      case StartMenuChoice::Quit:
+        m_game->pop_all_scenes();
+        break;
+    }
+  }
+
+  UiEntity* StartMenuElement::entity()
+  {
+    return m_entity;
   }
 
 }
