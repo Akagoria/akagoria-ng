@@ -6,6 +6,7 @@ namespace akgr {
   : base_scene(game, resources)
   , travel_scene(game, resources)
   , dialog_scene(game, resources)
+  , menu_scene(game, resources)
   {
   }
 

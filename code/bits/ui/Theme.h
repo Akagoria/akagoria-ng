@@ -58,6 +58,9 @@ namespace akgr::ui {
   struct MenuTheme : BoxTheme {
   };
 
+  struct ChoiceTheme : StackTheme {
+  };
+
   struct LabelTheme : WidgetTheme {
   };
 

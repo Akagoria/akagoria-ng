@@ -44,6 +44,8 @@ namespace akgr {
     settings.actions.emplace("right"_id, gf::continuous_action().add_scancode_control(gf::Scancode::Right));
     settings.actions.emplace("operate"_id, gf::instantaneous_action().add_scancode_control(gf::Scancode::Return));
 
+    settings.actions.emplace("menu"_id, gf::instantaneous_action().add_scancode_control(gf::Scancode::Escape));
+
     return settings;
   }
 
@@ -87,6 +89,10 @@ namespace akgr {
 
     if (m_action_group.active("operate"_id)) {
       handle_hero_operation();
+    }
+
+    if (m_action_group.active("menu"_id)) {
+      m_game->replace_scene(&m_game->world_act()->menu_scene);
     }
 
     auto stick = m_motion_group.last_gamepad_stick_location(gf::GamepadStick::Left);

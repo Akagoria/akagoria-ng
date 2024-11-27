@@ -1,5 +1,6 @@
 #include "Widgets.h"
 
+#include <algorithm>
 #include <utility>
 
 #include <gf2/core/Color.h>
@@ -133,50 +134,50 @@ namespace akgr::ui {
    * StackWidget
    */
 
-  // StackWidget::StackWidget(Widget* parent)
-  // : ContainerWidget(parent)
-  // , m_positioning(Positioning::Middle)
-  // {
-  // }
-  //
-  // void StackWidget::do_layout_request() {
-  //   gf::Vec2F container = size();
-  //
-  //   for (auto* child : *this) {
-  //     child->request_layout();
-  //     container = gf::max(container, child->size() + m_theme->padding.ne.*axis1);
-  //   }
-  //
-  //   set_size(container);
-  // }
-  //
-  // void StackWidget::do_layout_allocation() {
-  //   gf::Vec2F container = size();
-  //
-  //   for (auto* child : *this) {
-  //     gf::Vec2F size = child->size();
-  //     gf::Vec2F position = m_margin;
-  //
-  //     switch (m_positioning) {
-  //       case Positioning::Minimum:
-  //         position = m_margin;
-  //         break;
-  //       case Positioning::Middle:
-  //         position = (container - size) / 2;
-  //         break;
-  //       case Positioning::Maximum:
-  //         position = container - size - m_margin;
-  //         break;
-  //       case Positioning::Fill:
-  //         size = container - 2 * m_margin;
-  //         break;
-  //     }
-  //
-  //     child->set_position(position);
-  //     child->set_size(size);
-  //     child->allocate_layout();
-  //   }
-  // }
+  StackWidget::StackWidget(Widget* parent, StackTheme* theme)
+  : ContainerWidget(parent)
+  , m_theme(theme)
+  {
+  }
+
+  void StackWidget::layout_request() {
+    gf::Vec2F container = size();
+
+    for (auto* child : *this) {
+      child->layout_request();
+      container = gf::max(container, child->size() + m_theme->padding.ne + m_theme->padding.sw);
+    }
+
+    set_size(container);
+  }
+
+  void StackWidget::layout_allocation() {
+    gf::Vec2F container = size();
+
+    for (auto* child : *this) {
+      gf::Vec2F size = child->size();
+      gf::Vec2F position = m_theme->padding.ne;
+
+      switch (m_positioning) {
+        case Positioning::Minimum:
+          position = m_theme->padding.ne;
+          break;
+        case Positioning::Middle:
+          position = (container - size) / 2;
+          break;
+        case Positioning::Maximum:
+          position = container - size - m_theme->padding.sw;
+          break;
+        case Positioning::Fill:
+          size = container - m_theme->padding.ne - m_theme->padding.sw;
+          break;
+      }
+
+      child->set_position(position);
+      child->set_size(size);
+      child->layout_allocation();
+    }
+  }
 
   /*
     * ListWidget
@@ -297,36 +298,14 @@ namespace akgr::ui {
    * MenuWidget
    */
 
-  MenuWidget::MenuWidget(Widget* parent, Widget* arrow, const IndexState* index, MenuTheme* theme)
+  MenuWidget::MenuWidget(Widget* parent, std::unique_ptr<Widget> arrow, const IndexState* index, MenuTheme* theme)
   : BoxWidget(parent, Aspect::Vertical, theme)
-  , m_arrow(arrow)
+  , m_arrow(std::move(arrow))
   , m_index(index)
   , m_theme(theme)
   {
     set_positioning(Positioning::Minimum);
     m_arrow->set_parent(this);
-  }
-
-  MenuWidget::MenuWidget(MenuWidget&& other) noexcept
-  : BoxWidget(std::move(other))
-  , m_arrow(std::exchange(other.m_arrow, nullptr))
-  , m_index(std::exchange(other.m_index, nullptr))
-  , m_theme(std::exchange(other.m_theme, nullptr))
-  {
-  }
-
-  MenuWidget::~MenuWidget()
-  {
-    delete m_arrow;
-  }
-
-  MenuWidget& MenuWidget::operator=(MenuWidget&& other) noexcept
-  {
-    BoxWidget::operator=(std::move(other));
-    std::swap(m_arrow, other.m_arrow);
-    std::swap(m_index, other.m_index);
-    std::swap(m_theme, other.m_theme);
-    return *this;
   }
 
   void MenuWidget::render(gf::RenderRecorder& recorder)
@@ -363,55 +342,54 @@ namespace akgr::ui {
   }
 
 
-#if 0
   /*
    * ChoiceWidget
    */
 
-  ChoiceWidget::ChoiceWidget(Widget* parent, const WidgetIndexScenery& scenery)
-  : StackWidget(parent)
-  , m_scenery(scenery)
+  ChoiceWidget::ChoiceWidget(Widget* parent, std::unique_ptr<Widget> left_arrow, std::unique_ptr<Widget> right_arrow, const IndexState* index, ChoiceTheme* theme)
+  : StackWidget(parent, theme)
+  , m_left_arrow(std::move(left_arrow))
+  , m_right_arrow(std::move(right_arrow))
+  , m_index(index)
+  , m_theme(theme)
   {
-
+    m_left_arrow->set_parent(this);
+    m_right_arrow->set_parent(this);
   }
 
-  void ChoiceWidget::render(gf::RenderTarget& target, const gf::RenderStates& states, Theme& theme) {
-    std::size_t i = m_scenery.choice;
-    assert(i < getChildrenCount());
-    auto widget = getChild(i);
-    assert(widget);
-    widget->render(target, states, theme);
+  void ChoiceWidget::render(gf::RenderRecorder& recorder)
+  {
+    const uint32_t chosen = m_index->choice;
+    assert(chosen < children_count());
+    Widget* widget = child(chosen);
+    widget->render(recorder);
 
-    gf::Coordinates coords(target);
-
-    gf::Vec2F position = coords.getRelativePoint(getAbsolutePosition());
-    gf::Vec2F size = coords.getRelativeSize(getSize());
-
-    float square = size.height;
-
-    gf::CompoundCurve back({ square / 2, square / 4 });
-    back.lineTo({ square / 4, square / 2 });
-    back.lineTo({ square / 2, 3 * square / 4 });
-    back.setPosition(position);
-    back.setType(gf::Curve::Outlined);
-    back.setWidth(size.height / 10);
-    back.setColor(gf::Color::White);
-    back.setOutlineColor(gf::Color::Black);
-    back.setOutlineThickness(1);
-    target.draw(back, states);
-
-    gf::CompoundCurve forth({ - square / 2, square / 4 });
-    forth.lineTo({ - square / 4, square / 2 });
-    forth.lineTo({ - square / 2, 3 * square / 4 });
-    forth.setPosition({ position.x + size.width, position.y });
-    forth.setType(gf::Curve::Outlined);
-    forth.setWidth(size.height / 10);
-    forth.setColor(gf::Color::White);
-    forth.setOutlineColor(gf::Color::Black);
-    forth.setOutlineThickness(1);
-    target.draw(forth, states);
+    m_left_arrow->render(recorder);
+    m_right_arrow->render(recorder);
   }
 
+  void ChoiceWidget::layout_request()
+  {
+    m_left_arrow->layout_request();
+    m_right_arrow->layout_request();
+    StackWidget::layout_request();
+  }
+
+  void ChoiceWidget::layout_allocation()
+  {
+    StackWidget::layout_allocation();
+    const gf::Vec2F self_size = size();
+
+    const gf::Vec2F left_size = m_left_arrow->size();
+    const gf::Vec2F left_position = { 0.0f, (self_size.h - left_size.h) / 2.0f };
+    m_left_arrow->set_position(left_position);
+
+    const gf::Vec2F right_size = m_right_arrow->size();
+    const gf::Vec2F right_position = { self_size.w - right_size.w, (self_size.h - right_size.h) / 2.0f };
+    m_right_arrow->set_position(right_position);
+  }
+
+#if 0
   /*
     * CatalogueWidget
     */

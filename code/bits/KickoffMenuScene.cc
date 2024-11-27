@@ -8,9 +8,7 @@ namespace akgr {
 
   namespace {
 
-    constexpr gf::Vec2F MenuSceneWorldSize = { 1600, 900 };
-
-
+    constexpr gf::Vec2F KickoffMenuSceneSize = { 1600, 900 };
 
   }
 
@@ -25,8 +23,8 @@ namespace akgr {
   {
     set_clear_color(gf::White);
 
-    set_world_size(MenuSceneWorldSize);
-    set_world_center(MenuSceneWorldSize / 2.0f);
+    set_world_size(KickoffMenuSceneSize);
+    set_world_center(KickoffMenuSceneSize / 2.0f);
 
     add_world_entity(&m_start_menu);
     add_world_entity(&m_slot_selector);

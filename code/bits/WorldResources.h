@@ -34,6 +34,18 @@ namespace akgr {
 
     gf::RichTextResource pinned_quest_text;
 
+    gf::TextResource icon_left_arrow_text;
+    gf::TextResource icon_right_arrow_text;
+
+    gf::TextResource common_items_text;
+    gf::TextResource quest_items_text;
+    gf::TextResource back_text;
+
+    gf::TextResource icon_arrow_text;
+    gf::TextResource inventory_text;
+    gf::TextResource back_to_adventure_text;
+    gf::TextResource back_to_real_life_text;
+
     // bound from data
 
     std::vector<std::filesystem::path> map_textures;

@@ -78,22 +78,23 @@ namespace akgr::ui {
     Aspect m_aspect;
     Positioning m_positioning = Positioning::Minimum;
     gf::Vec2F m_offset = { 0.0f, 0.0f };
-    BoxTheme* m_theme;
+    BoxTheme* m_theme = nullptr;
   };
 
-  // class StackWidget : public ContainerWidget {
-  // public:
-  //   StackWidget(Widget* parent);
-  //
-  //   Positioning positioning() const noexcept { return m_positioning; }
-  //   void set_positioning(Positioning positioning) noexcept { m_positioning = positioning; }
-  //
-  // private:
-  //   void do_layout_request() override;
-  //   void do_layout_allocation() override;
-  //
-  //   Positioning m_positioning;
-  // };
+  class StackWidget : public ContainerWidget {
+  public:
+    StackWidget(Widget* parent, StackTheme* theme);
+
+    Positioning positioning() const noexcept { return m_positioning; }
+    void set_positioning(Positioning positioning) noexcept { m_positioning = positioning; }
+
+    void layout_request() override;
+    void layout_allocation() override;
+
+  private:
+    Positioning m_positioning = Positioning::Middle;
+    StackTheme* m_theme = nullptr;
+  };
 
   class ListWidget : public Widget {
   public:
@@ -145,14 +146,7 @@ namespace akgr::ui {
 
   class MenuWidget : public BoxWidget {
   public:
-    MenuWidget(Widget* parent, Widget* arrow, const IndexState* index, MenuTheme* theme);
-    MenuWidget(const MenuWidget&) = delete;
-    MenuWidget(MenuWidget&&) noexcept;
-    ~MenuWidget() override;
-
-    MenuWidget& operator=(const MenuWidget&) = delete;
-    MenuWidget& operator=(MenuWidget&&) noexcept;
-
+    MenuWidget(Widget* parent, std::unique_ptr<Widget> arrow, const IndexState* index, MenuTheme* theme);
 
     void render(gf::RenderRecorder& recorder) override;
 
@@ -160,20 +154,28 @@ namespace akgr::ui {
     void layout_allocation() override;
 
   private:
-    Widget* m_arrow = nullptr;
+    std::unique_ptr<Widget> m_arrow = nullptr;
     const IndexState* m_index = nullptr;
     MenuTheme* m_theme = nullptr;
   };
 
-#if 0
   class ChoiceWidget : public StackWidget {
   public:
-    ChoiceWidget(Widget* parent, const WidgetIndexScenery& scenery);
+    ChoiceWidget(Widget* parent, std::unique_ptr<Widget> left_arrow, std::unique_ptr<Widget> right_arrow, const IndexState* index, ChoiceTheme* theme);
+
+    void render(gf::RenderRecorder& recorder) override;
+
+    void layout_request() override;
+    void layout_allocation() override;
 
   private:
-    const WidgetIndexScenery& m_scenery;
+    std::unique_ptr<Widget> m_left_arrow = nullptr;
+    std::unique_ptr<Widget> m_right_arrow = nullptr;
+    const IndexState* m_index = nullptr;
+    ChoiceTheme* m_theme = nullptr;
   };
 
+#if 0
   class CatalogueWidget : public ListWidget {
   public:
     CatalogueWidget(Widget* parent, ListModel& model, const WidgetListScenery& scenery);

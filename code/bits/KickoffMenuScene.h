@@ -21,11 +21,6 @@ namespace akgr {
     KickoffMenuScene(Akagoria* game, const KickoffResources& resources);
 
   private:
-    enum class Menu : uint8_t {
-      StartMenu,
-      SlotSelector,
-    };
-
     void do_process_event(const gf::Event& event) override;
     void do_handle_actions() override;
 
@@ -33,8 +28,6 @@ namespace akgr {
     gf::FontAtlas m_atlas;
 
     gf::ActionGroup m_action_group;
-
-    Menu m_menu = Menu::StartMenu;
 
     StartMenuRenderer m_start_menu;
     StartMenuElement m_start_menu_element;

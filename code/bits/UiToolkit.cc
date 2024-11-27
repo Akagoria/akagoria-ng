@@ -1,5 +1,7 @@
 #include "UiToolkit.h"
 
+#include <gf2/core/Log.h>
+
 namespace akgr {
 
   gf::ActionGroupSettings compute_ui_settings()
@@ -112,6 +114,11 @@ namespace akgr {
     }
 
     auto iterator = m_elements.find(id);
+
+    if (iterator == m_elements.end()) {
+      gf::Log::fatal("No element found with id '{:X}'", uint64_t(id));
+    }
+
     m_current_element = iterator->second;
 
     if (m_current_element != nullptr) {

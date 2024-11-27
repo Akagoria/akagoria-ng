@@ -41,7 +41,7 @@ namespace akgr {
 
   }
 
-  ItemRenderer::ItemRenderer(Akagoria* game, const WorldResources& resources)
+  ItemRenderer::ItemRenderer(Akagoria* game, [[maybe_unused]] const WorldResources& resources)
   : m_game(game)
   , m_sprite_group_resource(compute_initial_resource(game))
   , m_sprite_group(m_sprite_group_resource, game->render_manager(), game->resource_manager())

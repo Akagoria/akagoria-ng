@@ -29,7 +29,7 @@ namespace akgr {
 
     auto arrow = std::make_unique<ui::LabelWidget>(nullptr, &m_label_theme, &m_icon_arrow_text);
 
-    auto* menu = m_frame_widget.add<ui::MenuWidget>(arrow.release(), &m_menu_index, &m_menu_theme);
+    auto* menu = m_frame_widget.add<ui::MenuWidget>(std::move(arrow), &m_menu_index, &m_menu_theme);
     menu->add<ui::LabelWidget>(&m_label_theme, &m_start_text);
     menu->add<ui::LabelWidget>(&m_label_theme, &m_load_text);
     menu->add<ui::LabelWidget>(&m_label_theme, &m_quit_text);

@@ -96,6 +96,51 @@ namespace akgr {
     pinned_quest_text.bold_font = "fonts/DejaVuSans-Bold.ttf";
     pinned_quest_text.italic_font = "fonts/DejaVuSans-Oblique.ttf";
     pinned_quest_text.bold_italic_font = "fonts/DejaVuSans-BoldOblique.ttf";
+
+    icon_left_arrow_text.data.content = "↩"; // "«";
+    icon_left_arrow_text.data.character_size = 20.0f;
+    icon_left_arrow_text.data.color = gf::gray(0.7f);
+    icon_left_arrow_text.font = "fonts/DejaVuSans-Bold.ttf";
+
+    icon_right_arrow_text.data.content = "↪"; // "»";
+    icon_right_arrow_text.data.character_size = 20.0f;
+    icon_right_arrow_text.data.color = gf::gray(0.7f);
+    icon_right_arrow_text.font = "fonts/DejaVuSans-Bold.ttf";
+
+    common_items_text.data.content = "Common Items";
+    common_items_text.data.character_size = 30.0f;
+    common_items_text.data.color = gf::White;
+    common_items_text.font = "fonts/DejaVuSans.ttf";
+
+    quest_items_text.data.content = "Quest Items";
+    quest_items_text.data.character_size = 30.0f;
+    quest_items_text.data.color = gf::White;
+    quest_items_text.font = "fonts/DejaVuSans.ttf";
+
+    back_text.data.content = "Back"; // TODO: i18n
+    back_text.data.character_size = 30.0f;
+    back_text.data.color = gf::White;
+    back_text.font = "fonts/DejaVuSans.ttf";
+
+    icon_arrow_text.data.content = "→";
+    icon_arrow_text.data.character_size = 30.0f;
+    icon_arrow_text.data.color = gf::White;
+    icon_arrow_text.font = "fonts/DejaVuSans.ttf";
+
+    inventory_text.data.content = "Inventory"; // TODO: i18n
+    inventory_text.data.character_size = 30.0f;
+    inventory_text.data.color = gf::White;
+    inventory_text.font = "fonts/DejaVuSans.ttf";
+
+    back_to_adventure_text.data.content = "Back To Adventure"; // TODO: i18n
+    back_to_adventure_text.data.character_size = 30.0f;
+    back_to_adventure_text.data.color = gf::White;
+    back_to_adventure_text.font = "fonts/DejaVuSans.ttf";
+
+    back_to_real_life_text.data.content = "Back To Real Life"; // TODO: i18n
+    back_to_real_life_text.data.character_size = 30.0f;
+    back_to_real_life_text.data.color = gf::White;
+    back_to_real_life_text.font = "fonts/DejaVuSans.ttf";
   }
 
   void WorldResources::bind(const WorldData& data)
@@ -121,7 +166,6 @@ namespace akgr {
       animation_textures.push_back(character_animation_path(character));
     }
 
-
   }
 
   gf::ResourceBundle WorldResources::bundle(Akagoria* game) const
@@ -138,6 +182,18 @@ namespace akgr {
     builder.add_in_bundle(area_text);
 
     builder.add_in_bundle(pinned_quest_text);
+
+    builder.add_in_bundle(icon_left_arrow_text);
+    builder.add_in_bundle(icon_right_arrow_text);
+
+    builder.add_in_bundle(common_items_text);
+    builder.add_in_bundle(quest_items_text);
+    builder.add_in_bundle(back_text);
+
+    builder.add_in_bundle(icon_arrow_text);
+    builder.add_in_bundle(inventory_text);
+    builder.add_in_bundle(back_to_adventure_text);
+    builder.add_in_bundle(back_to_real_life_text);
 
     for (const std::filesystem::path& texture : map_textures) {
       builder.add_raw_texture(texture);

@@ -42,7 +42,7 @@ namespace akgr {
 
     auto arrow = std::make_unique<ui::LabelWidget>(nullptr, &m_label_theme, &m_icon_arrow_text);
 
-    auto* menu = m_frame_widget.add<ui::MenuWidget>(arrow.release(), &m_menu_index, &m_menu_theme);
+    auto* menu = m_frame_widget.add<ui::MenuWidget>(std::move(arrow), &m_menu_index, &m_menu_theme);
 
     for (auto& text : m_slot_texts) {
       auto* inner_frame = menu->add<ui::FrameWidget>(&m_inner_frame_theme, game->render_manager());

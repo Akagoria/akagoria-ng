@@ -53,7 +53,7 @@ namespace akgr {
     gf::ActionGroupSettings settings;
 
     settings.actions.emplace("fullscreen"_id, gf::instantaneous_action().add_keycode_control(gf::Keycode::F));
-    settings.actions.emplace("quit"_id, gf::instantaneous_action().add_scancode_control(gf::Scancode::Escape));
+    // settings.actions.emplace("quit"_id, gf::instantaneous_action().add_scancode_control(gf::Scancode::Escape));
 
     settings.actions.emplace("physics_debug"_id, gf::instantaneous_action().add_scancode_control(gf::Scancode::F12));
     settings.actions.emplace("save_debug"_id, gf::instantaneous_action().add_scancode_control(gf::Scancode::F11));
@@ -77,9 +77,9 @@ namespace akgr {
       m_game->window()->toggle_fullscreen();
     }
 
-    if (m_action_group.active("quit"_id)) {
-      m_game->window()->close();
-    }
+    // if (m_action_group.active("quit"_id)) {
+    //   m_game->window()->close();
+    // }
 
     if (m_action_group.active("physics_debug"_id)) {
       m_physics_debug.set_awake(!m_physics_debug.awake());
