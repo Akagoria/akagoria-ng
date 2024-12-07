@@ -158,7 +158,7 @@ namespace akgr {
       }
 
       if (gf::square_distance(item.spot.location, hero.spot.location) < gf::square(ItemDistance)) {
-        item.picked = true;
+        item.status.set(ItemStatus::Picked);
         // item is actually removed in WorldModel
         return true;
       }

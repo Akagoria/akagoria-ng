@@ -1,8 +1,9 @@
 #ifndef AKGR_ITEM_STATE_H
 #define AKGR_ITEM_STATE_H
 
-#include <string>
+#include <cstdint>
 
+#include <gf2/core/Flags.h>
 #include <gf2/core/TypeTraits.h>
 
 #include "DataReference.h"
@@ -11,17 +12,20 @@
 
 namespace akgr {
 
+  enum class ItemStatus : uint8_t {
+    Picked = 0x01,
+  };
+
   struct ItemState {
-    std::string name;
     DataReference<ItemData> data;
     Spot spot;
     float rotation = 0.0f;
-    bool picked = false;
+    gf::Flags<ItemStatus> status = gf::None;
   };
 
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<ItemState, Archive>& state) {
-    return ar | state.name | state.data | state.spot | state.rotation | state.picked;
+    return ar | state.data | state.spot | state.rotation | state.status;
   }
 
 }

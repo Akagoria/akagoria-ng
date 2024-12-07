@@ -2,8 +2,6 @@
 
 #include <ctime>
 
-#include <optional>
-
 #include <gf2/core/Math.h>
 #include <gf2/core/Log.h>
 
@@ -163,7 +161,7 @@ namespace akgr {
     bool need_update = false;
 
     for (auto& item : state.items) {
-      if (item.picked) {
+      if (item.status.test(ItemStatus::Picked)) {
         need_update = true;
         check_quest_farm(item.data->label.tag);
         state.hero.inventory.add_item(item.data);
@@ -171,7 +169,7 @@ namespace akgr {
     }
 
     if (need_update) {
-      state.items.erase(std::remove_if(state.items.begin(), state.items.end(), [](const ItemState& item) { return item.picked; }), state.items.end());
+      state.items.erase(std::remove_if(state.items.begin(), state.items.end(), [](const ItemState& item) { return item.status.test(ItemStatus::Picked); }), state.items.end());
     }
   }
 
