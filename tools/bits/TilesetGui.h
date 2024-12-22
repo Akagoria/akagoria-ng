@@ -32,7 +32,7 @@ namespace akgr {
     // edit for atoms
     Atom m_edited_atom;
     static constexpr std::size_t NameBufferSize = 256;
-    char m_name_buffer[NameBufferSize];
+    char m_name_buffer[NameBufferSize] = { '\0' };
     int m_pigment_choice = 0;
     gf::Texture m_pigment_preview;
     bool m_new_atom = false;
@@ -45,7 +45,7 @@ namespace akgr {
 
     // edit for wang3
     Wang3 m_edited_wang3;
-    gf::Id m_ids_choice[3];
+    gf::Id m_ids_choice[3] = { gf::id(0), gf::id(0), gf::id(0) };
     gf::Texture m_wang3_preview;
     bool m_new_wang3 = false;
   };

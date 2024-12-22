@@ -261,7 +261,7 @@ namespace akgr {
                   }
 
                   ImGui::SetCursorPosX((ImGui::GetWindowWidth() - PreviewSize) / 2);
-                  ImGui::Image(static_cast<void*>(&m_pigment_preview), ImVec2(PreviewSize, PreviewSize));
+                  ImGui::Image(static_cast<ImTextureID>(reinterpret_cast<uintptr_t>(&m_pigment_preview)), ImVec2(PreviewSize, PreviewSize));
 
                   ImGui::Spacing();
 
@@ -548,7 +548,7 @@ namespace akgr {
                   }
 
                   ImGui::SetCursorPosX((ImGui::GetWindowWidth() - PreviewSize) / 2);
-                  ImGui::Image(static_cast<void*>(&m_wang2_preview), ImVec2(PreviewSize, PreviewSize));
+                  ImGui::Image(static_cast<ImTextureID>(reinterpret_cast<uintptr_t>(&m_wang2_preview)), ImVec2(PreviewSize, PreviewSize));
 
                   ImGui::Spacing();
 
@@ -752,7 +752,7 @@ namespace akgr {
                   }
 
                   ImGui::SetCursorPosX((ImGui::GetWindowWidth() - PreviewSize) / 2);
-                  ImGui::Image(static_cast<void*>(&m_wang3_preview), ImVec2(PreviewSize, PreviewSize));
+                  ImGui::Image(static_cast<ImTextureID>(reinterpret_cast<uintptr_t>(&m_wang3_preview)), ImVec2(PreviewSize, PreviewSize));
 
                   ImGui::Spacing();
 
