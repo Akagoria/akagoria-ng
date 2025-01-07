@@ -41,7 +41,7 @@ target("akagoria")
     add_includedirs("code/vendor/agate")
     add_includedirs("$(buildir)/config")
 --     add_packages("nlohmann_json")
-    add_packages("gamedevframework2", { components = { "framework", "physics" } })
+    add_packages("gamedevframework2", { components = { "framework", "physics", "imgui" } })
 --     add_packages("boost", "icu4c")
 
 target("akagoria-compile-data")

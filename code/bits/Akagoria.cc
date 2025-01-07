@@ -1,5 +1,7 @@
 #include "Akagoria.h"
 
+#include <imgui.h>
+
 namespace akgr {
 
   Akagoria::Akagoria(const std::filesystem::path& asset_directory)
@@ -7,6 +9,16 @@ namespace akgr {
   , m_world_async(render_manager())
   , m_world_model(this)
   {
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+    io.IniFilename = nullptr;
+
+    auto font_file = resource_manager()->search("fonts/DejaVuSans.ttf");
+    assert(!font_file.empty());
+    auto* font = io.Fonts->AddFontFromFileTTF(font_file.string().c_str(), 32.0f);
+    assert(font != nullptr);
+
     m_slot_manager.load_slot_headers();
 
     auto kickoff_bundle = m_kickoff_resources.bundle(this);
@@ -47,6 +59,12 @@ namespace akgr {
   bool Akagoria::world_loaded()
   {
     return m_world_async.finished();
+  }
+
+  void Akagoria::start_world()
+  {
+    gf::BasicScene* scenes[] = { &m_world_act->base_scene, &m_world_act->debug_scene, &m_world_act->travel_scene };
+    replace_all_scenes(scenes);
   }
 
 }

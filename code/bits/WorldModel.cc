@@ -163,8 +163,8 @@ namespace akgr {
     for (auto& item : state.items) {
       if (item.status.test(ItemStatus::Picked)) {
         need_update = true;
-        check_quest_farm(item.data->label.tag);
         state.hero.inventory.add_item(item.data);
+        check_quest_farm(item.data->label.tag);
       }
     }
 
@@ -247,13 +247,17 @@ namespace akgr {
 
   void WorldModel::check_quest_farm(const std::string& label)
   {
-    check_quest(QuestType::Farm, [&label](QuestState& quest, const QuestStepData& step) {
-      const auto& data = std::get<FarmQuestData>(step.features);
-      auto& state = std::get<FarmQuestState>(quest.features);
+    check_quest(QuestType::Farm, [this,&label](QuestState& quest, const QuestStepData& step) {
+      const auto& quest_data = std::get<FarmQuestData>(step.features);
+      auto& quest_state = std::get<FarmQuestState>(quest.features);
 
-      if (data.item->label.tag == label) {
-        ++state.amount;
-        return state.amount == data.count;
+      if (quest_data.item->label.tag == label) {
+        ++quest_state.amount;
+
+        if (quest_state.amount == quest_data.count) {
+          state.hero.inventory.transfer_to_quest_items(quest_data.item, quest_data.count);
+          return true;
+        }
       }
 
       return false;
@@ -325,16 +329,13 @@ namespace akgr {
               quest_state.amount += item.count;
 
               if (quest_state.amount >= quest_data.count) {
+                state.hero.inventory.transfer_to_quest_items(quest_data.item, quest_data.count);
                 m_advancing_quests.push(quest.data->label.tag);
               }
             }
           }
-
-
         }
         break;
     }
-
   }
-
 }

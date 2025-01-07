@@ -20,13 +20,16 @@ namespace akgr {
 
   struct InventoryState {
     std::vector<InventoryItemState> items;
+    std::vector<InventoryItemState> quest_items;
 
-    void add_item(DataReference<ItemData> data);
+    void add_item(const DataReference<ItemData>& data, int32_t count = 1);
+    void add_quest_item(const DataReference<ItemData>& data, int32_t count = 1);
+    void transfer_to_quest_items(const DataReference<ItemData>& data, int32_t count = 1);
   };
 
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<InventoryState, Archive>& state) {
-    return ar | state.items;
+    return ar | state.items | state.quest_items;
   }
 
 }

@@ -29,6 +29,7 @@ namespace akgr {
     void compute_next_choice();
     void compute_prev_choice();
     WorldMenuChoice choice() const;
+    void reset_choice();
 
     void update(gf::Time time) override;
     void render(gf::RenderRecorder& recorder) override;

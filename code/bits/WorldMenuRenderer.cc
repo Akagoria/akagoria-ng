@@ -51,6 +51,12 @@ namespace akgr {
     return static_cast<WorldMenuChoice>(m_menu_index.choice);
   }
 
+  void WorldMenuRenderer::reset_choice()
+  {
+    m_menu_index.choice = 0;
+    m_frame_widget.compute_layout();
+  }
+
   void WorldMenuRenderer::update(gf::Time time)
   {
     if (!visible()) {
@@ -98,6 +104,7 @@ namespace akgr {
         toolkit.change_ui_element("inventory"_id);
         break;
       case WorldMenuChoice::BackToAdventure:
+        m_entity->reset_choice();
         m_game->replace_scene(&m_game->world_act()->travel_scene);
         break;
       case WorldMenuChoice::BackToRealLife:

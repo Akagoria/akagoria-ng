@@ -6,7 +6,7 @@
 #include <filesystem>
 
 #include <gf2/framework/SceneSystem.h>
-
+#include <gf2/imgui/ImguiInitializer.h>
 #include <gf2/graphics/RenderAsync.h>
 
 #include "KickoffAct.h"
@@ -59,8 +59,10 @@ namespace akgr {
 
     void load_world(AdventureChoice choice, std::size_t index = 0);
     bool world_loaded();
+    void start_world();
 
   private:
+    gf::ImguiInitializer m_imgui_initializer;
     SlotManager m_slot_manager;
 
     KickoffResources m_kickoff_resources;

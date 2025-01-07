@@ -3,7 +3,6 @@
 #include "Akagoria.h"
 #include "DialogRenderer.h"
 #include "HeroState.h"
-#include "gf2/core/ActionSettings.h"
 
 namespace akgr {
 
