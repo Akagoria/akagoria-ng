@@ -50,7 +50,7 @@ namespace {
 
   constexpr ImGuiWindowFlags DefaultWindowFlags = ImGuiWindowFlags_NoSavedSettings;
 
-  class EditorEntity : public gf::Entity {
+  class EditorEntity : public gf::HudEntity {
   public:
     EditorEntity(std::filesystem::path data_directory)
     : m_data_directory(std::move(data_directory))

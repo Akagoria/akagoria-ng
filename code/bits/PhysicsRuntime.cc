@@ -253,9 +253,9 @@ namespace akgr {
         continue;
       }
 
-      const auto* tileset = map.tileset_from_gid(cell.gid);
+      const gf::MapTileset* tileset = map.tileset_from_gid(cell.gid);
       const uint32_t gid = cell.gid - tileset->first_gid;
-      const auto* tile = tileset->tile(gid);
+      const gf::MapTilesetTile* tile = tileset->tile(gid);
       assert(tile != nullptr);
 
       if (tile->properties_index == gf::NoIndex) {
@@ -324,13 +324,9 @@ namespace akgr {
     assert(layer.type == gf::MapLayerType::Object);
 
     const auto& object_layer = map.object_layers[layer.layer_index];
-    const auto& object_properties = map.properties[object_layer.layer.properties_index];
+    const std::string& type = object_layer.layer.type;
 
-    const auto& kind_property = object_properties("kind");
-    assert(kind_property.is_string());
-    const std::string kind = kind_property.as_string();
-
-    if (kind == "zones") {
+    if (type == "zones") {
       for (const auto& object : object_layer.objects) {
         extract_zone(object, floor, map);
       }
@@ -338,7 +334,7 @@ namespace akgr {
       return;
     }
 
-    if (kind == "low_sprites" || kind == "high_sprites") {
+    if (type == "low_sprites" || type == "high_sprites") {
       for (const auto& object : object_layer.objects) {
         extract_sprites(object, floor, map);
       }

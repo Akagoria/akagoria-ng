@@ -11,7 +11,7 @@
 
 namespace akgr {
 
-  class TilesetGui : public gf::Entity {
+  class TilesetGui : public gf::HudEntity {
   public:
     TilesetGui(std::filesystem::path datafile, gf::RenderManager* render_manager);
 

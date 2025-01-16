@@ -6,7 +6,7 @@
 namespace akgr {
   class Akagoria;
 
-  class WorldDebug : public gf::Entity {
+  class WorldDebug : public gf::HudEntity {
   public:
     WorldDebug(Akagoria* game);
 

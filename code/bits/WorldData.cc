@@ -129,13 +129,9 @@ namespace akgr {
     assert(layer.type == gf::MapLayerType::Object);
 
     const auto& object_layer = map.object_layers[layer.layer_index];
-    const auto& object_properties = map.properties[object_layer.layer.properties_index];
+    const std::string& type = object_layer.layer.type;
 
-    const auto& kind_property = object_properties("kind");
-    assert(kind_property.is_string());
-    const std::string kind = kind_property.as_string();
-
-    if (kind == "areas") {
+    if (type == "areas") {
       for (const auto& object : object_layer.objects) {
         assert(object.type == gf::MapObjectType::Point);
 
@@ -146,7 +142,7 @@ namespace akgr {
       }
     }
 
-    if (kind == "locations") {
+    if (type == "locations") {
       for (const auto& object : object_layer.objects) {
         assert(object.type == gf::MapObjectType::Point);
 

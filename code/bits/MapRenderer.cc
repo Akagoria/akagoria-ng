@@ -85,24 +85,16 @@ namespace akgr {
         for (const auto& sub_layer : group_layer.sub_layers) {
           if (sub_layer.type == gf::MapLayerType::Tile && type == PlaneType::Tile) {
             const auto& tile_layer = tiled_map->tile_layers[sub_layer.layer_index];
-            assert(tile_layer.layer.properties_index != gf::NoIndex);
-            const auto& layer_properties = tiled_map->properties[tile_layer.layer.properties_index];
-            assert(layer_properties.has_property("kind"));
-            const std::string& kind = layer_properties("kind").as_string();
 
-            if (kind == tile_layer_name_from_plane(plane)) {
+            if (tile_layer.layer.type == tile_layer_name_from_plane(plane)) {
               floor_layers.emplace(floor, sub_layer);
             }
           }
 
           if (sub_layer.type == gf::MapLayerType::Object && type == PlaneType::Object) {
             const auto& object_layer = tiled_map->object_layers[sub_layer.layer_index];
-            assert(object_layer.layer.properties_index != gf::NoIndex);
-            const auto& layer_properties = tiled_map->properties[object_layer.layer.properties_index];
-            assert(layer_properties.has_property("kind"));
-            const std::string& kind = layer_properties("kind").as_string();
 
-            if (kind == object_layer_name_from_plane(plane)) {
+            if (object_layer.layer.type == object_layer_name_from_plane(plane)) {
               floor_layers.emplace(floor, sub_layer);
             }
           }
