@@ -1,7 +1,7 @@
 #ifndef AKGR_WORLD_MENU_SCENE_H
 #define AKGR_WORLD_MENU_SCENE_H
 
-#include <gf2/graphics/ActionGroup.h>
+#include <gf2/core/ActionGroup.h>
 #include <gf2/graphics/FontAtlas.h>
 #include <gf2/graphics/Scene.h>
 

@@ -1,10 +1,10 @@
 #ifndef AKGR_WORLD_BASE_SCENE_H
 #define AKGR_WORLD_BASE_SCENE_H
 
-#include <gf2/graphics/ActionGroup.h>
+#include <gf2/core/ActionGroup.h>
+#include <gf2/core/Zoom.h>
 #include <gf2/graphics/Scene.h>
 #include <gf2/graphics/RichMapRenderer.h>
-#include <gf2/graphics/Zoom.h>
 #include <gf2/framework/GraphicsPhysicsDebug.h>
 
 #include "UniverseRenderer.h"

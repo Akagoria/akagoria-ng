@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include <gf2/graphics/ActionGroup.h>
+#include <gf2/core/ActionGroup.h>
 #include <gf2/graphics/FontAtlas.h>
 #include <gf2/graphics/Scene.h>
 

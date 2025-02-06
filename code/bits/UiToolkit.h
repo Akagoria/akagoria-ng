@@ -3,7 +3,7 @@
 
 #include <gf2/core/ActionSettings.h>
 
-#include <gf2/graphics/ActionGroup.h>
+#include <gf2/core/ActionGroup.h>
 #include <gf2/graphics/Entity.h>
 
 namespace akgr {
