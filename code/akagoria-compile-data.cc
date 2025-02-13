@@ -4,6 +4,7 @@
 #include <fstream>
 #include <unordered_set>
 
+#include <fmt/std.h>
 #include <nlohmann/json.hpp>
 
 #include <gf2/core/Clock.h>
@@ -242,8 +243,7 @@ namespace {
   void copy_textures(const gf::TiledMap& map, const std::filesystem::path& raw_directory, const std::filesystem::path& out_directory)
   {
     for (const auto& texture : map.textures) {
-      const std::filesystem::path relative_path = std::filesystem::proximate(texture.string(), raw_directory);
-      copy_textures(relative_path, raw_directory, out_directory);
+      copy_textures(texture, raw_directory, out_directory);
     }
   }
 
@@ -263,8 +263,8 @@ namespace {
   void sanitize_paths(gf::TiledMap& map, const std::filesystem::path& raw_directory)
   {
     for (auto& texture : map.textures) {
-      const std::filesystem::path relative_path = std::filesystem::proximate(texture.string(), raw_directory);
-      texture = relative_path;
+      std::filesystem::path relative_path = std::filesystem::proximate(texture.string(), raw_directory);
+      texture = std::move(relative_path);
     }
   }
 
@@ -341,6 +341,7 @@ int main() {
   gf::Log::info("# Reading map...");
 
   data.map = gf::TiledMap(raw_directory / "akagoria.tmx");
+  sanitize_paths(data.map, raw_directory);
 
   gf::Log::info("# Creating database...");
 
@@ -356,8 +357,6 @@ int main() {
 
   copy_textures(data.map, raw_directory, out_directory);
   copy_textures(data.items, raw_directory, out_directory);
-
-  sanitize_paths(data.map, raw_directory);
 
   auto duration = clock.elapsed_time();
   gf::Log::info("Data successfully compiled in {} ms", duration.as_milliseconds());

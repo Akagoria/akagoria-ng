@@ -16,7 +16,7 @@ namespace akgr {
 
     auto font_file = resource_manager()->search("fonts/DejaVuSans.ttf");
     assert(!font_file.empty());
-    auto* font = io.Fonts->AddFontFromFileTTF(font_file.string().c_str(), 32.0f);
+    [[maybe_unused]] auto* font = io.Fonts->AddFontFromFileTTF(font_file.string().c_str(), 32.0f);
     assert(font != nullptr);
 
     m_slot_manager.load_slot_headers();
