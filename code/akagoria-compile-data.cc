@@ -260,6 +260,15 @@ namespace {
     }
   }
 
+  void sanitize_paths(gf::TiledMap& map, const std::filesystem::path& raw_directory)
+  {
+    for (auto& texture : map.textures) {
+      const std::filesystem::path relative_path = std::filesystem::proximate(texture.string(), raw_directory);
+      texture = relative_path;
+    }
+  }
+
+
   void compile_json_characters(const std::filesystem::path& filename, akgr::DataLexicon<akgr::CharacterData>& data) {
     gf::Log::info("\tReading '{}'...", filename.string());
     std::ifstream ifs(filename);
@@ -347,6 +356,8 @@ int main() {
 
   copy_textures(data.map, raw_directory, out_directory);
   copy_textures(data.items, raw_directory, out_directory);
+
+  sanitize_paths(data.map, raw_directory);
 
   auto duration = clock.elapsed_time();
   gf::Log::info("Data successfully compiled in {} ms", duration.as_milliseconds());
