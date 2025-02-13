@@ -163,7 +163,7 @@ namespace akgr {
     for (auto& item : state.items) {
       if (item.status.test(ItemStatus::Picked)) {
         need_update = true;
-        state.hero.inventory.add_item(item.data);
+        state.hero.inventory.add_regular_item(item.data);
         check_quest_farm(item.data->label.tag);
       }
     }
@@ -324,7 +324,7 @@ namespace akgr {
           auto& quest_state = std::get<FarmQuestState>(quest.features);
           quest_state.amount = 0;
 
-          for (auto& item : state.hero.inventory.items) {
+          for (auto& item : state.hero.inventory.regular.items) {
             if (quest_data.item->label.id == item.data->label.id) {
               quest_state.amount += item.count;
 

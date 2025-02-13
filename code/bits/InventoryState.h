@@ -18,18 +18,29 @@ namespace akgr {
     return ar | state.data | state.count;
   }
 
-  struct InventoryState {
+  struct BasicInventoryState {
     std::vector<InventoryItemState> items;
-    std::vector<InventoryItemState> quest_items;
 
     void add_item(const DataReference<ItemData>& data, int32_t count = 1);
+  };
+
+  template<typename Archive>
+  Archive& operator|(Archive& ar, gf::MaybeConst<BasicInventoryState, Archive>& state) {
+    return ar | state.items;
+  }
+
+  struct InventoryState {
+    BasicInventoryState regular;
+    BasicInventoryState quest;
+
+    void add_regular_item(const DataReference<ItemData>& data, int32_t count = 1);
     void add_quest_item(const DataReference<ItemData>& data, int32_t count = 1);
     void transfer_to_quest_items(const DataReference<ItemData>& data, int32_t count = 1);
   };
 
   template<typename Archive>
   Archive& operator|(Archive& ar, gf::MaybeConst<InventoryState, Archive>& state) {
-    return ar | state.items | state.quest_items;
+    return ar | state.regular | state.quest;
   }
 
 }
