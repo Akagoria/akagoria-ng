@@ -42,7 +42,7 @@ namespace akgr {
   private:
     void bind_quests();
     void bind_map();
-    void bind_map_object_layer(const gf::MapLayerStructure& layer, int32_t floor, const gf::TiledMap& map);
+    void bind_map_object_layer(const gf::MapLayerStructure& layer, int32_t floor);
   };
 
   template<typename Archive>

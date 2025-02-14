@@ -121,7 +121,7 @@ namespace akgr {
       for (const auto& sub_layer : group_layer.sub_layers) {
         switch (sub_layer.type) {
           case gf::MapLayerType::Object:
-            bind_map_object_layer(sub_layer, floor, map);
+            bind_map_object_layer(sub_layer, floor);
             break;
           case gf::MapLayerType::Tile:
             break;
@@ -136,7 +136,7 @@ namespace akgr {
     data_lexicon_sort(locations);
   }
 
-  void WorldData::bind_map_object_layer(const gf::MapLayerStructure& layer, int32_t floor, const gf::TiledMap& map)
+  void WorldData::bind_map_object_layer(const gf::MapLayerStructure& layer, int32_t floor)
   {
     assert(layer.type == gf::MapLayerType::Object);
 
