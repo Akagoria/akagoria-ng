@@ -42,10 +42,20 @@ namespace akgr {
   void WorldData::save_to_file(const std::filesystem::path& filename) const
   {
     gf::FileOutputStream file(filename);
-    gf::CompressedOutputStream compressed(&file);
+    gf::HashedOutputStream hashed(&file);
+    gf::CompressedOutputStream compressed(&hashed);
     gf::Serializer ar(&compressed, DataVersion);
 
     ar | *this;
+
+    auto hash = hashed.hash();
+    std::string digest;
+
+    for (auto byte : hash) {
+      digest += fmt::format("{:02X}", byte);
+    }
+
+    gf::Log::info("Hash: {}", digest);
   }
 
   void WorldData::bind()
