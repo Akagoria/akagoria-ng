@@ -23,6 +23,7 @@ namespace akgr {
     gf::PhysicsDebugOptions compute_options()
     {
       gf::PhysicsDebugOptions options;
+      options.features = gf::All;
       return options;
     }
 
@@ -44,6 +45,7 @@ namespace akgr {
     add_world_entity(&m_universe_renderer);
     add_world_entity(&m_physics_debug);
 
+    m_physics_debug.set_priority(1000);
     m_physics_debug.set_awake(false);
   }
 

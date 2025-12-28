@@ -124,9 +124,9 @@ namespace akgr {
 
   bool WorldTravelScene::handle_hero_dialogs()
   {
-    auto& hero = m_game->world_state()->hero;
+    HeroState& hero = m_game->world_state()->hero;
 
-    for (auto& character : m_game->world_state()->characters) {
+    for (CharacterState& character : m_game->world_state()->characters) {
       if (!character.dialog) {
         continue;
       }
@@ -149,10 +149,10 @@ namespace akgr {
 
   bool WorldTravelScene::handle_hero_items()
   {
-    auto& hero = m_game->world_state()->hero;
-    auto& items = m_game->world_state()->items;
+    HeroState& hero = m_game->world_state()->hero;
+    std::vector<ItemState>& items = m_game->world_state()->items;
 
-    for (auto& item : items) {
+    for (ItemState& item : items) {
       if (item.spot.floor != hero.spot.floor) {
         continue;
       }

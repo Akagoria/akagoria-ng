@@ -1,5 +1,7 @@
 #include "AreaRenderer.h"
 
+#include <gf2/core/Log.h>
+
 #include "Akagoria.h"
 
 namespace akgr {
@@ -25,7 +27,7 @@ namespace akgr {
 
     if (!m_game->world_data()->areas.empty() && (m_current_area == nullptr || m_duration > AreaUpdatePeriod)) {
       m_duration -= AreaUpdatePeriod;
-      const auto* current_area = m_game->world_data()->compute_closest_area(m_game->world_state()->hero.spot.location);
+      const AreaData* current_area = m_game->world_data()->compute_closest_area(m_game->world_state()->hero.spot.location);
 
       if (current_area != m_current_area) {
         gf::TextData data = m_text_data;
