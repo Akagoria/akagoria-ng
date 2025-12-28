@@ -456,6 +456,8 @@ namespace akgr::ui {
       return;
     }
 
+    recorder.update_text_effect(m_text->effects());
+
     gf::Transform transform;
     transform.location = absolute_position() + m_theme->padding.ne;
 
