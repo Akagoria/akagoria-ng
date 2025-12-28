@@ -19,7 +19,7 @@ namespace akgr {
     WorldTravelScene travel_scene;
     WorldDialogScene dialog_scene;
     WorldMenuScene menu_scene;
-    WorldDebugScene debug_scene;
+    // WorldDebugScene debug_scene;
   };
 
 }

@@ -6,7 +6,9 @@
 
 #include <gf2/core/Streams.h>
 #include <gf2/core/Serialization.h>
+#include <gf2/core/SerializationContainer.h>
 #include <gf2/core/SerializationOps.h>
+#include <gf2/core/SerializationUtilities.h>
 
 #include "AreaData.h"
 #include "Version.h"

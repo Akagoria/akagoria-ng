@@ -127,7 +127,7 @@ namespace akgr {
     dialog_shape_object.geometry = m_dialog_shape_group.geometry();
     dialog_shape_object.priority = 0;
 
-    if (dialog_shape_object.geometry.size > 0) {
+    if (dialog_shape_object.geometry.count > 0) {
       recorder.record(dialog_shape_object);
     }
 
@@ -148,7 +148,7 @@ namespace akgr {
       auto graphics_iterator = m_animation_graphics.find(animation_id);
       assert(graphics_iterator != m_animation_graphics.end());
 
-      const auto& [ actual_animation_id, animation_graphics ] = *graphics_iterator;
+      auto& [ actual_animation_id, animation_graphics ] = *graphics_iterator;
 
       gf::Transform transform;
       transform.location = character_state.spot.location;
@@ -160,7 +160,7 @@ namespace akgr {
       character_object.geometry = animation_graphics.geometry(animation_state.current_animation_id(), animation_state.current_frame());
       character_object.priority = 0;
       character_object.transform = transform.compute_matrix(animation_graphics.bounds());
-      assert(character_object.geometry.size > 0);
+      assert(character_object.geometry.count > 0);
       recorder.record(character_object);
     }
 

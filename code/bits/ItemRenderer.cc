@@ -59,7 +59,7 @@ namespace akgr {
     auto geometries = m_sprite_group.geometry();
 
     for (auto& geometry : geometries) {
-      if (geometry.size == 0) {
+      if (geometry.count == 0) {
         continue;
       }
 

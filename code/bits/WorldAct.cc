@@ -13,7 +13,7 @@ namespace akgr {
   , travel_scene(game, resources)
   , dialog_scene(game, resources)
   , menu_scene(game, resources)
-  , debug_scene(game)
+  // , debug_scene(game)
   {
   }
 

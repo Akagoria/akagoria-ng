@@ -1,7 +1,9 @@
 #include "WorldState.h"
 
 #include <gf2/core/Streams.h>
+#include <gf2/core/SerializationContainer.h>
 #include <gf2/core/SerializationOps.h>
+#include <gf2/core/SerializationUtilities.h>
 
 #include "Version.h"
 #include "WorldData.h"
@@ -39,22 +41,22 @@ namespace akgr {
       assert(hero.dialog.data.check());
     }
 
-    for (auto& quest : hero.quests) {
+    for (QuestState& quest : hero.quests) {
       quest.data.bind_from(data.quests);
       assert(quest.data.check());
     }
 
-    for (auto& notification : notifications) {
+    for (NotificationState& notification : notifications) {
       notification.data.bind_from(data.notifications);
       assert(notification.data.check());
     }
 
-    for (auto& item : items) {
+    for (ItemState& item : items) {
       item.data.bind_from(data.items);
       assert(item.data.check());
     }
 
-    for (auto& character : characters) {
+    for (CharacterState& character : characters) {
       character.data.bind_from(data.characters);
       assert(character.data.check());
 

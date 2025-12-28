@@ -5,7 +5,7 @@
 
 #include <gf2/core/Random.h>
 #include <gf2/graphics/Entity.h>
-#include <gf2/graphics/Texture.h>
+#include <gf2/graphics/GpuTexture.h>
 
 #include "TilesetData.h"
 
@@ -34,19 +34,19 @@ namespace akgr {
     static constexpr std::size_t NameBufferSize = 256;
     char m_name_buffer[NameBufferSize] = { '\0' };
     int m_pigment_choice = 0;
-    gf::Texture m_pigment_preview;
+    gf::GpuTexture m_pigment_preview;
     bool m_new_atom = false;
 
     // edit for wang2
     Wang2 m_edited_wang2;
     int m_border_effect_choices[2] = { 0, 0 };
-    gf::Texture m_wang2_preview;
+    gf::GpuTexture m_wang2_preview;
     bool m_new_wang2 = false;
 
     // edit for wang3
     Wang3 m_edited_wang3;
     gf::Id m_ids_choice[3] = { gf::id(0), gf::id(0), gf::id(0) };
-    gf::Texture m_wang3_preview;
+    gf::GpuTexture m_wang3_preview;
     bool m_new_wang3 = false;
   };
 

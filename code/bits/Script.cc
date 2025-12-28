@@ -297,19 +297,6 @@ namespace akgr {
     }
   }
 
-  void Script::on_message_deferred(std::string name)
-  {
-    m_messages.push(std::move(name));
-  }
-
-  void Script::handle_deferred_messages()
-  {
-    while (!m_messages.empty()) {
-      on_message(m_messages.front());
-      m_messages.pop();
-    }
-  }
-
   void Script::not_implemented([[maybe_unused]] AgateVM* vm) {
     // assert(false);
   }
@@ -397,9 +384,9 @@ namespace akgr {
   // add_character(name, character, location, rotation)
   void Script::add_character(AgateVM* vm)
   {
-    const char *name = agateSlotGetString(vm, 1);
-    const char *character_id = agateSlotGetString(vm, 2);
-    const char *location_id = agateSlotGetString(vm, 3);
+    const char* name = agateSlotGetString(vm, 1);
+    const char* character_id = agateSlotGetString(vm, 2);
+    const char* location_id = agateSlotGetString(vm, 3);
     double rotation = agateSlotGetFloat(vm, 4);
 
     gf::Log::info("[SCRIPT] World.add_character({}, {}, {}, {})", name, character_id, location_id, rotation);
@@ -418,10 +405,8 @@ namespace akgr {
 
     state(vm).characters.push_back(character);
 
-    const gf::Id character_name_id = gf::hash_string(name);
-
-    auto& physics_runtime = runtime(vm).physics;
-    physics_runtime.characters.emplace(character_name_id, physics_runtime.create_character(character.spot, character.rotation));
+    PhysicsRuntime& physics_runtime = runtime(vm).physics;
+    physics_runtime.characters.push_back(physics_runtime.create_character(character.spot, character.rotation));
 
     agateSlotSetNil(vm, AGATE_RETURN_SLOT);
   }
@@ -449,8 +434,8 @@ namespace akgr {
   // add_dialog_to_character(dialog, name)
   void Script::add_dialog_to_character(AgateVM* vm)
   {
-    const char *dialog_id = agateSlotGetString(vm, 1);
-    const char *character_name = agateSlotGetString(vm, 2);
+    const char* dialog_id = agateSlotGetString(vm, 1);
+    const char* character_name = agateSlotGetString(vm, 2);
 
     gf::Log::info("[SCRIPT] World.add_dialog_to_character({}, {})", dialog_id, character_name);
 
@@ -469,8 +454,8 @@ namespace akgr {
   // add_item(item, location, rotation)
   void Script::add_item(AgateVM* vm)
   {
-    const char *item_id = agateSlotGetString(vm, 1);
-    const char *location_id = agateSlotGetString(vm, 2);
+    const char* item_id = agateSlotGetString(vm, 1);
+    const char* location_id = agateSlotGetString(vm, 2);
     double rotation = agateSlotGetFloat(vm, 3);
 
     gf::Log::info("[SCRIPT] World.add_item({}, {}, {})", item_id, location_id, rotation);

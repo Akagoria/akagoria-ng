@@ -63,7 +63,7 @@ namespace akgr {
 
   void Akagoria::start_world()
   {
-    gf::BasicScene* scenes[] = { &m_world_act->base_scene, &m_world_act->debug_scene, &m_world_act->travel_scene };
+    gf::BasicScene* scenes[] = { &m_world_act->base_scene, /* &m_world_act->debug_scene, */ &m_world_act->travel_scene };
     replace_all_scenes(scenes);
   }
 

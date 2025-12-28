@@ -8,16 +8,22 @@ namespace akgr {
 
   namespace {
 
-    std::vector<const gf::Texture*> load_textures(const gf::TiledMap* tiled_map, gf::ResourceManager* resource_manager)
+    std::vector<gf::GpuTexture*> load_textures(const gf::TiledMap* tiled_map, gf::ResourceManager* resource_manager)
     {
-      std::vector<const gf::Texture*> textures;
+      std::vector<gf::GpuTexture*> textures;
       textures.reserve(tiled_map->textures.size());
 
       for (const std::filesystem::path& filename : tiled_map->textures) {
-        textures.push_back(resource_manager->get<gf::Texture>(filename));
+        textures.push_back(resource_manager->get<gf::GpuTexture>(filename));
       }
 
       return textures;
+    }
+
+    gf::PhysicsDebugOptions compute_options()
+    {
+      gf::PhysicsDebugOptions options;
+      return options;
     }
 
   }
@@ -29,7 +35,7 @@ namespace akgr {
   , m_rich_map(&game->world_model()->data.map, load_textures(&game->world_model()->data.map, game->resource_manager()))
   , m_rich_map_renderer(&m_rich_map, game->render_manager())
   , m_universe_renderer(game, resources, &m_rich_map_renderer)
-  , m_physics_debug(&game->world_model()->runtime.physics.world, game->render_manager())
+  , m_physics_debug(compute_options(), &game->world_model()->runtime.physics.world, game->render_manager())
   {
     set_world_size({ 800.0f, 800.0f });
 

@@ -39,9 +39,6 @@ namespace akgr {
     void on_quest(const std::string& name);
     void on_quest_step(const std::string& name, std::size_t step);
 
-    void on_message_deferred(std::string name);
-    void handle_deferred_messages();
-
     /*
      * Adventure interface
      */
@@ -84,8 +81,6 @@ namespace akgr {
     AgateHandle* m_method_on_dialog = nullptr;
     AgateHandle* m_method_on_quest = nullptr;
     AgateHandle* m_method_on_quest_step = nullptr;
-
-    std::queue<std::string> m_messages;
   };
 
 

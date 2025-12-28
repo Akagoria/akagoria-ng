@@ -225,12 +225,12 @@ namespace akgr {
 
       switch (s) {
       case Split::Horizontal:
-        tile.fences.segments[0][0] = fence_left(settings, half + edge.offset);
-        tile.fences.segments[0][1] = fence_right(settings, half + edge.offset);
+        tile.fences.segments[0].p0 = fence_left(settings, half + edge.offset);
+        tile.fences.segments[0].p1 = fence_right(settings, half + edge.offset);
         break;
       case Split::Vertical:
-        tile.fences.segments[0][0] = fence_top(settings, half + edge.offset);
-        tile.fences.segments[0][1] = fence_bottom(settings, half + edge.offset);
+        tile.fences.segments[0].p0 = fence_top(settings, half + edge.offset);
+        tile.fences.segments[0].p1 = fence_bottom(settings, half + edge.offset);
         break;
       }
     }
@@ -313,20 +313,20 @@ namespace akgr {
 
       switch (c) {
         case Corner::TopLeft:
-          tile.fences.segments[0][0] = fence_top(settings, half + edge.offset);
-          tile.fences.segments[0][1] = fence_left(settings, half + edge.offset);
+          tile.fences.segments[0].p0 = fence_top(settings, half + edge.offset);
+          tile.fences.segments[0].p1 = fence_left(settings, half + edge.offset);
           break;
         case Corner::TopRight:
-          tile.fences.segments[0][0] = fence_top(settings, half - edge.offset);
-          tile.fences.segments[0][1] = fence_right(settings, half + edge.offset);
+          tile.fences.segments[0].p0 = fence_top(settings, half - edge.offset);
+          tile.fences.segments[0].p1 = fence_right(settings, half + edge.offset);
           break;
         case Corner::BottomLeft:
-          tile.fences.segments[0][0] = fence_bottom(settings, half + edge.offset);
-          tile.fences.segments[0][1] = fence_left(settings, half - edge.offset);
+          tile.fences.segments[0].p0 = fence_bottom(settings, half + edge.offset);
+          tile.fences.segments[0].p1 = fence_left(settings, half - edge.offset);
           break;
         case Corner::BottomRight:
-          tile.fences.segments[0][0] = fence_bottom(settings, half - edge.offset);
-          tile.fences.segments[0][1] = fence_right(settings, half - edge.offset);
+          tile.fences.segments[0].p0 = fence_bottom(settings, half - edge.offset);
+          tile.fences.segments[0].p1 = fence_right(settings, half - edge.offset);
           break;
       }
     }
@@ -368,10 +368,10 @@ namespace akgr {
 
     if (edge.limit) {
       tile.fences.count = 2;
-      tile.fences.segments[0][0] = fence_top(settings, half + edge.offset);
-      tile.fences.segments[0][1] = fence_right(settings, half - edge.offset);
-      tile.fences.segments[1][0] = fence_bottom(settings, half - edge.offset);
-      tile.fences.segments[1][1] = fence_left(settings, half + edge.offset);
+      tile.fences.segments[0].p0 = fence_top(settings, half + edge.offset);
+      tile.fences.segments[0].p1 = fence_right(settings, half - edge.offset);
+      tile.fences.segments[1].p0 = fence_bottom(settings, half - edge.offset);
+      tile.fences.segments[1].p1 = fence_left(settings, half + edge.offset);
     }
 
     tile.check_holes();
@@ -463,11 +463,11 @@ namespace akgr {
 
       if (e01.limit && e12.limit) {
         if (split == HSplit::Top) {
-          tile.fences.segments[tile.fences.count][0] = fence_left(settings, half + e01.offset);
-          tile.fences.segments[tile.fences.count][1] = fence_bottom(settings, half + e12.offset);
+          tile.fences.segments[tile.fences.count].p0 = fence_left(settings, half + e01.offset);
+          tile.fences.segments[tile.fences.count].p1 = fence_bottom(settings, half + e12.offset);
         } else {
-          tile.fences.segments[tile.fences.count][0] = fence_left(settings, half - e01.offset);
-          tile.fences.segments[tile.fences.count][1] = fence_top(settings, half + e12.offset);
+          tile.fences.segments[tile.fences.count].p0 = fence_left(settings, half - e01.offset);
+          tile.fences.segments[tile.fences.count].p1 = fence_top(settings, half + e12.offset);
         }
 
         ++tile.fences.count;
@@ -475,11 +475,11 @@ namespace akgr {
 
       if (e12.limit && e20.limit) {
         if (split == HSplit::Top) {
-          tile.fences.segments[tile.fences.count][0] = fence_right(settings, half - e20.offset);
-          tile.fences.segments[tile.fences.count][1] = fence_bottom(settings, half + e12.offset);
+          tile.fences.segments[tile.fences.count].p0 = fence_right(settings, half - e20.offset);
+          tile.fences.segments[tile.fences.count].p1 = fence_bottom(settings, half + e12.offset);
         } else {
-          tile.fences.segments[tile.fences.count][0] = fence_right(settings, half + e20.offset);
-          tile.fences.segments[tile.fences.count][1] = fence_top(settings, half + e12.offset);
+          tile.fences.segments[tile.fences.count].p0 = fence_right(settings, half + e20.offset);
+          tile.fences.segments[tile.fences.count].p1 = fence_top(settings, half + e12.offset);
         }
 
         ++tile.fences.count;
@@ -487,11 +487,11 @@ namespace akgr {
 
       if (e20.limit && e01.limit) {
         if (split == HSplit::Top) {
-          tile.fences.segments[tile.fences.count][0] = fence_left(settings, half + e01.offset);
-          tile.fences.segments[tile.fences.count][1] = fence_right(settings, half - e20.offset);
+          tile.fences.segments[tile.fences.count].p0 = fence_left(settings, half + e01.offset);
+          tile.fences.segments[tile.fences.count].p1 = fence_right(settings, half - e20.offset);
         } else {
-          tile.fences.segments[tile.fences.count][0] = fence_left(settings, half - e01.offset);
-          tile.fences.segments[tile.fences.count][1] = fence_right(settings, half + e20.offset);
+          tile.fences.segments[tile.fences.count].p0 = fence_left(settings, half - e01.offset);
+          tile.fences.segments[tile.fences.count].p1 = fence_right(settings, half + e20.offset);
         }
 
         ++tile.fences.count;
@@ -572,11 +572,11 @@ namespace akgr {
 
       if (e01.limit && e12.limit) {
         if (split == VSplit::Left) {
-          tile.fences.segments[tile.fences.count][0] = fence_top(settings, half + e01.offset);
-          tile.fences.segments[tile.fences.count][1] = fence_right(settings, half + e12.offset);
+          tile.fences.segments[tile.fences.count].p0 = fence_top(settings, half + e01.offset);
+          tile.fences.segments[tile.fences.count].p1 = fence_right(settings, half + e12.offset);
         } else {
-          tile.fences.segments[tile.fences.count][0] = fence_top(settings, half - e01.offset);
-          tile.fences.segments[tile.fences.count][1] = fence_left(settings, half + e12.offset);
+          tile.fences.segments[tile.fences.count].p0 = fence_top(settings, half - e01.offset);
+          tile.fences.segments[tile.fences.count].p1 = fence_left(settings, half + e12.offset);
         }
 
         ++tile.fences.count;
@@ -584,11 +584,11 @@ namespace akgr {
 
       if (e12.limit && e20.limit) {
         if (split == VSplit::Left) {
-          tile.fences.segments[tile.fences.count][0] = fence_bottom(settings, half - e20.offset);
-          tile.fences.segments[tile.fences.count][1] = fence_right(settings, half + e12.offset);
+          tile.fences.segments[tile.fences.count].p0 = fence_bottom(settings, half - e20.offset);
+          tile.fences.segments[tile.fences.count].p1 = fence_right(settings, half + e12.offset);
         } else {
-          tile.fences.segments[tile.fences.count][0] = fence_bottom(settings, half + e20.offset);
-          tile.fences.segments[tile.fences.count][1] = fence_left(settings, half + e12.offset);
+          tile.fences.segments[tile.fences.count].p0 = fence_bottom(settings, half + e20.offset);
+          tile.fences.segments[tile.fences.count].p1 = fence_left(settings, half + e12.offset);
         }
 
         ++tile.fences.count;
@@ -596,11 +596,11 @@ namespace akgr {
 
       if (e20.limit && e01.limit) {
         if (split == VSplit::Left) {
-          tile.fences.segments[tile.fences.count][0] = fence_top(settings, half + e01.offset);
-          tile.fences.segments[tile.fences.count][1] = fence_bottom(settings, half - e20.offset);
+          tile.fences.segments[tile.fences.count].p0 = fence_top(settings, half + e01.offset);
+          tile.fences.segments[tile.fences.count].p1 = fence_bottom(settings, half - e20.offset);
         } else {
-          tile.fences.segments[tile.fences.count][0] = fence_top(settings, half - e01.offset);
-          tile.fences.segments[tile.fences.count][1] = fence_bottom(settings, half + e20.offset);
+          tile.fences.segments[tile.fences.count].p0 = fence_top(settings, half - e01.offset);
+          tile.fences.segments[tile.fences.count].p1 = fence_bottom(settings, half + e20.offset);
         }
 
         ++tile.fences.count;
@@ -672,11 +672,11 @@ namespace akgr {
 
     if (e01.limit) {
       if (oblique == Oblique::Up) {
-        tile.fences.segments[tile.fences.count][0] = fence_left(settings, half - e01.offset);
-        tile.fences.segments[tile.fences.count][1] = fence_top(settings, half - e01.offset);
+        tile.fences.segments[tile.fences.count].p0 = fence_left(settings, half - e01.offset);
+        tile.fences.segments[tile.fences.count].p1 = fence_top(settings, half - e01.offset);
       } else {
-        tile.fences.segments[tile.fences.count][0] = fence_left(settings, half + e01.offset);
-        tile.fences.segments[tile.fences.count][1] = fence_bottom(settings, half - e01.offset);
+        tile.fences.segments[tile.fences.count].p0 = fence_left(settings, half + e01.offset);
+        tile.fences.segments[tile.fences.count].p1 = fence_bottom(settings, half - e01.offset);
       }
 
       ++tile.fences.count;
@@ -684,11 +684,11 @@ namespace akgr {
 
     if (e20.limit) {
       if (oblique == Oblique::Up) {
-        tile.fences.segments[tile.fences.count][0] = fence_right(settings, half - e20.offset);
-        tile.fences.segments[tile.fences.count][1] = fence_bottom(settings, half - e20.offset);
+        tile.fences.segments[tile.fences.count].p0 = fence_right(settings, half - e20.offset);
+        tile.fences.segments[tile.fences.count].p1 = fence_bottom(settings, half - e20.offset);
       } else {
-        tile.fences.segments[tile.fences.count][0] = fence_right(settings, half + e20.offset);
-        tile.fences.segments[tile.fences.count][1] = fence_top(settings, half - e20.offset);
+        tile.fences.segments[tile.fences.count].p0 = fence_right(settings, half + e20.offset);
+        tile.fences.segments[tile.fences.count].p1 = fence_top(settings, half - e20.offset);
       }
 
       ++tile.fences.count;

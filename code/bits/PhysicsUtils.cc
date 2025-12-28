@@ -20,10 +20,10 @@ namespace akgr {
 
   }
 
-  gf::PhysicsShapeFilter filter_from_floor(int32_t floor)
+  gf::PhysicsFilter filter_from_floor(int32_t floor)
   {
-    gf::PhysicsShapeFilter filter = {};
-    filter.categories = filter.mask = bits_from_floor(floor);
+    gf::PhysicsFilter filter = {};
+    filter.category_bits = filter.mask_bits = bits_from_floor(floor);
     return filter;
   }
 

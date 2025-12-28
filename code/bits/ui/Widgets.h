@@ -187,7 +187,7 @@ namespace akgr::ui {
 
   class LabelWidget : public Widget {
   public:
-    LabelWidget(Widget* parent, LabelTheme* theme, const gf::Text* text);
+    LabelWidget(Widget* parent, LabelTheme* theme, gf::Text* text);
 
     void render(gf::RenderRecorder& recorder) override;
 
@@ -196,7 +196,7 @@ namespace akgr::ui {
 
   private:
     LabelTheme* m_theme = nullptr;
-    const gf::Text* m_text = nullptr;
+    gf::Text* m_text = nullptr;
   };
 
 #if 0

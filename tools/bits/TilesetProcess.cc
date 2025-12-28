@@ -576,10 +576,10 @@ namespace akgr {
 
               name[5] = char('0' + i);
               os << "   <property name=\"" << std::begin(name) << "\" value=\""
-                << tile.fences.segments[i][0].x << Sep
-                << tile.fences.segments[i][0].y << Sep
-                << tile.fences.segments[i][1].x << Sep
-                << tile.fences.segments[i][1].y << "\" />\n";
+                << tile.fences.segments[i].p0.x << Sep
+                << tile.fences.segments[i].p0.y << Sep
+                << tile.fences.segments[i].p1.x << Sep
+                << tile.fences.segments[i].p1.y << "\" />\n";
             }
 
             os << "  </properties>\n";

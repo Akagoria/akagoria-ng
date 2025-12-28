@@ -10,11 +10,7 @@
 #include <gf2/core/Polygon.h>
 #include <gf2/core/StringUtils.h>
 
-#include <gf2/physics/PhysicsArbiter.h>
-#include <gf2/physics/PhysicsConstraint.h>
-#include <gf2/physics/PhysicsShape.h>
-#include <gf2/physics/PhysicsShapeEx.h>
-#include <gf2/physics/PhysicsWorld.h>
+#include <gf2/physics/PhysicsChain.h>
 
 #include "PhysicsUtils.h"
 #include "WorldData.h"
@@ -28,30 +24,27 @@ namespace akgr {
     constexpr float CharacterMass = 1.0f;
     constexpr float CharacterRadius = 20.0f;
 
-    constexpr uintptr_t HeroCollisionType = 69;
-
     // map
-
-    constexpr uintptr_t ZoneCollisionType = 42;
 
     constexpr float ShapeRadius = 1.0f;
 
     constexpr int EllipseSegmentCount = 10;
     constexpr float EllipseSegmentLength = 40.0f;
 
-    gf::PhysicsShape object_to_convex_shape(gf::PhysicsBody* body, const gf::MapObject& object)
+    gf::PhysicsShape create_convex_shape_from_object(gf::PhysicsBody* body, const gf::PhysicsShapeData& data, const gf::MapObject& object)
     {
       switch (object.type) {
         case gf::MapObjectType::Polygon:
           {
-            auto polygon = std::get<std::vector<gf::Vec2F>>(object.feature);
+            const auto polygon = std::get<std::vector<gf::Vec2F>>(object.feature);
             assert(gf::is_convex(polygon));
-            return gf::PhysicsShape::make_polygon(body, polygon, gf::Identity3F, ShapeRadius);
+            assert(polygon.size() < B2_MAX_POLYGON_VERTICES);
+            return gf::PhysicsShape::create_polygon(body, data, polygon, ShapeRadius);
           }
         case gf::MapObjectType::Rectangle:
           {
-            gf::Vec2F size = std::get<gf::Vec2F>(object.feature);
-            return gf::PhysicsShape::make_box(body, gf::RectF::from_size(size), ShapeRadius);
+            const gf::Vec2F size = std::get<gf::Vec2F>(object.feature);
+            return gf::PhysicsShape::create_box(body, data, size / 2.0f);
           }
         default:
           assert(false);
@@ -61,14 +54,17 @@ namespace akgr {
       return {};
     }
 
-    std::vector<gf::PhysicsShape> object_to_collision_shapes(gf::PhysicsBody* body, const gf::MapObject& object)
+    void create_collision_shapes_from_object(gf::PhysicsBody* body, const gf::PhysicsShapeData& data, const gf::MapObject& object)
     {
       switch (object.type) {
         case gf::MapObjectType::Rectangle:
           {
             gf::Vec2F size = std::get<gf::Vec2F>(object.feature);
-            return { gf::PhysicsShape::make_box(body, gf::RectF::from_position_size(object.location, size), ShapeRadius) };
+
+            gf::PhysicsShape shape = gf::PhysicsShape::create_box(body, data, gf::RectF::from_position_size(object.location, size));
+            shape.release();
           }
+          break;
         case gf::MapObjectType::Polyline:
         case gf::MapObjectType::Polygon:
           {
@@ -78,68 +74,74 @@ namespace akgr {
               point += object.location;
             }
 
-            auto type = (object.type == gf::MapObjectType::Polygon) ? gf::PolylineType::Loop : gf::PolylineType::Chain;
-            return gf::make_polyline_shapes(body, polyline, ShapeRadius, type);
+            gf::PhysicsChainData chain_data;
+            chain_data.points = polyline;
+            chain_data.loop = (object.type == gf::MapObjectType::Polygon);
+            chain_data.filter = data.filter;
+
+            gf::PhysicsChain chain_ccw(body, chain_data);
+            chain_ccw.release();
+
+            std::reverse(polyline.begin(), polyline.end());
+            chain_data.points = polyline;
+
+            gf::PhysicsChain chain_cw(body, chain_data);
+            chain_cw.release();
           }
+          break;
         case gf::MapObjectType::Ellipse:
           {
             const gf::Vec2F size = std::get<gf::Vec2F>(object.feature);
 
             if (gf::almost_equals(size.w, size.h)) {
               const float radius = (size.w + size.h) / 2.0f;
-              return { gf::PhysicsShape::make_circle(body, radius, object.location) };
+
+              gf::PhysicsShape shape = gf::PhysicsShape::create_circle(body, data, gf::CircF::from_center_radius(object.location, radius));
+              shape.release();
+            } else {
+              std::vector<gf::Vec2F> polyline;
+
+              const float perimeter_approx = gf::Pi * std::sqrt(2 * (gf::square(size.w) + gf::square(size.h)));
+              const int count = std::max(EllipseSegmentCount, static_cast<int>(perimeter_approx / EllipseSegmentLength));
+              polyline.reserve(count);
+
+              for (int i = 0; i < count; ++i) {
+                polyline.push_back(object.location + size / 2 + size / 2 * gf::unit(2.0f * gf::Pi * float(i) / float(count)));
+              }
+
+              gf::PhysicsChainData chain_data;
+              chain_data.points = polyline;
+              chain_data.loop = true;
+              chain_data.filter = data.filter;
+
+              gf::PhysicsChain chain_ccw(body, chain_data);
+              chain_ccw.release();
+
+              std::reverse(polyline.begin(), polyline.end());
+              chain_data.points = polyline;
+
+              gf::PhysicsChain chain_cw(body, chain_data);
+              chain_cw.release();
+
             }
-
-            std::vector<gf::Vec2F> polyline;
-
-            const float perimeter_approx = gf::Pi * std::sqrt(2 * (gf::square(size.w) + gf::square(size.h)));
-            const int count = std::max(EllipseSegmentCount, static_cast<int>(perimeter_approx / EllipseSegmentLength));
-            polyline.reserve(count);
-
-            for (int i = 0; i < count; ++i) {
-              polyline.push_back(object.location + size / 2 + size / 2 * gf::unit(2.0f * gf::Pi * float(i) / float(count)));
-            }
-
-            return gf::make_polyline_shapes(body, polyline, ShapeRadius, gf::PolylineType::Loop);
           }
+          break;
         default:
           assert(false);
           break;
       }
-
-      return {};
     }
   }
 
   /*
-   * ZoneHandler
+   * PhysicsDetail
    */
 
-  void ZoneHandler::add_zone(gf::PhysicsId id, std::string name, std::string message, std::set<gf::Id> requirements)
+  void CharacterPhysics::set_spot(Spot spot)
   {
-    Zone zone = { std::move(name), std::move(message), std::move(requirements) };
-    m_zones.emplace(id, std::move(zone));
-  }
-
-  void ZoneHandler::clear_zones()
-  {
-    m_zones.clear();
-  }
-
-  bool ZoneHandler::begin(gf::PhysicsArbiter arbiter, [[maybe_unused]] gf::PhysicsWorld world)
-  {
-    auto [ zone_body, hero_body  ] = arbiter.bodies();
-    assert(zone_body.type() == gf::PhysicsBodyType::Static);
-    const gf::PhysicsId id = zone_body.id();
-
-    if (auto iterator = m_zones.find(id); iterator != m_zones.end()) {
-      const auto& zone = iterator->second;
-      on_message.emit(zone.message, zone.requirements);
-    } else {
-      gf::Log::error("No zone found for a body.");
-    }
-
-    return true;
+    const gf::PhysicsRotation rotation = body.rotation();
+    body.set_transform(spot.location, rotation);
+    shape.set_filter(filter_from_floor(spot.floor));
   }
 
   /*
@@ -148,9 +150,10 @@ namespace akgr {
 
   void PhysicsRuntime::bind(const WorldData& data, const WorldState& state)
   {
-    // zone_handler
+    gf::PhysicsWorldData world_data;
+    world_data.gravity = { 0.0f, 0.0f };
 
-    world.add_collision_handler(&zone_handler, ZoneCollisionType, HeroCollisionType);
+    world = { world_data };
 
     // hero
 
@@ -162,21 +165,21 @@ namespace akgr {
 
     // map
 
-    const auto& map = data.map;
+    const gf::TiledMap& map = data.map;
 
-    for (const auto& layer : map.layers) {
+    for (const gf::MapLayerStructure& layer : map.layers) {
       assert(layer.type == gf::MapLayerType::Group);
 
-      const auto& group_layer = map.group_layers[layer.layer_index];
-      const auto& group_properties = map.properties[group_layer.layer.properties_index];
+      const gf::MapGroupLayer& group_layer = map.group_layers[layer.layer_index];
+      const gf::PropertyMap& group_properties = map.properties[group_layer.layer.properties_index];
 
-      const auto& floor_property = group_properties("floor");
+      const gf::Property& floor_property = group_properties("floor");
       assert(floor_property.is_int());
       const auto floor = static_cast<int32_t>(floor_property.as_int());
 
       std::vector<gf::SegmentI> fences;
 
-      for (const auto& sub_layer : group_layer.sub_layers) {
+      for (const gf::MapLayerStructure& sub_layer : group_layer.sub_layers) {
         switch (sub_layer.type) {
           case gf::MapLayerType::Object:
             compute_object_layer(sub_layer, floor, map);
@@ -194,49 +197,37 @@ namespace akgr {
     }
   }
 
-  PhysicsMovableRuntime PhysicsRuntime::create_character(Spot spot, float rotation, uintptr_t collision_type)
+  CharacterPhysics PhysicsRuntime::create_character(Spot spot, float rotation)
   {
-    PhysicsMovableRuntime movable;
+    CharacterPhysics detail;
 
-    movable.controller = gf::PhysicsBody::make_kinematic();
-    movable.controller.set_location(spot.location);
-    movable.controller.set_rotation(rotation);
-    world.add_body(movable.controller);
+    gf::PhysicsBodyData body_data;
+    body_data.type = gf::PhysicsBodyType::Dynamic;
+    body_data.location = spot.location;
+    body_data.rotation = rotation;
+    body_data.motion_locks.angular_z = true;
 
-    movable.body = gf::PhysicsBody::make_dynamic(CharacterMass, gf::compute_moment_for_circle(CharacterMass, 0.0f, CharacterRadius, { 0.0f, 0.0f }));
-    movable.body.set_location(spot.location);
-    movable.body.set_rotation(rotation);
-    world.add_body(movable.body);
+    detail.body = { &world, body_data };
 
-    auto pivot = gf::PhysicsConstraint::make_pivot_joint(&movable.controller, &movable.body, { 0.0f, 0.0f }, { 0.0f, 0.0f });
-    pivot.set_max_bias(0.0f);
-    pivot.set_max_force(1'000.0f);
-    world.add_constraint(pivot);
+    gf::PhysicsShapeData shape_data;
+    shape_data.density = CharacterMass;
+    shape_data.enable_sensor_events = true;
+    shape_data.filter = filter_from_floor(spot.floor);
 
-    auto gear = gf::PhysicsConstraint::make_gear_joint(&movable.controller, &movable.body, 0.0f, 1.0f);
-    gear.set_error_bias(0.0f);
-    gear.set_max_bias(1.2f);
-    gear.set_max_force(5'000.0f);
-    world.add_constraint(gear);
+    detail.shape = gf::PhysicsShape::create_circle(&detail.body, shape_data, gf::CircF::from_radius(CharacterRadius));
 
-    movable.shape = gf::PhysicsShape::make_circle(&movable.body, CharacterRadius, { 0.0f, 0.0f });
-    movable.shape.set_shape_filter(filter_from_floor(spot.floor));
-    movable.shape.set_collision_type(collision_type);
-    world.add_shape(movable.shape);
-
-    return movable;
+    return detail;
   }
 
   void PhysicsRuntime::bind_hero(const HeroState& state)
   {
-    hero = create_character(state.spot, state.rotation, HeroCollisionType);
+    hero = create_character(state.spot, state.rotation);
   }
 
   void PhysicsRuntime::bind_characters(const std::vector<CharacterState>& states)
   {
-    for (const auto& character : states) {
-      const gf::Id character_name_id = gf::hash_string(character.name);
-      characters.emplace(character_name_id, create_character(character.spot, character.rotation));
+    for (const CharacterState& character : states) {
+      characters.push_back(create_character(character.spot, character.rotation));
     }
   }
 
@@ -276,26 +267,26 @@ namespace akgr {
         assert(coords.size() == 4);
 
         gf::SegmentI segment;
-        segment[0] = gf::vec(std::atoi(coords[0].data()), std::atoi(coords[1].data()));
-        segment[1] = gf::vec(std::atoi(coords[2].data()), std::atoi(coords[3].data()));
+        segment.p0 = gf::vec(std::atoi(coords[0].data()), std::atoi(coords[1].data()));
+        segment.p1 = gf::vec(std::atoi(coords[2].data()), std::atoi(coords[3].data()));
 
         if (cell.flip.test(gf::CellFlip::Diagonally)) {
-          std::swap(segment[0].x, segment[0].y);
-          std::swap(segment[1].x, segment[1].y);
+          std::swap(segment.p0.x, segment.p0.y);
+          std::swap(segment.p1.x, segment.p1.y);
         }
 
         if (cell.flip.test(gf::CellFlip::Horizontally)) {
-          segment[0].x = map.tile_size.x - segment[0].x;
-          segment[1].x = map.tile_size.x - segment[1].x;
+          segment.p0.x = map.tile_size.x - segment.p0.x;
+          segment.p1.x = map.tile_size.x - segment.p1.x;
         }
 
         if (cell.flip.test(gf::CellFlip::Vertically)) {
-          segment[0].y = map.tile_size.y - segment[0].y;
-          segment[1].y = map.tile_size.y - segment[1].y;
+          segment.p0.y = map.tile_size.y - segment.p0.y;
+          segment.p1.y = map.tile_size.y - segment.p1.y;
         }
 
-        segment[0] += position * map.tile_size;
-        segment[1] += position * map.tile_size;
+        segment.p0 += position * map.tile_size;
+        segment.p1 += position * map.tile_size;
 
         fences.push_back(segment);
       }
@@ -304,19 +295,30 @@ namespace akgr {
 
   void PhysicsRuntime::extract_collisions(const std::vector<gf::SegmentI>& fences, int32_t floor)
   {
-    auto body = gf::PhysicsBody::make_static();
-    world.add_body(body);
+    gf::PhysicsBodyData body_data;
+    body_data.type = gf::PhysicsBodyType::Static;
 
-    auto collisions = gf::compute_lines(fences);
+    gf::PhysicsBody body(&world, body_data);
 
-    for (auto& collision : collisions) {
-      auto shapes = gf::make_polyline_shapes(&body, collision.points, ShapeRadius, collision.type);
+    std::vector<gf::Polyline> collisions = gf::compute_lines(fences);
 
-      for (auto& shape : shapes) {
-        shape.set_shape_filter(filter_from_floor(floor));
-        world.add_shape(shape);
-      }
+    for (gf::Polyline collision : collisions) {
+      gf::PhysicsChainData chain_data;
+      chain_data.points = collision.points;
+      chain_data.loop = (collision.type == gf::PolylineType::Loop);
+      chain_data.filter = filter_from_floor(floor);
+
+      gf::PhysicsChain chain_ccw(&body, chain_data);
+      chain_ccw.release();
+
+      std::reverse(collision.points.begin(), collision.points.end());
+      chain_data.points = collision.points;
+
+      gf::PhysicsChain chain_cw(&body, chain_data);
+      chain_cw.release();
     }
+
+    body.release();
   }
 
   void PhysicsRuntime::compute_object_layer(const gf::MapLayerStructure& layer, int32_t floor, const gf::TiledMap& map)
@@ -347,14 +349,14 @@ namespace akgr {
   {
     // 1. prepare zone data
 
-    const auto& object_properties = map.properties[object.properties_index];
+    const gf::PropertyMap& object_properties = map.properties[object.properties_index];
 
     if (!object_properties.has_property("message")) {
       gf::Log::error("Missing message in a zone object: '{}'", object.name);
       return;
     }
 
-    const auto& message = object_properties("message").as_string();
+    const std::string& message = object_properties("message").as_string();
 
     std::set<gf::Id> requirements;
 
@@ -373,55 +375,61 @@ namespace akgr {
 
     // 2. create shape
 
-    auto body = gf::PhysicsBody::make_static();
-    body.set_location(object.location);
-    body.set_rotation(gf::degrees_to_radians(object.rotation));
-    world.add_body(body);
+    gf::PhysicsBodyData body_data;
+    body_data.type = gf::PhysicsBodyType::Static;
+    body_data.location = object.location;
+    body_data.rotation = gf::degrees_to_radians(object.rotation);
 
-    auto shape = object_to_convex_shape(&body, object);
-    shape.set_collision_type(ZoneCollisionType);
-    shape.set_sensor(true);
-    shape.set_shape_filter(filter_from_floor(floor));
-    world.add_shape(shape);
+    gf::PhysicsBody body(&world, body_data);
+
+    gf::PhysicsShapeData shape_data;
+    shape_data.filter = filter_from_floor(floor);
+    shape_data.enable_sensor_events = true;
+    shape_data.sensor = true;
+
+    gf::PhysicsShape shape = create_convex_shape_from_object(&body, shape_data, object);
 
     // 3. add zone to known zones
 
-    zone_handler.add_zone(body.id(), object.name, message, std::move(requirements));
+    Zone zone = { object.name, message, std::move(requirements) };
+    zones.emplace(shape.id(), std::move(zone));
+
+    shape.release();
+    body.release();
   }
 
   void PhysicsRuntime::extract_sprites(const gf::MapObject& object, int32_t floor, const gf::TiledMap& map)
   {
     assert(object.type == gf::MapObjectType::Tile);
-    const auto tile = std::get<gf::MapTile>(object.feature);
+    const gf::MapTile tile = std::get<gf::MapTile>(object.feature);
 
-    const auto* tileset = map.tileset_from_gid(tile.gid);
+    const gf::MapTileset* tileset = map.tileset_from_gid(tile.gid);
     const uint32_t id = tile.gid - tileset->first_gid;
-    const auto& tileset_tile = tileset->tiles[id];
+    const gf::MapTilesetTile& tileset_tile = tileset->tiles[id];
 
     if (!tileset_tile.objects) {
       return;
     }
 
-    const auto& object_layer = map.object_layers[*tileset_tile.objects];
+    const gf::MapObjectLayer& object_layer = map.object_layers[*tileset_tile.objects];
 
     const gf::Vec2F object_size = tileset->tile_size;
     const gf::Vec2F object_center = object.location - gf::diry(object_size.h);
     const gf::Vec2F bottom_left = object.location;
     const gf::Vec2F location = gf::transform_point(gf::rotation(gf::degrees_to_radians(object.rotation), bottom_left), object_center);
 
-    auto body = gf::PhysicsBody::make_static();
-    body.set_location(location);
-    body.set_rotation(gf::degrees_to_radians(object.rotation));
-    world.add_body(body);
+    gf::PhysicsBodyData body_data;
+    body_data.type = gf::PhysicsBodyType::Static;
+    body_data.location = location;
+    body_data.rotation = gf::degrees_to_radians(object.rotation);
 
-    for (const auto& physics_object : object_layer.objects) {
-      auto shapes = object_to_collision_shapes(&body, physics_object);
+    gf::PhysicsBody body(&world, body_data);
 
-      for (auto& shape : shapes) {
-        shape.set_shape_filter(filter_from_floor(floor));
-        world.add_shape(shape);
-      }
+    gf::PhysicsShapeData shape_data;
+    shape_data.filter = filter_from_floor(floor);
+
+    for (const gf::MapObject& physics_object : object_layer.objects) {
+      create_collision_shapes_from_object(&body, shape_data, physics_object);
     }
-
   }
 }

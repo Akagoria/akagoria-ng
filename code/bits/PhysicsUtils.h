@@ -3,11 +3,11 @@
 
 #include <cstdint>
 
-#include <gf2/physics/PhysicsShape.h>
+#include <gf2/physics/PhysicsFilter.h>
 
 namespace akgr {
 
-  gf::PhysicsShapeFilter filter_from_floor(int32_t floor);
+  gf::PhysicsFilter filter_from_floor(int32_t floor);
 
 }
 

@@ -9,7 +9,6 @@
 #include <gf2/core/Log.h>
 
 #include <gf2/graphics/RenderRecorder.h>
-#include <gf2/graphics/Texture.h>
 
 namespace akgr::ui {
 
@@ -264,7 +263,7 @@ namespace akgr::ui {
   void FrameWidget::render(gf::RenderRecorder& recorder) {
     auto geometry = m_shape.geometry();
 
-    if (geometry.size == 0) {
+    if (geometry.count == 0) {
       return;
     }
 
@@ -442,7 +441,7 @@ namespace akgr::ui {
    * LabelWidget
    */
 
-  LabelWidget::LabelWidget(Widget* parent, LabelTheme* theme, const gf::Text* text)
+  LabelWidget::LabelWidget(Widget* parent, LabelTheme* theme, gf::Text* text)
   : Widget(parent)
   , m_theme(theme)
   , m_text(text)
@@ -453,7 +452,7 @@ namespace akgr::ui {
   {
     auto geometry = m_text->geometry();
 
-    if (geometry.size == 0) {
+    if (geometry.count == 0) {
       return;
     }
 

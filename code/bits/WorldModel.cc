@@ -4,6 +4,7 @@
 
 #include <gf2/core/Math.h>
 #include <gf2/core/Log.h>
+#include <gf2/physics/PhysicsEvents.h>
 
 #include "Akagoria.h"
 
@@ -72,9 +73,8 @@ namespace akgr {
       }
     }
 
-    runtime.physics.hero.body.set_rotation(rotation);
-    runtime.physics.hero.controller.set_rotation(rotation);
-    runtime.physics.hero.controller.set_velocity(velocity * gf::unit(rotation));
+    runtime.physics.hero.body.set_linear_velocity(velocity * gf::unit(rotation));
+    runtime.physics.hero.body.set_transform(runtime.physics.hero.body.location(), rotation);
   }
 
   void WorldModel::update_dialog([[maybe_unused]] gf::Time time)
@@ -116,11 +116,9 @@ namespace akgr {
   {
     // const float dt = time.as_seconds();
 
-    for (auto& character : state.characters) {
-      auto physics_iterator = runtime.physics.characters.find(gf::hash_string(character.name));
-      assert(physics_iterator != runtime.physics.characters.end());
-
-      auto& [ character_name_id, character_physics ] = *physics_iterator;
+    for (auto [ index, character ] : gf::enumerate(state.characters)) {
+      assert(index < runtime.physics.characters.size());
+      CharacterPhysics& character_physics = runtime.physics.characters[index];
 
       switch (character.behavior_type()) {
         case CharacterBehavior::None:
@@ -128,26 +126,22 @@ namespace akgr {
         case CharacterBehavior::Stay:
           {
             auto& stay = std::get<CharacterStayState>(character.behavior);
-            auto move = stay.location - character.spot.location;
+            const gf::Vec2F move = stay.location - character.spot.location;
 
             if (gf::square_length(move) > gf::square(20.0f)) {
               const gf::Vec2F current_direction = gf::unit(character.rotation);
 
               if (gf::dot(current_direction, move) >= 0.0f) {
                 character.rotation = gf::angle(move);
-                character_physics.body.set_rotation(character.rotation);
-                character_physics.controller.set_rotation(character.rotation);
-                character_physics.controller.set_velocity(LinearVelocity * gf::unit(character.rotation));
+                character_physics.body.set_linear_velocity(LinearVelocity * gf::unit(character.rotation));
                 character.action = CharacterAction::Forward;
               } else {
                 character.rotation = gf::angle(move) + gf::Pi;
-                character_physics.body.set_rotation(character.rotation);
-                character_physics.controller.set_rotation(character.rotation);
-                character_physics.controller.set_velocity(- 0.5f * LinearVelocity * gf::unit(character.rotation));
+                character_physics.body.set_linear_velocity(- 0.5f * LinearVelocity * gf::unit(character.rotation));
                 character.action = CharacterAction::Backward;
               }
             } else {
-              character_physics.controller.set_velocity({ 0.0f, 0.0f });
+              character_physics.body.set_linear_velocity({ 0.0f, 0.0f });
               character.action = CharacterAction::Static;
             }
           }
@@ -175,20 +169,40 @@ namespace akgr {
 
   void WorldModel::update_physics(gf::Time time)
   {
+    // update the world
+
     runtime.physics.world.update(time);
 
-    state.hero.rotation = runtime.physics.hero.body.rotation();
-    state.hero.spot.location = runtime.physics.hero.body.location();
+    // handle message events
 
-    for (auto& character : state.characters) {
-      if (auto iterator = runtime.physics.characters.find(gf::hash_string(character.name)); iterator != runtime.physics.characters.end()) {
-        auto& body = iterator->second.body;
-        character.rotation = body.rotation();
-        character.spot.location = body.location();
+    gf::PhysicsSensorEvents events = runtime.physics.world.sensor_events();
+
+    for (const gf::PhysicsSensorBeginTouchEvent& event : events.begin_events) {
+      auto iterator = runtime.physics.zones.find(event.sensor.id());
+
+      if (iterator != runtime.physics.zones.end()) {
+        const PhysicsRuntime::Zone& zone = iterator->second;
+
+        if (std::includes(state.hero.requirements.begin(), state.hero.requirements.end(), zone.requirements.begin(), zone.requirements.end())) {
+          runtime.script.on_message(zone.message);
+        }
+      } else {
+        gf::Log::error("No zone found for a body."); // TODO: use name of the body
       }
     }
 
-    runtime.script.handle_deferred_messages();
+    // update characters location/rotation
+
+    state.hero.rotation = runtime.physics.hero.body.rotation().angle();
+    state.hero.spot.location = runtime.physics.hero.body.location();
+
+    for (auto [ index, character ] : gf::enumerate(state.characters)) {
+      assert(index < runtime.physics.characters.size());
+      const CharacterPhysics& character_physics = runtime.physics.characters[index];
+
+      character.rotation = character_physics.body.rotation().angle();
+      character.spot.location = character_physics.body.location();
+    }
   }
 
   void WorldModel::update_quests([[maybe_unused]] gf::Time time)
@@ -221,7 +235,7 @@ namespace akgr {
       return;
     }
 
-    auto& current = state.notifications.front();
+    NotificationState& current = state.notifications.front();
     current.elapsed += time;
 
     if (current.elapsed > current.data->duration) {

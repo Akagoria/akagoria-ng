@@ -4,6 +4,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 #include <gf2/core/Geometry.h>
 #include <gf2/core/Id.h>
@@ -11,44 +12,36 @@
 #include <gf2/core/TiledMap.h>
 
 #include <gf2/physics/PhysicsBody.h>
-#include <gf2/physics/PhysicsCollisionHandler.h>
+#include <gf2/physics/PhysicsShape.h>
 #include <gf2/physics/PhysicsWorld.h>
 
-#include "PhysicsMovableRuntime.h"
 #include "WorldData.h"
 #include "WorldState.h"
 
 namespace akgr {
 
-  class ZoneHandler : public gf::PhysicsCollisionHandler {
-  public:
-    void add_zone(gf::PhysicsId id, std::string name, std::string message, std::set<gf::Id> requirements);
-    void clear_zones();
+  struct CharacterPhysics {
+    gf::PhysicsBody body;
+    gf::PhysicsShape shape;
 
-    bool begin(gf::PhysicsArbiter arbiter, gf::PhysicsWorld world) override;
+    void set_spot(Spot spot);
+  };
 
-    gf::Signal<void(const std::string& message, const std::set<gf::Id>& requirements)> on_message; // NOLINT
+  struct PhysicsRuntime {
+    gf::PhysicsWorld world;
 
-  private:
+    CharacterPhysics hero;
+    std::vector<CharacterPhysics> characters;
+
     struct Zone {
       std::string name;
       std::string message;
       std::set<gf::Id> requirements;
     };
 
-    std::map<gf::PhysicsId, Zone> m_zones;
-  };
+    std::map<gf::PhysicsShapeId, Zone> zones;
 
-
-  struct PhysicsRuntime {
-    gf::PhysicsWorld world;
-    ZoneHandler zone_handler;
-
-    PhysicsMovableRuntime hero;
-    std::map<gf::Id, PhysicsMovableRuntime> characters;
-
-
-    PhysicsMovableRuntime create_character(Spot spot, float rotation, uintptr_t collision_type = 0);
+    CharacterPhysics create_character(Spot spot, float rotation);
 
     void bind(const WorldData& data, const WorldState& state);
 
